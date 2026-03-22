@@ -23,8 +23,6 @@
       --bronze:#b97a4b;
       --green:#55c27a;
       --green-soft:rgba(85,194,122,.14);
-      --red:#ff7a7a;
-      --red-soft:rgba(255,122,122,.12);
       --yellow:#e5c76b;
       --yellow-soft:rgba(229,199,107,.12);
       --shadow:0 20px 50px rgba(0,0,0,.32);
@@ -346,7 +344,7 @@
       <div class="eyebrow">CDL Liga</div>
       <h1>Tabellen + Spieltage in clean</h1>
       <div class="sub">
-        Es werden nur die wichtigen Tabellenwerte angezeigt: Siege, Niederlagen, Leg-Differenz und Punkte. Darunter siehst du die Spieltage mit Status offen oder fertig.
+        Es werden nur die wichtigen Tabellenwerte angezeigt: Platz, Siege, Niederlagen, Leg-Differenz und Punkte. Darunter siehst du die Spieltage mit Gegnern und Status offen oder fertig.
       </div>
       <div class="legend">
         <span class="chip blue"><span class="dot"></span>Autodarts</span>
@@ -390,7 +388,7 @@
             <div class="card-head">
               <div>
                 <h3>Spieltage</h3>
-                <div class="hint">Mit klarer Spieltag-Überschrift und Status</div>
+                <div class="hint">Mit klarer Spieltag-Überschrift, Paarungen und Status</div>
               </div>
             </div>
             <div id="matchdays" class="matchdays">
@@ -521,18 +519,16 @@
     }
 
     function parseLeagueTable(tableData){
-      const rawRows = (tableData.rows || []).map(r => (r.c || []).map(normalizeCell));
+      const rows = (tableData.rows || []).map(r => (r.c || []).map(normalizeCell));
 
-      let headerIndex = rawRows.findIndex(row =>
+      const headerIndex = rows.findIndex(row =>
         row.some(cell => cleanHeader(cell).includes("spieler"))
       );
 
-      if (headerIndex === -1) {
-        return { cols: [], rows: [] };
-      }
+      if (headerIndex === -1) return { cols: [], rows: [] };
 
-      let cols = rawRows[headerIndex].map(cleanText);
-      let rows = rawRows
+      let cols = rows[headerIndex].map(cleanText);
+      let dataRows = rows
         .slice(headerIndex + 1)
         .filter(row => row.some(cell => cleanText(cell) !== ""))
         .map(row => {
@@ -547,10 +543,10 @@
 
       if (duplicateSpielerIndex !== -1) {
         cols = cols.slice(0, duplicateSpielerIndex);
-        rows = rows.map(row => row.slice(0, duplicateSpielerIndex));
+        dataRows = dataRows.map(row => row.slice(0, duplicateSpielerIndex));
       }
 
-      return { cols, rows };
+      return { cols, rows: dataRows };
     }
 
     function findColumnIndex(headers, patterns){
@@ -562,6 +558,12 @@
       return -1;
     }
 
+    function numericFromCell(value){
+      const txt = cleanText(value);
+      const m = txt.match(/-?\d+/);
+      return m ? m[0] : txt;
+    }
+
     function buildCleanLeagueTable(cols, rows){
       const idxRank = findColumnIndex(cols, ["platz", "rang", "position"]);
       const idxPlayer = findColumnIndex(cols, ["spieler", "name"]);
@@ -570,41 +572,25 @@
       const idxLegDiff = findColumnIndex(cols, ["leg-diff", "leg diff", "legdiff", "diff"]);
       const idxPoints = findColumnIndex(cols, ["punkte", "pkt"]);
 
-      const wanted = [
-        { idx: idxRank, label: "Platz" },
-        { idx: idxPlayer, label: "Spieler" },
-        { idx: idxWins, label: "Siege" },
-        { idx: idxLosses, label: "Niederlagen" },
-        { idx: idxLegDiff, label: "Leg-Diff" },
-        { idx: idxPoints, label: "Punkte" }
-      ].filter(col => col.idx !== -1);
+      const outCols = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      const outRows = rows.map((row, i) => [
+        idxRank !== -1 ? numericFromCell(row[idxRank]) || String(i + 1) : String(i + 1),
+        idxPlayer !== -1 ? cleanText(row[idxPlayer]) : "",
+        idxWins !== -1 ? numericFromCell(row[idxWins]) : "",
+        idxLosses !== -1 ? numericFromCell(row[idxLosses]) : "",
+        idxLegDiff !== -1 ? numericFromCell(row[idxLegDiff]) : "",
+        idxPoints !== -1 ? numericFromCell(row[idxPoints]) : ""
+      ]).filter(r => r[1] !== "");
 
-      if (wanted.length < 4) {
-        return { cols: ["Platz", "Spieler"], rows: rows.map((row, i) => [String(i + 1), row[idxPlayer] || ""]) };
-      }
-
-      return {
-        cols: wanted.map(col => col.label),
-        rows: rows.map((row, i) => wanted.map(col => {
-          if (col.label === "Platz") {
-            const v = cleanText(row[col.idx]);
-            return v || String(i + 1);
-          }
-          return row[col.idx] ?? "";
-        }))
-      };
+      return { cols: outCols, rows: outRows };
     }
 
     function detectRankIndex(cols){
-      return cols.findIndex(c => cleanHeader(c).includes("platz")) !== -1
-        ? cols.findIndex(c => cleanHeader(c).includes("platz"))
-        : 0;
+      return cols.findIndex(c => cleanHeader(c).includes("platz"));
     }
 
     function detectNameIndex(cols){
-      return cols.findIndex(c => cleanHeader(c).includes("spieler")) !== -1
-        ? cols.findIndex(c => cleanHeader(c).includes("spieler"))
-        : 1;
+      return cols.findIndex(c => cleanHeader(c).includes("spieler"));
     }
 
     function getRankValue(row, rankIndex, fallback){
@@ -685,80 +671,69 @@
     }
 
     function looksLikeScore(text){
-      return /^\d+\s*[:\-]\s*\d+$/.test(text);
+      return /^\d+\s*[:\-]\s*\d+$/.test(cleanText(text));
     }
 
-    function scoreIsFinished(score){
-      return looksLikeScore(score);
+    function isMatchdayTitle(text){
+      return /spieltag\s*\d+/i.test(cleanText(text));
     }
 
-    function extractMatchFromRow(values){
-      const cleaned = values.map(cleanText).filter(Boolean);
-      if (cleaned.length < 2) return null;
-
-      const scoreIndex = cleaned.findIndex(v => looksLikeScore(v));
-      if (scoreIndex !== -1) {
-        let p1 = cleaned[scoreIndex - 1] || "";
-        let p2 = cleaned[scoreIndex + 1] || "";
-        const score = cleaned[scoreIndex];
-
-        if (!p1 || !p2) return null;
-        if (/spieler\s*1|spieler\s*2/i.test(p1 + " " + p2)) return null;
-
-        return { p1, p2, score };
-      }
-
-      const text = cleaned.join(" ").toLowerCase();
-      if (text.includes("spieler 1") || text.includes("spieler 2")) return null;
-
-      if (cleaned.length >= 3) {
-        return { p1: cleaned[0], p2: cleaned[1], score: "offen" };
-      }
-
-      if (cleaned.length === 2) {
-        return { p1: cleaned[0], p2: cleaned[1], score: "offen" };
-      }
-
-      return null;
-    }
-
-    function parseMatchRows(tableData){
+    function parseMatchdayRows(tableData){
       const rows = (tableData.rows || [])
-        .map(r => (r.c || []).map(normalizeCell).map(cleanText))
-        .filter(row => row.some(cell => cell !== ""));
+        .map(r => (r.c || []).map(normalizeCell).map(cleanText));
 
       const groups = [];
-      let current = null;
-      let fallbackCounter = 1;
+      let currentGroup = null;
+      let fallbackDay = 1;
 
       for (const row of rows) {
-        const joined = row.join(" ").trim();
-        const lower = joined.toLowerCase();
+        const nonEmpty = row.filter(v => v !== "");
+        if (!nonEmpty.length) continue;
 
-        if (/spieltag\s*\d+/i.test(joined)) {
+        const joined = nonEmpty.join(" ");
+
+        if (isMatchdayTitle(joined)) {
           const titleMatch = joined.match(/spieltag\s*\d+/i);
-          const title = titleMatch ? titleMatch[0].replace(/\s+/g, " ").trim() : `Spieltag ${fallbackCounter++}`;
-          current = { title, matches: [] };
-          groups.push(current);
+          const title = titleMatch ? titleMatch[0].replace(/\s+/g, " ").trim() : `Spieltag ${fallbackDay++}`;
+          currentGroup = { title, matches: [] };
+          groups.push(currentGroup);
           continue;
         }
 
-        const match = extractMatchFromRow(row);
-        if (!match) continue;
+        const score = nonEmpty.find(looksLikeScore) || "";
+        const names = nonEmpty.filter(v =>
+          !looksLikeScore(v) &&
+          !/spieltag/i.test(v) &&
+          !/spieler\s*1/i.test(v) &&
+          !/spieler\s*2/i.test(v) &&
+          !/^heim$/i.test(v) &&
+          !/^ausw(ä|ae)rts?$/i.test(v) &&
+          !/^discord$/i.test(v) &&
+          !/^ergebnis$/i.test(v)
+        );
 
-        if (!current) {
-          current = { title: `Spieltag ${fallbackCounter++}`, matches: [] };
-          groups.push(current);
+        if (names.length < 2) continue;
+
+        const p1 = names[0];
+        const p2 = names[1];
+
+        if (!currentGroup) {
+          currentGroup = { title: `Spieltag ${fallbackDay++}`, matches: [] };
+          groups.push(currentGroup);
         }
 
-        current.matches.push(match);
+        currentGroup.matches.push({
+          p1,
+          p2,
+          score: score || "offen"
+        });
       }
 
       return groups
         .filter(group => group.matches.length)
         .map(group => ({
           ...group,
-          status: group.matches.every(m => scoreIsFinished(m.score)) ? "fertig" : "offen"
+          status: group.matches.every(match => looksLikeScore(match.score)) ? "fertig" : "offen"
         }));
     }
 
@@ -783,7 +758,7 @@
         box.appendChild(title);
 
         group.matches.forEach(match => {
-          const finished = scoreIsFinished(match.score);
+          const finished = looksLikeScore(match.score);
           const row = document.createElement("div");
           row.className = "match";
 
@@ -820,7 +795,7 @@
         const cleanLeague = buildCleanLeagueTable(parsedLeague.cols, parsedLeague.rows);
         renderTable(cleanLeague.cols, cleanLeague.rows);
 
-        const matchGroups = parseMatchRows(matchdayData);
+        const matchGroups = parseMatchdayRows(matchdayData);
         renderMatchdays(matchGroups);
 
         leagueMeta.textContent = `${cleanLeague.rows.length} Einträge geladen`;
