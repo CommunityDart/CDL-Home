@@ -21,12 +21,18 @@
       --gold:#d6b04d;
       --silver:#b9c3d0;
       --bronze:#b97a4b;
+      --green:#55c27a;
+      --green-soft:rgba(85,194,122,.14);
+      --red:#ff7a7a;
+      --red-soft:rgba(255,122,122,.12);
+      --yellow:#e5c76b;
+      --yellow-soft:rgba(229,199,107,.12);
       --shadow:0 20px 50px rgba(0,0,0,.32);
       --radius-xl:28px;
       --radius-lg:22px;
-      --radius-md:16px;
       --max:1240px;
     }
+
     *{box-sizing:border-box}
     html,body{margin:0}
     body{
@@ -38,7 +44,9 @@
         linear-gradient(180deg, #091019 0%, #0a1018 100%);
       min-height:100vh;
     }
+
     .wrap{max-width:var(--max);margin:0 auto;padding:28px 18px 42px}
+
     .hero{
       border:1px solid var(--line);
       background:linear-gradient(135deg, rgba(14,23,36,.96), rgba(10,17,26,.95));
@@ -46,21 +54,55 @@
       box-shadow:var(--shadow);
       padding:30px;
       margin-bottom:18px;
-      position:relative;
       overflow:hidden;
     }
-    .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-    h1{margin:0;font-size:clamp(30px,4.4vw,48px);line-height:1.03;letter-spacing:-.03em}
-    .sub{margin-top:12px;max-width:760px;color:var(--muted);font-size:16px}
-    .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-    .chip{
-      display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
-      background:var(--panel2);color:var(--muted);border-radius:999px;padding:8px 12px;
-      font-size:13px;font-weight:600
+
+    .eyebrow{
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:10px;
     }
+
+    h1{
+      margin:0;
+      font-size:clamp(30px,4.4vw,48px);
+      line-height:1.03;
+      letter-spacing:-.03em;
+    }
+
+    .sub{
+      margin-top:12px;
+      max-width:760px;
+      color:var(--muted);
+      font-size:16px;
+    }
+
+    .legend{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--line);
+      background:var(--panel2);
+      color:var(--muted);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:600;
+    }
+
     .chip .dot{width:8px;height:8px;border-radius:999px;display:block}
     .chip.blue .dot{background:var(--blue)}
     .chip.orange .dot{background:var(--orange)}
+
     .shell{
       border:1px solid var(--line);
       background:rgba(16,25,39,.94);
@@ -68,6 +110,7 @@
       box-shadow:var(--shadow);
       overflow:hidden;
     }
+
     .topbar{
       padding:14px;
       border-bottom:1px solid var(--line);
@@ -76,86 +119,223 @@
       display:grid;
       gap:10px;
     }
+
     .tab-row{display:flex;gap:10px;flex-wrap:wrap}
     button{appearance:none;border:none;font:inherit}
+
     .btn{
-      padding:10px 16px;border-radius:999px;background:#132033;border:1px solid var(--line2);
-      color:var(--text);cursor:pointer;font-weight:700;transition:.16s ease;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.02)
+      padding:10px 16px;
+      border-radius:999px;
+      background:#132033;
+      border:1px solid var(--line2);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:700;
+      transition:.16s ease;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
     }
+
     .btn:hover{transform:translateY(-1px);border-color:#3a5173}
     .btn.active.autodarts{background:var(--blue-soft);border-color:rgba(77,140,255,.55)}
     .btn.active.dartcounter{background:var(--orange-soft);border-color:rgba(255,154,61,.55)}
+
     .content{padding:20px}
-    .head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
-    .head h2{margin:0;font-size:30px;letter-spacing:-.02em}
-    .meta{color:var(--muted);margin-top:4px}
-    .status{
-      display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 14px;
-      border:1px solid var(--line);background:#0f1724;color:var(--muted);font-weight:600
+    .head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
     }
+
+    .head h2{
+      margin:0;
+      font-size:30px;
+      letter-spacing:-.02em;
+    }
+
+    .meta{color:var(--muted);margin-top:4px}
+
+    .status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:10px 14px;
+      border:1px solid var(--line);
+      background:#0f1724;
+      color:var(--muted);
+      font-weight:600;
+    }
+
     .status .s-dot{width:9px;height:9px;border-radius:999px;background:#71829a}
     .status.ok .s-dot{background:#4fd07b}
     .status.err .s-dot{background:#ff6d6d}
+
     .stack{display:grid;gap:18px}
+
     .card{
-      border:1px solid var(--line);border-radius:var(--radius-lg);
-      background:linear-gradient(180deg, #0d1520 0%, #0b1320 100%);overflow:hidden
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      background:linear-gradient(180deg, #0d1520 0%, #0b1320 100%);
+      overflow:hidden;
     }
+
     .card-head{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:16px 18px;border-bottom:1px solid var(--line)
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:16px 18px;
+      border-bottom:1px solid var(--line);
     }
+
     .card-head h3{margin:0;font-size:20px}
     .card-head .hint{color:var(--muted);font-size:14px}
+
     .table-wrap{overflow:auto}
     table{width:100%;border-collapse:separate;border-spacing:0;min-width:760px}
+
     thead th{
-      position:sticky;top:0;z-index:1;background:#101a29;color:#bfd0e6;text-transform:uppercase;
-      letter-spacing:.06em;font-size:12px;padding:14px 14px;border-bottom:1px solid var(--line);text-align:left
+      position:sticky;
+      top:0;
+      z-index:1;
+      background:#101a29;
+      color:#bfd0e6;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      font-size:12px;
+      padding:14px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
     }
+
     tbody td{
-      padding:14px 14px;border-bottom:1px solid #17263a;color:#e8eef7;white-space:nowrap
+      padding:14px;
+      border-bottom:1px solid #17263a;
+      color:#e8eef7;
+      white-space:nowrap;
     }
+
     tbody tr:hover{background:#101928}
     tbody tr.top1{background:linear-gradient(90deg, rgba(214,176,77,.12), transparent 58%)}
     tbody tr.top2{background:linear-gradient(90deg, rgba(185,195,208,.10), transparent 58%)}
     tbody tr.top3{background:linear-gradient(90deg, rgba(185,122,75,.10), transparent 58%)}
+
     .rank{
       width:32px;height:32px;border-radius:999px;display:inline-grid;place-items:center;
-      border:1px solid var(--line2);background:#122035;font-weight:800;color:#dce8f6;font-size:14px
+      border:1px solid var(--line2);background:#122035;font-weight:800;color:#dce8f6;font-size:14px;
     }
+
     .rank.r1{background:rgba(214,176,77,.14);border-color:rgba(214,176,77,.48);color:#f2dc95}
     .rank.r2{background:rgba(185,195,208,.13);border-color:rgba(185,195,208,.4);color:#edf3fa}
     .rank.r3{background:rgba(185,122,75,.14);border-color:rgba(185,122,75,.42);color:#efc19e}
+
     .player{font-weight:800;letter-spacing:-.01em}
+    .center{text-align:center}
     .loader,.empty{padding:44px 20px;text-align:center;color:var(--muted)}
     .footnote{margin-top:12px;color:var(--muted);font-size:13px}
     .small{font-size:12px;color:var(--muted)}
+
     .matchdays{padding:18px;display:grid;gap:14px}
-    .md-group{border:1px solid var(--line);border-radius:18px;background:#0f1825;overflow:hidden}
-    .md-title{padding:12px 14px;background:#101a29;border-bottom:1px solid var(--line);font-weight:800}
-    .match{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid #17263a}
+    .md-group{
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#0f1825;
+      overflow:hidden;
+    }
+
+    .md-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:12px 14px;
+      background:#101a29;
+      border-bottom:1px solid var(--line);
+      font-weight:800;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:800;
+      border:1px solid var(--line2);
+      color:#dce8f6;
+      background:#132033;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .badge.offen{background:var(--yellow-soft);border-color:rgba(229,199,107,.35);color:#f0dd9d}
+    .badge.fertig{background:var(--green-soft);border-color:rgba(85,194,122,.35);color:#9ce0b5}
+
+    .match{
+      display:grid;
+      grid-template-columns:1fr auto 1fr auto;
+      gap:12px;
+      align-items:center;
+      padding:12px 14px;
+      border-bottom:1px solid #17263a;
+    }
+
     .match:last-child{border-bottom:none}
     .p1,.p2{font-weight:700}
     .p2{text-align:right}
+
     .score{
-      min-width:90px;text-align:center;padding:8px 10px;border-radius:999px;
-      background:#132033;border:1px solid var(--line2);color:#dbe8f7;font-weight:800
+      min-width:92px;
+      text-align:center;
+      padding:8px 10px;
+      border-radius:999px;
+      background:#132033;
+      border:1px solid var(--line2);
+      color:#dbe8f7;
+      font-weight:800;
     }
-    .pending{color:var(--muted)}
-    .mini{font-size:13px;color:var(--muted)}
-    @media (max-width:820px){
-      .match{grid-template-columns:1fr;gap:8px}
-      .p2{text-align:left}
+
+    .score.offen{
+      background:var(--yellow-soft);
+      border-color:rgba(229,199,107,.35);
+      color:#f0dd9d;
+    }
+
+    .score.fertig{
+      background:var(--green-soft);
+      border-color:rgba(85,194,122,.35);
+      color:#9ce0b5;
+    }
+
+    .match-state{
+      font-size:12px;
+      color:var(--muted);
+      min-width:54px;
+      text-align:right;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+    }
+
+    @media (max-width:880px){
+      .match{
+        grid-template-columns:1fr;
+        gap:8px;
+      }
+      .p2,.match-state{text-align:left}
       .score{justify-self:start}
     }
+
     @media (max-width:720px){
       .wrap{padding:14px 12px 30px}
       .hero{padding:20px}
       .content{padding:14px}
       .head h2{font-size:24px}
-      thead th,tbody td{padding:12px 12px}
+      thead th,tbody td{padding:12px}
       .btn{padding:10px 14px}
     }
   </style>
@@ -166,7 +346,7 @@
       <div class="eyebrow">CDL Liga</div>
       <h1>Tabellen + Spieltage in clean</h1>
       <div class="sub">
-        Rechts liegende Spielermatrix wird ausgeblendet. Angezeigt wird nur die eigentliche Ligatabelle mit den wichtigsten Werten plus die Spieltage darunter.
+        Es werden nur die wichtigen Tabellenwerte angezeigt: Siege, Niederlagen, Leg-Differenz und Punkte. Darunter siehst du die Spieltage mit Status offen oder fertig.
       </div>
       <div class="legend">
         <span class="chip blue"><span class="dot"></span>Autodarts</span>
@@ -194,7 +374,7 @@
             <div class="card-head">
               <div>
                 <h3>Tabelle</h3>
-                <div class="hint">Nur die wichtigsten Spalten für die Ligaansicht</div>
+                <div class="hint">Platz, Spieler, Siege, Niederlagen, Leg-Diff, Punkte</div>
               </div>
             </div>
             <div class="table-wrap">
@@ -210,11 +390,11 @@
             <div class="card-head">
               <div>
                 <h3>Spieltage</h3>
-                <div class="hint">Automatisch aus dem passenden Discord-/Spieltag-Blatt geladen</div>
+                <div class="hint">Mit klarer Spieltag-Überschrift und Status</div>
               </div>
             </div>
             <div id="matchdays" class="matchdays">
-              <div class="loader" id="matchLoader">Spieltage werden geladen…</div>
+              <div class="loader">Spieltage werden geladen…</div>
             </div>
           </section>
         </div>
@@ -336,19 +516,19 @@
       return String(value ?? "").trim();
     }
 
+    function cleanHeader(value){
+      return cleanText(value).toLowerCase().replace(/\s+/g, " ");
+    }
+
     function parseLeagueTable(tableData){
       const rawRows = (tableData.rows || []).map(r => (r.c || []).map(normalizeCell));
+
       let headerIndex = rawRows.findIndex(row =>
-        row.some(cell => {
-          const v = cleanText(cell).toLowerCase();
-          return v === "spieler" || v.includes("spieler");
-        })
+        row.some(cell => cleanHeader(cell).includes("spieler"))
       );
 
       if (headerIndex === -1) {
-        const fallbackCols = (tableData.cols || []).map((c, i) => cleanText(c.label || c.id || `Spalte ${i+1}`));
-        const fallbackRows = rawRows.filter(row => row.some(cell => cleanText(cell) !== ""));
-        return { cols: fallbackCols, rows: fallbackRows };
+        return { cols: [], rows: [] };
       }
 
       let cols = rawRows[headerIndex].map(cleanText);
@@ -362,7 +542,7 @@
         });
 
       const duplicateSpielerIndex = cols.findIndex((col, idx) =>
-        idx > 2 && cleanText(col).toLowerCase() === "spieler"
+        idx > 2 && cleanHeader(col) === "spieler"
       );
 
       if (duplicateSpielerIndex !== -1) {
@@ -370,72 +550,61 @@
         rows = rows.map(row => row.slice(0, duplicateSpielerIndex));
       }
 
-      cols = renameVisibleColumns(cols);
-
       return { cols, rows };
     }
 
-    function renameVisibleColumns(cols){
-      const normalized = cols.map(c => cleanText(c).toLowerCase());
-      const out = [...cols];
-
-      if (!out[0] || out[0] === "—") out[0] = "Platz";
-      if (out[1] && normalized[1].includes("spieler")) out[1] = "Spieler";
-      if (out[2] && normalized[2].includes("discord")) out[2] = "Discord";
-
-      const emptyIdx = [];
-      out.forEach((col, idx) => {
-        if (idx >= 3 && (!cleanText(col) || col === "—")) emptyIdx.push(idx);
-      });
-
-      const templates = [
-        ["Spiele","Siege","Niederlagen","Leg +","Leg -","Leg-Diff","Punkte"],
-        ["Siege","Niederlagen","Leg +","Leg -","Leg-Diff","Punkte"],
-        ["Siege","Niederlagen","Leg-Diff","Punkte"],
-        ["Siege","Niederlagen","Leg-Diff"]
-      ];
-
-      const template = templates.find(t => t.length === emptyIdx.length) || emptyIdx.map((_, i) => `Wert ${i+1}`);
-      emptyIdx.forEach((idx, i) => out[idx] = template[i]);
-
-      return out;
+    function findColumnIndex(headers, patterns){
+      const normalized = headers.map(cleanHeader);
+      for (const pattern of patterns) {
+        const idx = normalized.findIndex(h => h === pattern || h.includes(pattern));
+        if (idx !== -1) return idx;
+      }
+      return -1;
     }
 
-    function selectImportantColumns(cols, rows){
-      const lower = cols.map(c => cleanText(c).toLowerCase());
-      const wanted = [];
-      const add = (matcher) => {
-        const idx = lower.findIndex((v, i) => !wanted.includes(i) && matcher(v));
-        if (idx !== -1) wanted.push(idx);
-      };
+    function buildCleanLeagueTable(cols, rows){
+      const idxRank = findColumnIndex(cols, ["platz", "rang", "position"]);
+      const idxPlayer = findColumnIndex(cols, ["spieler", "name"]);
+      const idxWins = findColumnIndex(cols, ["siege", "sieg"]);
+      const idxLosses = findColumnIndex(cols, ["niederlagen", "niederlage"]);
+      const idxLegDiff = findColumnIndex(cols, ["leg-diff", "leg diff", "legdiff", "diff"]);
+      const idxPoints = findColumnIndex(cols, ["punkte", "pkt"]);
 
-      add(v => v === "platz" || v.includes("platz") || v.includes("rang") || v.includes("position"));
-      add(v => v === "spieler" || v.includes("spieler") || v.includes("name"));
-      add(v => v.includes("siege") || v === "sieg");
-      add(v => v.includes("niederlagen") || v.includes("niederlage"));
-      add(v => v.includes("leg-diff") || v.includes("leg diff") || v.includes("legdiff"));
-      add(v => v.includes("punkte") || v === "pkt");
+      const wanted = [
+        { idx: idxRank, label: "Platz" },
+        { idx: idxPlayer, label: "Spieler" },
+        { idx: idxWins, label: "Siege" },
+        { idx: idxLosses, label: "Niederlagen" },
+        { idx: idxLegDiff, label: "Leg-Diff" },
+        { idx: idxPoints, label: "Punkte" }
+      ].filter(col => col.idx !== -1);
 
       if (wanted.length < 4) {
-        return { cols, rows };
+        return { cols: ["Platz", "Spieler"], rows: rows.map((row, i) => [String(i + 1), row[idxPlayer] || ""]) };
       }
 
       return {
-        cols: wanted.map(i => cols[i]),
-        rows: rows.map(row => wanted.map(i => row[i] ?? ""))
+        cols: wanted.map(col => col.label),
+        rows: rows.map((row, i) => wanted.map(col => {
+          if (col.label === "Platz") {
+            const v = cleanText(row[col.idx]);
+            return v || String(i + 1);
+          }
+          return row[col.idx] ?? "";
+        }))
       };
     }
 
     function detectRankIndex(cols){
-      const lower = cols.map(c => cleanText(c).toLowerCase());
-      const idx = lower.findIndex(v => v.includes("platz") || v.includes("rang") || v.includes("position"));
-      return idx === -1 ? 0 : idx;
+      return cols.findIndex(c => cleanHeader(c).includes("platz")) !== -1
+        ? cols.findIndex(c => cleanHeader(c).includes("platz"))
+        : 0;
     }
 
     function detectNameIndex(cols){
-      const lower = cols.map(c => cleanText(c).toLowerCase());
-      const idx = lower.findIndex(v => v.includes("spieler") || v.includes("name"));
-      return idx === -1 ? 1 : idx;
+      return cols.findIndex(c => cleanHeader(c).includes("spieler")) !== -1
+        ? cols.findIndex(c => cleanHeader(c).includes("spieler"))
+        : 1;
     }
 
     function getRankValue(row, rankIndex, fallback){
@@ -457,10 +626,18 @@
       thead.innerHTML = "";
       tbody.innerHTML = "";
 
+      if (!cols.length || !rows.length) {
+        table.hidden = true;
+        loader.style.display = "block";
+        loader.textContent = "Keine Tabellendaten gefunden.";
+        return;
+      }
+
       const headRow = document.createElement("tr");
       cols.forEach((col) => {
         const th = document.createElement("th");
-        th.textContent = col || "—";
+        th.textContent = col;
+        if (col !== "Spieler") th.classList.add("center");
         headRow.appendChild(th);
       });
       thead.appendChild(headRow);
@@ -476,7 +653,7 @@
         if(rank === 2) tr.classList.add("top2");
         if(rank === 3) tr.classList.add("top3");
 
-        cols.forEach((_, idx) => {
+        cols.forEach((col, idx) => {
           const td = document.createElement("td");
           const value = row[idx] ?? "";
 
@@ -485,10 +662,12 @@
             span.className = "rank" + (rank <= 3 ? ` r${rank}` : "");
             span.textContent = rank;
             td.appendChild(span);
+            td.classList.add("center");
           } else if (idx === nameIndex) {
             td.innerHTML = `<span class="player">${escapeHtml(value)}</span>`;
           } else {
             td.textContent = value;
+            td.classList.add("center");
           }
 
           tr.appendChild(td);
@@ -498,12 +677,49 @@
       });
 
       table.hidden = false;
-      loader.style.display = rows.length ? "none" : "block";
-      loader.textContent = rows.length ? "" : "Keine Tabellendaten gefunden.";
+      loader.style.display = "none";
     }
 
     function toMatchdaySheetName(league){
       return `Discord ${league}`;
+    }
+
+    function looksLikeScore(text){
+      return /^\d+\s*[:\-]\s*\d+$/.test(text);
+    }
+
+    function scoreIsFinished(score){
+      return looksLikeScore(score);
+    }
+
+    function extractMatchFromRow(values){
+      const cleaned = values.map(cleanText).filter(Boolean);
+      if (cleaned.length < 2) return null;
+
+      const scoreIndex = cleaned.findIndex(v => looksLikeScore(v));
+      if (scoreIndex !== -1) {
+        let p1 = cleaned[scoreIndex - 1] || "";
+        let p2 = cleaned[scoreIndex + 1] || "";
+        const score = cleaned[scoreIndex];
+
+        if (!p1 || !p2) return null;
+        if (/spieler\s*1|spieler\s*2/i.test(p1 + " " + p2)) return null;
+
+        return { p1, p2, score };
+      }
+
+      const text = cleaned.join(" ").toLowerCase();
+      if (text.includes("spieler 1") || text.includes("spieler 2")) return null;
+
+      if (cleaned.length >= 3) {
+        return { p1: cleaned[0], p2: cleaned[1], score: "offen" };
+      }
+
+      if (cleaned.length === 2) {
+        return { p1: cleaned[0], p2: cleaned[1], score: "offen" };
+      }
+
+      return null;
     }
 
     function parseMatchRows(tableData){
@@ -513,44 +729,42 @@
 
       const groups = [];
       let current = null;
+      let fallbackCounter = 1;
 
       for (const row of rows) {
-        const full = row.join(" ").toLowerCase();
+        const joined = row.join(" ").trim();
+        const lower = joined.toLowerCase();
 
-        if (full.includes("spieltag")) {
-          current = { title: row.find(v => /spieltag/i.test(v)) || row.join(" "), matches: [] };
+        if (/spieltag\s*\d+/i.test(joined)) {
+          const titleMatch = joined.match(/spieltag\s*\d+/i);
+          const title = titleMatch ? titleMatch[0].replace(/\s+/g, " ").trim() : `Spieltag ${fallbackCounter++}`;
+          current = { title, matches: [] };
           groups.push(current);
           continue;
         }
 
-        const values = row.filter(Boolean);
-        if (values.length < 2) continue;
+        const match = extractMatchFromRow(row);
+        if (!match) continue;
 
         if (!current) {
-          current = { title: "Spieltage", matches: [] };
+          current = { title: `Spieltag ${fallbackCounter++}`, matches: [] };
           groups.push(current);
         }
 
-        let p1 = values[0] || "";
-        let p2 = values[1] || "";
-        let score = values[2] || "";
-
-        if (values.length >= 4) {
-          p1 = values[1] || values[0];
-          p2 = values[2] || values[1];
-          score = values[3] || values[0];
-        }
-
-        if (/spieler\s*1/i.test(p1) || /spieler\s*2/i.test(p2)) continue;
-
-        current.matches.push({ p1, p2, score });
+        current.matches.push(match);
       }
 
-      return groups.filter(g => g.matches.length);
+      return groups
+        .filter(group => group.matches.length)
+        .map(group => ({
+          ...group,
+          status: group.matches.every(m => scoreIsFinished(m.score)) ? "fertig" : "offen"
+        }));
     }
 
     function renderMatchdays(groups){
       matchdaysEl.innerHTML = "";
+
       if (!groups.length) {
         matchdaysEl.innerHTML = `<div class="empty">Keine Spieltage gefunden.</div>`;
         return;
@@ -562,25 +776,24 @@
 
         const title = document.createElement("div");
         title.className = "md-title";
-        title.textContent = group.title;
+        title.innerHTML = `
+          <span>${escapeHtml(group.title)}</span>
+          <span class="badge ${group.status}">${group.status}</span>
+        `;
         box.appendChild(title);
 
         group.matches.forEach(match => {
+          const finished = scoreIsFinished(match.score);
           const row = document.createElement("div");
           row.className = "match";
-          const scoreText = match.score && !/offen|tbd|vs/i.test(match.score.toLowerCase())
-            ? match.score
-            : "offen";
 
           row.innerHTML = `
-            <div>
-              <div class="p1">${escapeHtml(match.p1)}</div>
-            </div>
-            <div class="score ${scoreText === 'offen' ? 'pending' : ''}">${escapeHtml(scoreText)}</div>
-            <div>
-              <div class="p2">${escapeHtml(match.p2)}</div>
-            </div>
+            <div class="p1">${escapeHtml(match.p1)}</div>
+            <div class="score ${finished ? "fertig" : "offen"}">${escapeHtml(finished ? match.score : "offen")}</div>
+            <div class="p2">${escapeHtml(match.p2)}</div>
+            <div class="match-state">${finished ? "fertig" : "offen"}</div>
           `;
+
           box.appendChild(row);
         });
 
@@ -604,13 +817,13 @@
         ]);
 
         const parsedLeague = parseLeagueTable(leagueTableData);
-        const simplified = selectImportantColumns(parsedLeague.cols, parsedLeague.rows);
-        renderTable(simplified.cols, simplified.rows);
+        const cleanLeague = buildCleanLeagueTable(parsedLeague.cols, parsedLeague.rows);
+        renderTable(cleanLeague.cols, cleanLeague.rows);
 
         const matchGroups = parseMatchRows(matchdayData);
         renderMatchdays(matchGroups);
 
-        leagueMeta.textContent = `${simplified.rows.length} Einträge geladen`;
+        leagueMeta.textContent = `${cleanLeague.rows.length} Einträge geladen`;
         setStatus("Live verbunden", "ok");
       } catch (error) {
         console.error(error);
