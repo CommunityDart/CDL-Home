@@ -16,9 +16,7 @@
       margin:0 auto;
       padding:20px;
     }
-    h1{
-      margin:0 0 20px;
-    }
+    h1{margin:0 0 20px;}
     .row{
       display:flex;
       flex-wrap:wrap;
@@ -34,9 +32,7 @@
       cursor:pointer;
       font-weight:700;
     }
-    button.active{
-      background:#4d8cff;
-    }
+    button.active{background:#4d8cff;}
     .card{
       background:#0f1a2b;
       border:1px solid #22324a;
@@ -44,9 +40,7 @@
       padding:16px;
       margin-bottom:16px;
     }
-    h2,h3{
-      margin:0 0 12px;
-    }
+    h2,h3{margin:0 0 12px;}
     table{
       width:100%;
       border-collapse:collapse;
@@ -56,12 +50,8 @@
       border-bottom:1px solid #22324a;
       text-align:left;
     }
-    th{
-      background:#142338;
-    }
-    .center{
-      text-align:center;
-    }
+    th{background:#142338;}
+    .center{text-align:center;}
     .top1{background:rgba(212,175,55,.18);}
     .top2{background:rgba(192,192,192,.12);}
     .top3{background:rgba(205,127,50,.14);}
@@ -108,31 +98,19 @@
       min-width:70px;
       text-align:center;
     }
-    .score.offen{
-      color:#ffcc66;
-    }
-    .score.fertig{
-      color:#8df0b0;
-    }
+    .score.offen{color:#ffcc66;}
+    .score.fertig{color:#8df0b0;}
     .state{
       font-size:12px;
       color:#9fb3cc;
       text-transform:uppercase;
       text-align:right;
     }
-    .right{
-      text-align:right;
-    }
-    .muted{
-      color:#9fb3cc;
-    }
-    @media (max-width: 700px){
-      .match{
-        grid-template-columns:1fr;
-      }
-      .right,.state{
-        text-align:left;
-      }
+    .right{text-align:right;}
+    .muted{color:#9fb3cc;}
+    @media (max-width:700px){
+      .match{grid-template-columns:1fr;}
+      .right,.state{text-align:left;}
     }
   </style>
 </head>
@@ -255,37 +233,51 @@
       });
     }
 
+    function isNumericOnly(val){
+      return /^\d+$/.test(clean(val));
+    }
+
     function parseSheet(rows){
-      let tableHeaderIndex = -1;
+      const cleanedRows = rows
+        .map(r => {
+          const copy = [...r];
+          while (copy.length < 8) copy.push("");
+          return copy.map(clean);
+        })
+        .filter(r => r.some(v => v !== ""));
 
-      for (let i = 0; i < rows.length; i++) {
-        const joined = rows[i].map(v => clean(v).toLowerCase()).join(" | ");
-        if (joined.includes("platz") && joined.includes("spieler") && joined.includes("punkte")) {
-          tableHeaderIndex = i;
-          break;
-        }
-      }
-
-      if (tableHeaderIndex === -1) {
+      if (!cleanedRows.length) {
         return { tableCols: [], tableRows: [], matchdays: [] };
       }
 
-      const tableCols = rows[tableHeaderIndex].slice(0, 6).map(clean);
-      const afterHeader = rows.slice(tableHeaderIndex + 1);
-
+      // Erstes Auftreten eines Spieltags finden:
+      // entweder "Spieltag X" oder erste Spalte ist nur Zahl UND Spalten 2/4 haben Spielernamen
       let matchdayStart = -1;
-      for (let i = 0; i < afterHeader.length; i++) {
-        if (/^spieltag\s*\d+$/i.test(clean(afterHeader[i][0]))) {
+
+      for (let i = 0; i < cleanedRows.length; i++) {
+        const row = cleanedRows[i];
+        const a = row[0];
+        const b = row[1];
+        const d = row[3];
+
+        const looksLikeExplicitMatchday = /^spieltag\s*\d+$/i.test(a);
+        const looksLikeMatchRow = isNumericOnly(a) && b !== "" && d !== "" && !/^spieler 1$/i.test(b);
+
+        if (looksLikeExplicitMatchday || looksLikeMatchRow) {
           matchdayStart = i;
           break;
         }
       }
 
-      const tableRows = (matchdayStart === -1 ? afterHeader : afterHeader.slice(0, matchdayStart))
-        .map(r => r.slice(0, 6))
-        .filter(r => clean(r[1]) !== "");
+      // Tabelle = alles vor dem Spieltagsbereich, aber nur sinnvolle Zeilen
+      const rawTable = (matchdayStart === -1 ? cleanedRows : cleanedRows.slice(0, matchdayStart))
+        .filter(r => r[0] !== "" && r[1] !== "");
 
-      const matchRows = matchdayStart === -1 ? [] : afterHeader.slice(matchdayStart);
+      // Wenn oben keine Header da sind, setzen wir eigene
+      let tableCols = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      let tableRows = rawTable.map(r => r.slice(0, 6));
+
+      const matchRows = matchdayStart === -1 ? [] : cleanedRows.slice(matchdayStart);
       const matchdays = parseMatchdays(matchRows);
 
       return { tableCols, tableRows, matchdays };
@@ -294,6 +286,7 @@
     function parseMatchdays(rows){
       const groups = [];
       let current = null;
+      let currentDay = null;
 
       for (const row of rows) {
         const a = clean(row[0]);
@@ -304,14 +297,21 @@
         const h = clean(row[7]);
 
         if (/^spieltag\s*\d+$/i.test(a)) {
+          currentDay = a;
           current = { title: a, matches: [] };
           groups.push(current);
           continue;
         }
 
-        if (!current) continue;
-        if (!b || !d) continue;
-        if (/spieler 1/i.test(b)) continue;
+        const looksLikeMatch = isNumericOnly(a) && b !== "" && d !== "" && !/^spieler 1$/i.test(b);
+
+        if (!looksLikeMatch) continue;
+
+        if (!current || currentDay !== `Spieltag ${a}`) {
+          currentDay = `Spieltag ${a}`;
+          current = { title: currentDay, matches: [] };
+          groups.push(current);
+        }
 
         const finished = f !== "" && g !== "" && !isNaN(Number(f)) && !isNaN(Number(g));
         current.matches.push({
@@ -326,7 +326,7 @@
     }
 
     function renderTable(cols, rows){
-      if (!cols.length || !rows.length) {
+      if (!rows.length) {
         tableBox.innerHTML = "Keine Tabelle gefunden.";
         return;
       }
@@ -347,10 +347,9 @@
         html += `<tr class="${cls}">`;
         row.forEach((cell, idx) => {
           if (idx === 0) {
-            const rankClass = rank <= 3 ? `r${rank}` : "";
-            html += `<td class="center"><span class="rank ${rankClass}">${rank}</span></td>`;
+            html += `<td class="center">${esc(cell || rank)}</td>`;
           } else if (idx === 1) {
-            html += `<td><span class="player">${esc(cell)}</span></td>`;
+            html += `<td><strong>${esc(cell)}</strong></td>`;
           } else {
             html += `<td class="center">${esc(cell)}</td>`;
           }
