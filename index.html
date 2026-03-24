@@ -545,18 +545,25 @@ async function openRegelwerk(){
   try{
     const rows=await fetchSheet("Regelwerk");
 
-    const cleaned=rows
+    const lines = rows
       .map(r => r.map(v => String(v ?? "").trim()).filter(Boolean).join(" "))
       .filter(Boolean);
 
-    if(!cleaned.length){
+    if(!lines.length){
       box.innerHTML="Kein Regelwerk gefunden.";
       return;
     }
 
-    box.innerHTML=cleaned
-      .map(line => `<p>${line}</p>`)
-      .join("");
+    let html = "<ol style='padding-left:20px;'>";
+
+    lines.forEach(line=>{
+      html += `<li style="margin-bottom:10px;">${line}</li>`;
+    });
+
+    html += "</ol>";
+
+    box.innerHTML = html;
+
   }catch(err){
     console.error(err);
     box.innerHTML="Fehler beim Laden des Regelwerks.";
