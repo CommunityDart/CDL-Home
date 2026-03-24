@@ -260,38 +260,6 @@ th{
   }
 }
 </style>
-  .regelwerk-table{
-  width:100%;
-  border-collapse:collapse;
-  table-layout:auto;
-}
-
-.regelwerk-table th,
-.regelwerk-table td{
-  text-align:left;
-  padding:12px 14px;
-  border-bottom:1px solid #22324a;
-  vertical-align:top;
-}
-
-.regelwerk-table th{
-  background:#142338;
-  color:#fff;
-  font-weight:700;
-}
-
-.regelwerk-section{
-  margin:0;
-  padding:14px;
-  background:#142338;
-  border-bottom:1px solid #22324a;
-  font-weight:700;
-  color:#fff;
-}
-
-.regelwerk-empty{
-  color:#9fb3cc;
-}
 </head>
 
 <body>
@@ -556,51 +524,21 @@ function renderRegelwerkTable(rows){
     .filter(r => r.some(v => v !== ""));
 
   if(!normalized.length){
-    regelwerkBox.innerHTML = "<div class='regelwerk-empty'>Kein Regelwerk gefunden.</div>";
+    regelwerkBox.innerHTML = "Kein Regelwerk gefunden.";
     return;
   }
 
-  // maximale wirklich genutzte Spaltenzahl bestimmen
-  let maxCols = 0;
-  normalized.forEach(row => {
-    let lastUsed = 0;
-    row.forEach((cell, i) => {
-      if(cell !== "") lastUsed = i + 1;
-    });
-    if(lastUsed > maxCols) maxCols = lastUsed;
-  });
-
-  const trimmed = normalized.map(row => {
-    const copy = row.slice(0, maxCols);
-    while(copy.length < maxCols) copy.push("");
-    return copy;
-  });
+  const maxCols = Math.max(...normalized.map(r => r.length));
 
   let html = `<table class="regelwerk-table">`;
 
-  trimmed.forEach((row, rowIndex) => {
-    const filled = row.filter(v => v !== "");
-
-    // Zeile mit nur einem Eintrag = Abschnittsüberschrift
-    if(filled.length === 1 && maxCols > 1){
-      html += `<tr><td colspan="${maxCols}" class="regelwerk-section">${filled[0]}</td></tr>`;
-      return;
-    }
-
-    // Erste Zeile als Header
-    if(rowIndex === 0){
-      html += "<tr>";
-      row.forEach(cell => {
-        html += `<th>${cell}</th>`;
-      });
-      html += "</tr>";
-      return;
-    }
-
+  normalized.forEach((row, rowIndex) => {
     html += "<tr>";
-    row.forEach(cell => {
-      html += `<td>${cell}</td>`;
-    });
+    for(let i = 0; i < maxCols; i++){
+      const value = row[i] ?? "";
+      const tag = rowIndex === 0 ? "th" : "td";
+      html += `<${tag}>${value}</${tag}>`;
+    }
     html += "</tr>";
   });
 
