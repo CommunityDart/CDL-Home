@@ -229,6 +229,50 @@ th{
   text-transform:uppercase;
 }
 
+/* Regelwerk Modal */
+.modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.72);
+  z-index:9999;
+  padding:20px;
+}
+.modal-box{
+  max-width:900px;
+  margin:0 auto;
+  background:#0f1a2b;
+  border:1px solid #22324a;
+  border-radius:14px;
+  padding:20px;
+  max-height:85vh;
+  overflow:auto;
+  position:relative;
+}
+.modal-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  background:#18304d;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:8px 12px;
+  cursor:pointer;
+  font-weight:700;
+}
+.modal-title{
+  margin-top:0;
+}
+.modal-content p{
+  line-height:1.6;
+  margin:0 0 12px;
+  color:#dbe6f7;
+}
+.modal-content h3{
+  margin:18px 0 10px;
+}
+
 @media(max-width:900px){
   .matchdays{grid-template-columns:1fr;}
 }
@@ -256,7 +300,7 @@ th{
   </div>
 
   <div class="header-actions">
-    <a href="DEIN_REGELWERK_LINK" target="_blank" class="top-link">📘 Regelwerk</a>
+    <a href="#" onclick="openRegelwerk(); return false;" class="top-link">📘 Regelwerk</a>
     <a href="DEIN_FAQ_LINK" target="_blank" class="top-link">❓ FAQ</a>
     <a href="DEIN_PAYPAL_LINK" target="_blank" class="donate-btn">💸 Spenden</a>
   </div>
@@ -281,6 +325,15 @@ th{
   <div id="matchdaysBox" class="matchdays"></div>
 </div>
 
+</div>
+
+<!-- Regelwerk Modal -->
+<div id="regelwerkModal" class="modal-overlay">
+  <div class="modal-box">
+    <button onclick="closeRegelwerk()" class="modal-close">✕</button>
+    <h2 class="modal-title">📘 Regelwerk</h2>
+    <div id="regelwerkContent" class="modal-content">Lädt…</div>
+  </div>
 </div>
 
 <script>
@@ -314,7 +367,7 @@ async function fetchSheet(sheet){
   const res=await fetch(gviz(sheet));
   const text=await res.text();
   const json=JSON.parse(text.substring(47).slice(0,-2));
-  return json.table.rows.map(r => (r.c || []).map(c => c ? c.v : ""));
+  return (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : ""));
 }
 
 async function getActiveLeagues(platform){
@@ -482,6 +535,36 @@ function renderMatchdays(rows){
     });
 
   matchdaysBox.innerHTML=html || "Keine Spieltage gefunden.";
+}
+
+async function openRegelwerk(){
+  document.getElementById("regelwerkModal").style.display="block";
+  const box=document.getElementById("regelwerkContent");
+  box.innerHTML="Lädt…";
+
+  try{
+    const rows=await fetchSheet("Regelwerk");
+
+    const cleaned=rows
+      .map(r => r.map(v => String(v ?? "").trim()).filter(Boolean).join(" "))
+      .filter(Boolean);
+
+    if(!cleaned.length){
+      box.innerHTML="Kein Regelwerk gefunden.";
+      return;
+    }
+
+    box.innerHTML=cleaned
+      .map(line => `<p>${line}</p>`)
+      .join("");
+  }catch(err){
+    console.error(err);
+    box.innerHTML="Fehler beim Laden des Regelwerks.";
+  }
+}
+
+function closeRegelwerk(){
+  document.getElementById("regelwerkModal").style.display="none";
 }
 
 async function load(){
