@@ -1,571 +1,382 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Community Dart Liga - Saison #2</title>
-  <style>
-    body{
-      margin:0;
-      font-family:Arial,sans-serif;
-      background:#081018;
-      color:#fff;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CDL Season 2</title>
 
-    .wrap{
-      max-width:1200px;
-      margin:0 auto;
-      padding:20px;
-    }
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#081018;
+  color:#fff;
+}
 
-    .header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:20px;
-      flex-wrap:wrap;
-      gap:15px;
-    }
+.wrap{
+  max-width:1200px;
+  margin:0 auto;
+  padding:20px;
+}
 
-    .header-left{
-      display:flex;
-      align-items:center;
-      gap:16px;
-    }
+/* HEADER */
+.header{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:20px;
+}
 
-    .logo{
-      width:78px;
-      height:auto;
-      display:block;
-    }
+.logo{
+  width:70px;
+}
 
-    .title-box h1{
-      margin:0;
-      font-size:32px;
-      line-height:1.05;
-    }
+.title-box h1{
+  margin:0;
+  font-size:28px;
+}
 
-    .title-box p{
-      margin:4px 0 0;
-      font-size:14px;
-      color:#9fb3cc;
-    }
+.title-box p{
+  margin:0;
+  font-size:13px;
+  color:#9fb3cc;
+}
 
-    .tabs-wrap{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-bottom:20px;
-    }
+/* TABS */
+.tabs-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:20px;
+}
 
-    .row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
 
-    button{
-      border:none;
-      background:#18304d;
-      color:#fff;
-      padding:10px 14px;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:700;
-      transition:0.2s ease;
-    }
+button{
+  border:none;
+  background:#18304d;
+  color:#fff;
+  padding:10px 14px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:700;
+}
 
-    button:hover{
-      opacity:0.95;
-    }
+button.active-autodarts{
+  background:#4d8cff;
+}
 
-    button.active-autodarts{
-      background:#4d8cff;
-    }
+button.active-dartcounter{
+  background:#ff8c2a;
+}
 
-    button.active-dartcounter{
-      background:#ff8c2a;
-    }
+/* CARDS */
+.card{
+  background:#0f1a2b;
+  border:1px solid #22324a;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px;
+}
 
-    .card{
-      background:#0f1a2b;
-      border:1px solid #22324a;
-      border-radius:14px;
-      padding:16px;
-      margin-bottom:16px;
-    }
+/* TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
 
-    h2,h3{
-      margin:0 0 12px;
-    }
+th,td{
+  padding:10px;
+  border-bottom:1px solid #22324a;
+}
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-    }
+th{
+  background:#142338;
+}
 
-    th,td{
-      padding:10px;
-      border-bottom:1px solid #22324a;
-      text-align:left;
-    }
+.center{text-align:center;}
 
-    th{
-      background:#142338;
-    }
+.top1{background:rgba(212,175,55,.18);}
+.top2{background:rgba(192,192,192,.12);}
+.top3{background:rgba(205,127,50,.14);}
 
-    .center{
-      text-align:center;
-    }
+/* MATCHDAYS GRID */
+.matchdays{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
 
-    .top1{
-      background:rgba(212,175,55,.18);
-    }
+/* MATCHDAY CARD */
+.group{
+  border:1px solid #22324a;
+  border-radius:10px;
+  overflow:hidden;
+}
 
-    .top2{
-      background:rgba(192,192,192,.12);
-    }
+.group-head{
+  background:#142338;
+  padding:8px 10px;
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  font-weight:700;
+}
 
-    .top3{
-      background:rgba(205,127,50,.14);
-    }
+.badge{
+  font-size:11px;
+  padding:3px 8px;
+  border-radius:999px;
+}
 
-    .group{
-      margin-bottom:14px;
-      border:1px solid #22324a;
-      border-radius:10px;
-      overflow:hidden;
-    }
+.badge.offen{
+  background:rgba(255,165,0,.18);
+  color:#ffcc66;
+}
 
-    .group-head{
-      background:#142338;
-      padding:10px 12px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-weight:700;
-      gap:10px;
-    }
+.badge.fertig{
+  background:rgba(0,200,100,.18);
+  color:#8df0b0;
+}
 
-    .badge{
-      font-size:12px;
-      padding:4px 8px;
-      border-radius:999px;
-      white-space:nowrap;
-    }
+/* MATCH */
+.match{
+  display:grid;
+  grid-template-columns:1fr auto 1fr auto;
+  gap:8px;
+  padding:8px 10px;
+  border-top:1px solid #22324a;
+  align-items:center;
+}
 
-    .badge.offen{
-      background:rgba(255,165,0,.18);
-      color:#ffcc66;
-    }
+.score{
+  padding:3px 8px;
+  border-radius:999px;
+  background:#1a2b44;
+  font-weight:700;
+}
 
-    .badge.fertig{
-      background:rgba(0,200,100,.18);
-      color:#8df0b0;
-    }
+.score.offen{color:#ffcc66;}
+.score.fertig{color:#8df0b0;}
 
-    .match{
-      display:grid;
-      grid-template-columns:1fr auto 1fr auto;
-      gap:10px;
-      padding:10px 12px;
-      border-top:1px solid #22324a;
-      align-items:center;
-    }
+.state{
+  font-size:11px;
+  color:#9fb3cc;
+  text-transform:uppercase;
+}
 
-    .score{
-      font-weight:700;
-      padding:4px 10px;
-      border-radius:999px;
-      background:#1a2b44;
-      min-width:70px;
-      text-align:center;
-    }
+/* RESPONSIVE */
+@media(max-width:900px){
+  .matchdays{
+    grid-template-columns:1fr;
+  }
+}
 
-    .score.offen{
-      color:#ffcc66;
-    }
-
-    .score.fertig{
-      color:#8df0b0;
-    }
-
-    .state{
-      font-size:12px;
-      color:#9fb3cc;
-      text-transform:uppercase;
-      text-align:right;
-      white-space:nowrap;
-    }
-
-    .right{
-      text-align:right;
-    }
-
-    .muted{
-      color:#9fb3cc;
-    }
-
-    @media (max-width:700px){
-      .match{
-        grid-template-columns:1fr;
-      }
-
-      .right,.state{
-        text-align:left;
-      }
-
-      .header{
-        align-items:flex-start;
-      }
-
-      .logo{
-        width:64px;
-      }
-
-      .title-box h1{
-        font-size:26px;
-      }
-    }
-  </style>
+@media(max-width:700px){
+  .match{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <div class="header">
-      <div class="header-left">
-        <img src="logo.png" alt="Community Dart Liga Logo" class="logo">
-        <div class="title-box">
-          <h1>CDL Season 2</h1>
-          <p>Community Dart Liga</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="tabs-wrap">
-      <div class="row" id="platformTabs"></div>
-      <div class="row" id="leagueTabs"></div>
-    </div>
-
-    <div class="card">
-      <h2 id="title">Lädt…</h2>
-    </div>
-
-    <div class="card">
-      <h3>Tabelle</h3>
-      <div id="tableBox">Lädt…</div>
-    </div>
-
-    <div class="card">
-      <h3>Spieltage</h3>
-      <div id="matchdaysBox">Lädt…</div>
-    </div>
+<div class="header">
+  <img src="./logo.png" class="logo">
+  <div class="title-box">
+    <h1>CDL Season 2</h1>
+    <p>Community Dart Liga</p>
   </div>
+</div>
 
-  <script>
-    const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
+<div class="tabs-wrap">
+  <div class="row" id="platformTabs"></div>
+  <div class="row" id="leagueTabs"></div>
+</div>
 
-    const CONFIG = {
-      autodarts: [
-        "Autodarts Liga 1",
-        "Autodarts Liga 2",
-        "Autodarts Liga 3",
-        "Autodarts Liga 4",
-        "Autodarts Liga 5",
-        "Autodarts Liga 6"
-      ],
-      dartcounter: [
-        "DartCounter Liga 1",
-        "DartCounter Liga 2",
-        "DartCounter Liga 3",
-        "DartCounter Liga 4",
-        "DartCounter Liga 5",
-        "DartCounter Liga 6"
-      ]
+<div class="card">
+  <h2 id="title">Lädt…</h2>
+</div>
+
+<div class="card">
+  <h3>Tabelle</h3>
+  <div id="tableBox">Lädt…</div>
+</div>
+
+<div class="card">
+  <h3>Spieltage</h3>
+  <div id="matchdaysBox" class="matchdays">Lädt…</div>
+</div>
+
+</div>
+
+<script>
+const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
+
+const CONFIG = {
+  autodarts:[
+    "Autodarts Liga 1","Autodarts Liga 2","Autodarts Liga 3",
+    "Autodarts Liga 4","Autodarts Liga 5","Autodarts Liga 6"
+  ],
+  dartcounter:[
+    "DartCounter Liga 1","DartCounter Liga 2","DartCounter Liga 3",
+    "DartCounter Liga 4","DartCounter Liga 5","DartCounter Liga 6"
+  ]
+};
+
+let currentPlatform="autodarts";
+let currentLeague=CONFIG[currentPlatform][0];
+
+const platformTabs=document.getElementById("platformTabs");
+const leagueTabs=document.getElementById("leagueTabs");
+const titleEl=document.getElementById("title");
+const tableBox=document.getElementById("tableBox");
+const matchdaysBox=document.getElementById("matchdaysBox");
+
+function gviz(sheet){
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
+}
+
+async function fetchSheet(sheet){
+  const res=await fetch(gviz(sheet));
+  const text=await res.text();
+  const json=JSON.parse(text.substring(47).slice(0,-2));
+  return json.table.rows.map(r=>r.c.map(c=>c?c.v:""));
+}
+
+function renderPlatformTabs(){
+  platformTabs.innerHTML="";
+  Object.keys(CONFIG).forEach(key=>{
+    const btn=document.createElement("button");
+    btn.innerText=key==="autodarts"?"Autodarts":"DartCounter";
+
+    if(key===currentPlatform){
+      btn.classList.add(key==="autodarts"?"active-autodarts":"active-dartcounter");
+    }
+
+    btn.onclick=()=>{
+      currentPlatform=key;
+      currentLeague=CONFIG[key][0];
+      renderPlatformTabs();
+      renderLeagueTabs();
+      load();
     };
+    platformTabs.appendChild(btn);
+  });
+}
 
-    let currentPlatform = "autodarts";
-    let currentLeague = CONFIG[currentPlatform][0];
+function renderLeagueTabs(){
+  leagueTabs.innerHTML="";
+  CONFIG[currentPlatform].forEach(l=>{
+    const btn=document.createElement("button");
+    btn.innerText=l;
 
-    const platformTabs = document.getElementById("platformTabs");
-    const leagueTabs = document.getElementById("leagueTabs");
-    const titleEl = document.getElementById("title");
-    const tableBox = document.getElementById("tableBox");
-    const matchdaysBox = document.getElementById("matchdaysBox");
-
-    function esc(str){
-      return String(str ?? "").replace(/[&<>"']/g, s => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#39;"
-      }[s]));
+    if(l===currentLeague){
+      btn.classList.add(currentPlatform==="autodarts"?"active-autodarts":"active-dartcounter");
     }
 
-    function clean(v){
-      return String(v ?? "").trim();
-    }
+    btn.onclick=()=>{
+      currentLeague=l;
+      renderLeagueTabs();
+      load();
+    };
+    leagueTabs.appendChild(btn);
+  });
+}
 
-    function cellValue(cell){
-      if (!cell) return "";
-      if (cell.f != null && cell.f !== "") return String(cell.f).trim();
-      if (cell.v == null) return "";
-      return String(cell.v).trim();
-    }
+function renderTable(rows){
+  let html="<table><tr><th>Platz</th><th>Spieler</th><th>Siege</th><th>Niederlagen</th><th>Leg-Diff</th><th>Punkte</th></tr>";
 
-    function isNumericOnly(val){
-      return /^-?\d+$/.test(clean(val));
-    }
+  rows.forEach(r=>{
+    if(!r[1]) return;
 
-    function isTextPlayer(val){
-      const v = clean(val);
-      return v !== "" && !isNumericOnly(v) && !/^offen$/i.test(v) && !/^fertig$/i.test(v);
-    }
+    html+=`<tr>
+      <td>${r[0]}</td>
+      <td><b>${r[1]}</b></td>
+      <td>${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
+    </tr>`;
+  });
 
-    function gvizUrl(sheetName){
-      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=out:json&t=${Date.now()}`;
-    }
+  html+="</table>";
+  tableBox.innerHTML=html;
+}
 
-    async function fetchSheet(sheetName){
-      const res = await fetch(gvizUrl(sheetName));
-      const text = await res.text();
-      const json = JSON.parse(text.substring(47).slice(0, -2));
-      return (json.table.rows || []).map(r => (r.c || []).map(cellValue));
-    }
+function renderMatchdays(rows){
+  let groups={};
 
-    function renderPlatformTabs(){
-      platformTabs.innerHTML = "";
+  rows.forEach(r=>{
+    const day=r[0];
+    const p1=r[1];
+    const p2=r[3];
+    const l1=r[5];
+    const l2=r[6];
+    const status=r[7];
 
-      Object.keys(CONFIG).forEach(key => {
-        const btn = document.createElement("button");
-        btn.textContent = key === "autodarts" ? "Autodarts" : "DartCounter";
+    if(!day || !p1 || !p2) return;
 
-        if (key === currentPlatform) {
-          btn.classList.add(
-            key === "autodarts" ? "active-autodarts" : "active-dartcounter"
-          );
-        }
+    const key="Spieltag "+day;
 
-        btn.onclick = () => {
-          currentPlatform = key;
-          currentLeague = CONFIG[key][0];
-          renderPlatformTabs();
-          renderLeagueTabs();
-          loadLeague();
-        };
+    if(!groups[key]) groups[key]={matches:[]};
 
-        platformTabs.appendChild(btn);
-      });
-    }
+    groups[key].matches.push({
+      p1,p2,
+      score:(l1 && l2)?`${l1}:${l2}`:"offen",
+      status:(l1 && l2)?"fertig":"offen"
+    });
+  });
 
-    function renderLeagueTabs(){
-      leagueTabs.innerHTML = "";
+  let html="";
 
-      CONFIG[currentPlatform].forEach(league => {
-        const btn = document.createElement("button");
-        btn.textContent = league;
+  Object.keys(groups).sort((a,b)=>a.split(" ")[1]-b.split(" ")[1]).forEach(key=>{
+    const g=groups[key];
+    const done=g.matches.every(m=>m.status==="fertig");
 
-        if (league === currentLeague) {
-          btn.classList.add(
-            currentPlatform === "autodarts" ? "active-autodarts" : "active-dartcounter"
-          );
-        }
+    html+=`<div class="group">
+      <div class="group-head">
+        <span>${key}</span>
+        <span class="badge ${done?"fertig":"offen"}">${done?"fertig":"offen"}</span>
+      </div>`;
 
-        btn.onclick = () => {
-          currentLeague = league;
-          renderLeagueTabs();
-          loadLeague();
-        };
+    g.matches.forEach(m=>{
+      html+=`<div class="match">
+        <div>${m.p1}</div>
+        <div class="score ${m.status}">${m.score}</div>
+        <div>${m.p2}</div>
+        <div class="state">${m.status}</div>
+      </div>`;
+    });
 
-        leagueTabs.appendChild(btn);
-      });
-    }
+    html+="</div>";
+  });
 
-    function parseTable(rows){
-      const cleanedRows = rows
-        .map(r => {
-          const copy = [...r];
-          while (copy.length < 6) copy.push("");
-          return copy.slice(0, 6).map(clean);
-        })
-        .filter(r => r.some(v => v !== ""));
+  matchdaysBox.innerHTML=html;
+}
 
-      const tableRows = cleanedRows.filter(row => {
-        const a = row[0], b = row[1], c = row[2], d = row[3], e = row[4], f = row[5];
-        return (
-          isNumericOnly(a) &&
-          isTextPlayer(b) &&
-          (c === "" || isNumericOnly(c)) &&
-          (d === "" || isNumericOnly(d)) &&
-          (e === "" || /^-?\d+$/.test(e)) &&
-          (f === "" || isNumericOnly(f))
-        );
-      });
+async function load(){
+  titleEl.innerText=currentLeague;
 
-      return {
-        tableCols: ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"],
-        tableRows
-      };
-    }
+  const [liga,erg]=await Promise.all([
+    fetchSheet(currentLeague),
+    fetchSheet("Erg "+currentLeague)
+  ]);
 
-    function getErgSheetName(league){
-      return `Erg ${league}`;
-    }
+  renderTable(liga);
+  renderMatchdays(erg);
+}
 
-    function parseMatchdays(rows){
-      const cleanedRows = rows
-        .map(r => {
-          const copy = [...r];
-          while (copy.length < 8) copy.push("");
-          return copy.map(clean);
-        })
-        .filter(r => r.some(v => v !== ""));
+renderPlatformTabs();
+renderLeagueTabs();
+load();
+</script>
 
-      const groupsMap = {};
-
-      for (const row of cleanedRows) {
-        const a = row[0];
-        const b = row[1];
-        const d = row[3];
-        const f = row[5];
-        const g = row[6];
-        const h = row[7];
-
-        const looksLikeMatch =
-          isNumericOnly(a) &&
-          isTextPlayer(b) &&
-          isTextPlayer(d) &&
-          !/^spieler 1$/i.test(b) &&
-          !/^spieler 2$/i.test(d);
-
-        if (!looksLikeMatch) continue;
-
-        const dayKey = `Spieltag ${a}`;
-
-        if (!groupsMap[dayKey]) {
-          groupsMap[dayKey] = {
-            title: dayKey,
-            matches: []
-          };
-        }
-
-        const finished =
-          f !== "" &&
-          g !== "" &&
-          !isNaN(Number(f)) &&
-          !isNaN(Number(g));
-
-        groupsMap[dayKey].matches.push({
-          p1: b,
-          p2: d,
-          score: finished ? `${f}:${g}` : "offen",
-          status: finished || /fertig/i.test(h) ? "fertig" : "offen"
-        });
-      }
-
-      return Object.values(groupsMap).sort((x, y) => {
-        const ax = Number(x.title.replace("Spieltag ", ""));
-        const ay = Number(y.title.replace("Spieltag ", ""));
-        return ax - ay;
-      });
-    }
-
-    function renderTable(cols, rows){
-      if (!rows.length) {
-        tableBox.innerHTML = "Keine Tabelle gefunden.";
-        return;
-      }
-
-      let html = "<table><thead><tr>";
-      cols.forEach((col, i) => {
-        html += `<th class="${i === 1 ? "" : "center"}">${esc(col)}</th>`;
-      });
-      html += "</tr></thead><tbody>";
-
-      rows.forEach((row) => {
-        const rank = Number(clean(row[0])) || 0;
-        let cls = "";
-        if (rank === 1) cls = "top1";
-        if (rank === 2) cls = "top2";
-        if (rank === 3) cls = "top3";
-
-        html += `<tr class="${cls}">`;
-        row.forEach((cell, idx) => {
-          if (idx === 0) {
-            html += `<td class="center">${esc(cell)}</td>`;
-          } else if (idx === 1) {
-            html += `<td><strong>${esc(cell)}</strong></td>`;
-          } else {
-            html += `<td class="center">${esc(cell)}</td>`;
-          }
-        });
-        html += "</tr>";
-      });
-
-      html += "</tbody></table>";
-      tableBox.innerHTML = html;
-    }
-
-    function renderMatchdays(groups){
-      if (!groups.length) {
-        matchdaysBox.innerHTML = "Keine Spieltage gefunden.";
-        return;
-      }
-
-      let html = "";
-
-      groups.forEach(group => {
-        const allFinished = group.matches.every(m => m.status === "fertig");
-
-        html += `<div class="group">`;
-        html += `<div class="group-head">
-          <span>${esc(group.title)}</span>
-          <span class="badge ${allFinished ? "fertig" : "offen"}">${allFinished ? "fertig" : "offen"}</span>
-        </div>`;
-
-        group.matches.forEach(match => {
-          html += `<div class="match">
-            <div>${esc(match.p1)}</div>
-            <div class="score ${match.status}">${esc(match.status === "fertig" ? match.score : "offen")}</div>
-            <div class="right">${esc(match.p2)}</div>
-            <div class="state">${esc(match.status)}</div>
-          </div>`;
-        });
-
-        html += `</div>`;
-      });
-
-      matchdaysBox.innerHTML = html;
-    }
-
-    async function loadLeague(){
-      titleEl.textContent = currentLeague;
-      tableBox.innerHTML = "Lädt…";
-      matchdaysBox.innerHTML = "Lädt…";
-
-      try {
-        const [leagueRows, ergRows] = await Promise.all([
-          fetchSheet(currentLeague),
-          fetchSheet(getErgSheetName(currentLeague))
-        ]);
-
-        const parsedTable = parseTable(leagueRows);
-        const parsedMatchdays = parseMatchdays(ergRows);
-
-        renderTable(parsedTable.tableCols, parsedTable.tableRows);
-        renderMatchdays(parsedMatchdays);
-
-      } catch (err) {
-        console.error(err);
-        tableBox.innerHTML = "Fehler beim Laden der Tabelle.";
-        matchdaysBox.innerHTML = "Fehler beim Laden der Spieltage.";
-      }
-    }
-
-    renderPlatformTabs();
-    renderLeagueTabs();
-    loadLeague();
-  </script>
 </body>
 </html>
