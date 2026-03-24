@@ -145,7 +145,6 @@ th,td{
   border-bottom:1px solid #22324a;
   text-align:center;
   vertical-align:middle;
-  word-break:break-word;
 }
 th{
   background:#142338;
@@ -231,20 +230,42 @@ th{
   text-transform:uppercase;
 }
 
+/* Seitenwechsel */
 .hidden{
   display:none !important;
 }
-
 .back-btn{
   margin-bottom:12px;
 }
 
-.regelwerk-table th,
-.regelwerk-table td{
-  text-align:left;
+/* Regelwerk + FAQ Tabellen */
+.rule-table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:auto;
 }
-
-.empty-note{
+.rule-table th,
+.rule-table td{
+  text-align:left;
+  padding:12px 14px;
+  border-bottom:1px solid #22324a;
+  vertical-align:top;
+  word-break:break-word;
+}
+.rule-table th{
+  background:#142338;
+  color:#fff;
+  font-weight:700;
+}
+.rule-section{
+  margin:0;
+  padding:14px;
+  background:#142338;
+  border-bottom:1px solid #22324a;
+  font-weight:700;
+  color:#fff;
+}
+.rule-empty{
   color:#9fb3cc;
 }
 
@@ -275,8 +296,8 @@ th{
     </div>
 
     <div class="header-actions">
-      <a href="#" onclick="showRegelwerkPage(); return false;" class="top-link">📘 Regelwerk</a>
-      <a href="DEIN_FAQ_LINK" target="_blank" class="top-link">❓ FAQ</a>
+      <a href="#" onclick="showSheetPage('Regelwerk','📘 Regelwerk'); return false;" class="top-link">📘 Regelwerk</a>
+      <a href="#" onclick="showSheetPage('FAQ','❓ FAQ'); return false;" class="top-link">❓ FAQ</a>
       <a href="DEIN_PAYPAL_LINK" target="_blank" class="donate-btn">💸 Spenden</a>
     </div>
   </div>
@@ -303,12 +324,12 @@ th{
     </div>
   </div>
 
-  <!-- Regelwerk Ansicht -->
-  <div id="regelwerkView" class="hidden">
+  <!-- Regelwerk / FAQ Ansicht -->
+  <div id="sheetPageView" class="hidden">
     <div class="card">
       <button class="top-link back-btn" onclick="showLeaguePage()">⬅ Zurück zur Liga</button>
-      <h2>📘 Regelwerk</h2>
-      <div id="regelwerkBox">Lädt…</div>
+      <h2 id="sheetPageTitle">Seite</h2>
+      <div id="sheetPageBox">Lädt…</div>
     </div>
   </div>
 
@@ -336,9 +357,11 @@ const leagueTabs=document.getElementById("leagueTabs");
 const titleEl=document.getElementById("title");
 const tableBox=document.getElementById("tableBox");
 const matchdaysBox=document.getElementById("matchdaysBox");
+
 const leagueView=document.getElementById("leagueView");
-const regelwerkView=document.getElementById("regelwerkView");
-const regelwerkBox=document.getElementById("regelwerkBox");
+const sheetPageView=document.getElementById("sheetPageView");
+const sheetPageTitle=document.getElementById("sheetPageTitle");
+const sheetPageBox=document.getElementById("sheetPageBox");
 
 function gviz(sheet){
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
@@ -415,7 +438,7 @@ async function renderLeagueTabs(){
 
   if(!leagues.length){
     currentLeague=null;
-    leagueTabs.innerHTML="<span class='empty-note'>Keine aktive Liga</span>";
+    leagueTabs.innerHTML="<span class='rule-empty'>Keine aktive Liga</span>";
     return;
   }
 
@@ -457,14 +480,14 @@ function renderTable(rows, discordMap){
       <td>${medal ? `<span class="medal">${medal}</span>` : ""}${r[0]}</td>
       <td>
         <div class="player-wrap">
-          <a href="#" class="player-link" onclick="return false;">${playerName}</a>
-          ${discordName ? `<span class="discord-name">${discordName}</span>` : ""}
+          <a href="#" class="player-link" onclick="return false;">${escapeHtml(playerName)}</a>
+          ${discordName ? `<span class="discord-name">${escapeHtml(discordName)}</span>` : ""}
         </div>
       </td>
-      <td>${r[2] ?? ""}</td>
-      <td>${r[3] ?? ""}</td>
-      <td>${r[4] ?? ""}</td>
-      <td>${r[5] ?? ""}</td>
+      <td>${escapeHtml(r[2] ?? "")}</td>
+      <td>${escapeHtml(r[3] ?? "")}</td>
+      <td>${escapeHtml(r[4] ?? "")}</td>
+      <td>${escapeHtml(r[5] ?? "")}</td>
     </tr>`;
   }
 
@@ -499,15 +522,15 @@ function renderMatchdays(rows){
 
       html+=`<div class="group">
         <div class="group-head">
-          <span>${key}</span>
+          <span>${escapeHtml(key)}</span>
           <span class="badge ${done ? "fertig" : "offen"}">${done ? "fertig" : "offen"}</span>
         </div>`;
 
       groups[key].forEach(m=>{
         html+=`<div class="match">
-          <div>${m.p1}</div>
-          <div class="score ${m.done ? "fertig" : "offen"}">${m.score}</div>
-          <div>${m.p2}</div>
+          <div>${escapeHtml(m.p1)}</div>
+          <div class="score ${m.done ? "fertig" : "offen"}">${escapeHtml(m.score)}</div>
+          <div>${escapeHtml(m.p2)}</div>
           <div class="state">${m.done ? "fertig" : "offen"}</div>
         </div>`;
       });
@@ -518,50 +541,88 @@ function renderMatchdays(rows){
   matchdaysBox.innerHTML=html || "Keine Spieltage gefunden.";
 }
 
-function renderRegelwerkTable(rows){
+function escapeHtml(str){
+  return String(str ?? "").replace(/[&<>"']/g, s => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[s]));
+}
+
+function renderStructuredSheet(rows){
   const normalized = rows
     .map(r => r.map(v => String(v ?? "").trim()))
     .filter(r => r.some(v => v !== ""));
 
   if(!normalized.length){
-    regelwerkBox.innerHTML = "Kein Regelwerk gefunden.";
+    sheetPageBox.innerHTML = "<div class='rule-empty'>Kein Inhalt gefunden.</div>";
     return;
   }
 
-  const maxCols = Math.max(...normalized.map(r => r.length));
+  let maxCols = 0;
+  normalized.forEach(row => {
+    let lastUsed = 0;
+    row.forEach((cell, i) => {
+      if(cell !== "") lastUsed = i + 1;
+    });
+    if(lastUsed > maxCols) maxCols = lastUsed;
+  });
 
-  let html = `<table class="regelwerk-table">`;
+  const trimmed = normalized.map(row => {
+    const copy = row.slice(0, maxCols);
+    while(copy.length < maxCols) copy.push("");
+    return copy;
+  });
 
-  normalized.forEach((row, rowIndex) => {
-    html += "<tr>";
-    for(let i = 0; i < maxCols; i++){
-      const value = row[i] ?? "";
-      const tag = rowIndex === 0 ? "th" : "td";
-      html += `<${tag}>${value}</${tag}>`;
+  let html = `<table class="rule-table">`;
+
+  trimmed.forEach((row, rowIndex) => {
+    const filled = row.filter(v => v !== "");
+
+    if(filled.length === 1 && rowIndex !== 0 && maxCols > 1){
+      html += `<tr><td colspan="${maxCols}" class="rule-section">${escapeHtml(filled[0])}</td></tr>`;
+      return;
     }
+
+    if(rowIndex === 0){
+      html += "<tr>";
+      row.forEach(cell => {
+        html += `<th>${escapeHtml(cell)}</th>`;
+      });
+      html += "</tr>";
+      return;
+    }
+
+    html += "<tr>";
+    row.forEach(cell => {
+      html += `<td>${escapeHtml(cell)}</td>`;
+    });
     html += "</tr>";
   });
 
   html += "</table>";
-  regelwerkBox.innerHTML = html;
+  sheetPageBox.innerHTML = html;
 }
 
-async function showRegelwerkPage(){
+async function showSheetPage(sheetName, title){
   leagueView.classList.add("hidden");
-  regelwerkView.classList.remove("hidden");
-  regelwerkBox.innerHTML = "Lädt…";
+  sheetPageView.classList.remove("hidden");
+  sheetPageTitle.innerText = title;
+  sheetPageBox.innerHTML = "Lädt…";
 
   try{
-    const rows = await fetchSheet("Regelwerk");
-    renderRegelwerkTable(rows);
+    const rows = await fetchSheet(sheetName);
+    renderStructuredSheet(rows);
   }catch(err){
     console.error(err);
-    regelwerkBox.innerHTML = "Fehler beim Laden des Regelwerks.";
+    sheetPageBox.innerHTML = "Fehler beim Laden.";
   }
 }
 
 function showLeaguePage(){
-  regelwerkView.classList.add("hidden");
+  sheetPageView.classList.add("hidden");
   leagueView.classList.remove("hidden");
 }
 
