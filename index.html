@@ -144,6 +144,8 @@ th,td{
   padding:12px 10px;
   border-bottom:1px solid #22324a;
   text-align:center;
+  vertical-align:middle;
+  word-break:break-word;
 }
 th{
   background:#142338;
@@ -229,48 +231,21 @@ th{
   text-transform:uppercase;
 }
 
-/* Regelwerk Modal */
-.modal-overlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.72);
-  z-index:9999;
-  padding:20px;
+.hidden{
+  display:none !important;
 }
-.modal-box{
-  max-width:900px;
-  margin:0 auto;
-  background:#0f1a2b;
-  border:1px solid #22324a;
-  border-radius:14px;
-  padding:20px;
-  max-height:85vh;
-  overflow:auto;
-  position:relative;
+
+.back-btn{
+  margin-bottom:12px;
 }
-.modal-close{
-  position:absolute;
-  top:12px;
-  right:12px;
-  background:#18304d;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  padding:8px 12px;
-  cursor:pointer;
-  font-weight:700;
+
+.regelwerk-table th,
+.regelwerk-table td{
+  text-align:left;
 }
-.modal-title{
-  margin-top:0;
-}
-.modal-content p{
-  line-height:1.6;
-  margin:0 0 12px;
-  color:#dbe6f7;
-}
-.modal-content h3{
-  margin:18px 0 10px;
+
+.empty-note{
+  color:#9fb3cc;
 }
 
 @media(max-width:900px){
@@ -290,50 +265,53 @@ th{
 <body>
 <div class="wrap">
 
-<div class="header">
-  <div class="header-left">
-    <img src="./logo.png" class="logo" alt="Logo">
-    <div class="title-box">
-      <h1>CDL Season 2</h1>
-      <p>Community Dart Liga</p>
+  <div class="header">
+    <div class="header-left">
+      <img src="./logo.png" class="logo" alt="Logo">
+      <div class="title-box">
+        <h1>CDL Season 2</h1>
+        <p>Community Dart Liga</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <a href="#" onclick="showRegelwerkPage(); return false;" class="top-link">📘 Regelwerk</a>
+      <a href="DEIN_FAQ_LINK" target="_blank" class="top-link">❓ FAQ</a>
+      <a href="DEIN_PAYPAL_LINK" target="_blank" class="donate-btn">💸 Spenden</a>
     </div>
   </div>
 
-  <div class="header-actions">
-    <a href="#" onclick="openRegelwerk(); return false;" class="top-link">📘 Regelwerk</a>
-    <a href="DEIN_FAQ_LINK" target="_blank" class="top-link">❓ FAQ</a>
-    <a href="DEIN_PAYPAL_LINK" target="_blank" class="donate-btn">💸 Spenden</a>
+  <!-- Liga Ansicht -->
+  <div id="leagueView">
+    <div class="tabs-wrap">
+      <div class="row" id="platformTabs"></div>
+      <div class="row" id="leagueTabs"></div>
+    </div>
+
+    <div class="card">
+      <h2 id="title"></h2>
+    </div>
+
+    <div class="card">
+      <h3>Tabelle</h3>
+      <div id="tableBox"></div>
+    </div>
+
+    <div class="card">
+      <h3>Spieltage</h3>
+      <div id="matchdaysBox" class="matchdays"></div>
+    </div>
   </div>
-</div>
 
-<div class="tabs-wrap">
-  <div class="row" id="platformTabs"></div>
-  <div class="row" id="leagueTabs"></div>
-</div>
-
-<div class="card">
-  <h2 id="title"></h2>
-</div>
-
-<div class="card">
-  <h3>Tabelle</h3>
-  <div id="tableBox"></div>
-</div>
-
-<div class="card">
-  <h3>Spieltage</h3>
-  <div id="matchdaysBox" class="matchdays"></div>
-</div>
-
-</div>
-
-<!-- Regelwerk Modal -->
-<div id="regelwerkModal" class="modal-overlay">
-  <div class="modal-box">
-    <button onclick="closeRegelwerk()" class="modal-close">✕</button>
-    <h2 class="modal-title">📘 Regelwerk</h2>
-    <div id="regelwerkContent" class="modal-content">Lädt…</div>
+  <!-- Regelwerk Ansicht -->
+  <div id="regelwerkView" class="hidden">
+    <div class="card">
+      <button class="top-link back-btn" onclick="showLeaguePage()">⬅ Zurück zur Liga</button>
+      <h2>📘 Regelwerk</h2>
+      <div id="regelwerkBox">Lädt…</div>
+    </div>
   </div>
+
 </div>
 
 <script>
@@ -358,6 +336,9 @@ const leagueTabs=document.getElementById("leagueTabs");
 const titleEl=document.getElementById("title");
 const tableBox=document.getElementById("tableBox");
 const matchdaysBox=document.getElementById("matchdaysBox");
+const leagueView=document.getElementById("leagueView");
+const regelwerkView=document.getElementById("regelwerkView");
+const regelwerkBox=document.getElementById("regelwerkBox");
 
 function gviz(sheet){
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
@@ -419,7 +400,7 @@ function renderPlatformTabs(){
       currentLeague=null;
       renderPlatformTabs();
       await renderLeagueTabs();
-      load();
+      loadLeague();
     };
 
     platformTabs.appendChild(btn);
@@ -434,7 +415,7 @@ async function renderLeagueTabs(){
 
   if(!leagues.length){
     currentLeague=null;
-    leagueTabs.innerHTML="<span>Keine aktive Liga</span>";
+    leagueTabs.innerHTML="<span class='empty-note'>Keine aktive Liga</span>";
     return;
   }
 
@@ -453,7 +434,7 @@ async function renderLeagueTabs(){
     btn.onclick=async()=>{
       currentLeague=l;
       await renderLeagueTabs();
-      load();
+      loadLeague();
     };
 
     leagueTabs.appendChild(btn);
@@ -537,94 +518,54 @@ function renderMatchdays(rows){
   matchdaysBox.innerHTML=html || "Keine Spieltage gefunden.";
 }
 
-async function openRegelwerk(){
-  document.getElementById("regelwerkModal").style.display = "block";
-  const box = document.getElementById("regelwerkContent");
-  box.innerHTML = "Lädt…";
+function renderRegelwerkTable(rows){
+  const normalized = rows
+    .map(r => r.map(v => String(v ?? "").trim()))
+    .filter(r => r.some(v => v !== ""));
+
+  if(!normalized.length){
+    regelwerkBox.innerHTML = "Kein Regelwerk gefunden.";
+    return;
+  }
+
+  const maxCols = Math.max(...normalized.map(r => r.length));
+
+  let html = `<table class="regelwerk-table">`;
+
+  normalized.forEach((row, rowIndex) => {
+    html += "<tr>";
+    for(let i = 0; i < maxCols; i++){
+      const value = row[i] ?? "";
+      const tag = rowIndex === 0 ? "th" : "td";
+      html += `<${tag}>${value}</${tag}>`;
+    }
+    html += "</tr>";
+  });
+
+  html += "</table>";
+  regelwerkBox.innerHTML = html;
+}
+
+async function showRegelwerkPage(){
+  leagueView.classList.add("hidden");
+  regelwerkView.classList.remove("hidden");
+  regelwerkBox.innerHTML = "Lädt…";
 
   try{
     const rows = await fetchSheet("Regelwerk");
-
-    // Nur erste Spalte bzw. zusammengeführte Textzeile lesen
-    const lines = rows
-      .map(r => r.map(v => String(v ?? "").trim()).filter(Boolean).join(" ").trim())
-      .map(line => line.replace(/\s+/g, " "))
-      .filter((line, i, arr) => !(line === "" && arr[i - 1] === ""));
-
-    if(!lines.length){
-      box.innerHTML = "Kein Regelwerk gefunden.";
-      return;
-    }
-
-    // In Abschnitte aufteilen:
-    // Zeile = Überschrift
-    // folgende Zeilen bis zur Leerzeile = Punkte
-    const sections = [];
-    let currentSection = null;
-
-    for(const line of lines){
-      if(line === ""){
-        currentSection = null;
-        continue;
-      }
-
-      if(!currentSection){
-        currentSection = {
-          title: line,
-          items: []
-        };
-        sections.push(currentSection);
-      } else {
-        currentSection.items.push(line);
-      }
-    }
-
-    // Falls nur Fließtext ohne leere Zeilen existiert:
-    // und der erste Abschnitt keine Items hat, alles als einfache Liste zeigen
-    const hasStructuredSections = sections.some(section => section.items.length > 0);
-
-    let html = "";
-
-    if(hasStructuredSections){
-      sections.forEach(section => {
-        html += `
-          <div style="margin-bottom:22px;">
-            <h3 style="margin:0 0 10px; color:#fff; font-size:20px; border-bottom:1px solid #22324a; padding-bottom:6px;">
-              ${section.title}
-            </h3>
-        `;
-
-        if(section.items.length){
-          html += `<ol style="margin:0; padding-left:22px;">`;
-          section.items.forEach(item => {
-            html += `<li style="margin-bottom:10px; line-height:1.6; color:#dbe6f7;">${item}</li>`;
-          });
-          html += `</ol>`;
-        }
-
-        html += `</div>`;
-      });
-    } else {
-      html = `<ol style="margin:0; padding-left:22px;">`;
-      lines.filter(Boolean).forEach(line => {
-        html += `<li style="margin-bottom:10px; line-height:1.6; color:#dbe6f7;">${line}</li>`;
-      });
-      html += `</ol>`;
-    }
-
-    box.innerHTML = html;
-
-  } catch(err){
+    renderRegelwerkTable(rows);
+  }catch(err){
     console.error(err);
-    box.innerHTML = "Fehler beim Laden des Regelwerks.";
+    regelwerkBox.innerHTML = "Fehler beim Laden des Regelwerks.";
   }
 }
 
-function closeRegelwerk(){
-  document.getElementById("regelwerkModal").style.display="none";
+function showLeaguePage(){
+  regelwerkView.classList.add("hidden");
+  leagueView.classList.remove("hidden");
 }
 
-async function load(){
+async function loadLeague(){
   if(!currentLeague){
     titleEl.innerText="Keine aktive Liga";
     tableBox.innerHTML="";
@@ -651,7 +592,7 @@ async function load(){
 async function init(){
   renderPlatformTabs();
   await renderLeagueTabs();
-  load();
+  loadLeague();
 }
 
 init();
