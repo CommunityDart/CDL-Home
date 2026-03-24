@@ -538,28 +538,85 @@ function renderMatchdays(rows){
 }
 
 async function openRegelwerk(){
-  document.getElementById("regelwerkModal").style.display="block";
-  const box=document.getElementById("regelwerkContent");
-  box.innerHTML="Lädt…";
+  document.getElementById("regelwerkModal").style.display = "block";
+  const box = document.getElementById("regelwerkContent");
+  box.innerHTML = "Lädt…";
 
   try{
-    const rows=await fetchSheet("Regelwerk");
+    const rows = await fetchSheet("Regelwerk");
 
-    const cleaned=rows
-      .map(r => r.map(v => String(v ?? "").trim()).filter(Boolean).join(" "))
-      .filter(Boolean);
+    // Nur erste Spalte bzw. zusammengeführte Textzeile lesen
+    const lines = rows
+      .map(r => r.map(v => String(v ?? "").trim()).filter(Boolean).join(" ").trim())
+      .map(line => line.replace(/\s+/g, " "))
+      .filter((line, i, arr) => !(line === "" && arr[i - 1] === ""));
 
-    if(!cleaned.length){
-      box.innerHTML="Kein Regelwerk gefunden.";
+    if(!lines.length){
+      box.innerHTML = "Kein Regelwerk gefunden.";
       return;
     }
 
-    box.innerHTML=cleaned
-      .map(line => `<p>${line}</p>`)
-      .join("");
-  }catch(err){
+    // In Abschnitte aufteilen:
+    // Zeile = Überschrift
+    // folgende Zeilen bis zur Leerzeile = Punkte
+    const sections = [];
+    let currentSection = null;
+
+    for(const line of lines){
+      if(line === ""){
+        currentSection = null;
+        continue;
+      }
+
+      if(!currentSection){
+        currentSection = {
+          title: line,
+          items: []
+        };
+        sections.push(currentSection);
+      } else {
+        currentSection.items.push(line);
+      }
+    }
+
+    // Falls nur Fließtext ohne leere Zeilen existiert:
+    // und der erste Abschnitt keine Items hat, alles als einfache Liste zeigen
+    const hasStructuredSections = sections.some(section => section.items.length > 0);
+
+    let html = "";
+
+    if(hasStructuredSections){
+      sections.forEach(section => {
+        html += `
+          <div style="margin-bottom:22px;">
+            <h3 style="margin:0 0 10px; color:#fff; font-size:20px; border-bottom:1px solid #22324a; padding-bottom:6px;">
+              ${section.title}
+            </h3>
+        `;
+
+        if(section.items.length){
+          html += `<ol style="margin:0; padding-left:22px;">`;
+          section.items.forEach(item => {
+            html += `<li style="margin-bottom:10px; line-height:1.6; color:#dbe6f7;">${item}</li>`;
+          });
+          html += `</ol>`;
+        }
+
+        html += `</div>`;
+      });
+    } else {
+      html = `<ol style="margin:0; padding-left:22px;">`;
+      lines.filter(Boolean).forEach(line => {
+        html += `<li style="margin-bottom:10px; line-height:1.6; color:#dbe6f7;">${line}</li>`;
+      });
+      html += `</ol>`;
+    }
+
+    box.innerHTML = html;
+
+  } catch(err){
     console.error(err);
-    box.innerHTML="Fehler beim Laden des Regelwerks.";
+    box.innerHTML = "Fehler beim Laden des Regelwerks.";
   }
 }
 
