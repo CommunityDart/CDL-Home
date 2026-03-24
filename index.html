@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Community Dart Liga </title>
+<title>CDL Season 2</title>
 
 <style>
 body{
@@ -238,7 +238,7 @@ th{
   margin-bottom:12px;
 }
 
-/* Regelwerk + FAQ Tabellen */
+/* Regelwerk + FAQ */
 .rule-table{
   width:100%;
   border-collapse:collapse;
@@ -268,6 +268,26 @@ th{
 .rule-empty{
   color:#9fb3cc;
 }
+.sheet-note{
+  color:#9fb3cc;
+  margin-bottom:12px;
+}
+.qa-block{
+  border:1px solid #22324a;
+  border-radius:12px;
+  overflow:hidden;
+  margin-bottom:12px;
+}
+.qa-q{
+  background:#142338;
+  padding:12px 14px;
+  font-weight:700;
+}
+.qa-a{
+  padding:14px;
+  line-height:1.6;
+  color:#dbe6f7;
+}
 
 @media(max-width:900px){
   .matchdays{grid-template-columns:1fr;}
@@ -290,8 +310,8 @@ th{
     <div class="header-left">
       <img src="./logo.png" class="logo" alt="Logo">
       <div class="title-box">
-        <h1>Community Dart Liga </h1>
-        <p>#Saison 2</p>
+        <h1>CDL Season 2</h1>
+        <p>Community Dart Liga</p>
       </div>
     </div>
 
@@ -336,52 +356,62 @@ th{
 </div>
 
 <script>
-const SHEET_ID="1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
+const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
 
-const CONFIG={
-  autodarts:[
+const CONFIG = {
+  autodarts: [
     "Autodarts Liga 1","Autodarts Liga 2","Autodarts Liga 3",
     "Autodarts Liga 4","Autodarts Liga 5","Autodarts Liga 6"
   ],
-  dartcounter:[
+  dartcounter: [
     "DartCounter Liga 1","DartCounter Liga 2","DartCounter Liga 3",
     "DartCounter Liga 4","DartCounter Liga 5","DartCounter Liga 6"
   ]
 };
 
-let currentPlatform="autodarts";
-let currentLeague=null;
+let currentPlatform = "autodarts";
+let currentLeague = null;
 
-const platformTabs=document.getElementById("platformTabs");
-const leagueTabs=document.getElementById("leagueTabs");
-const titleEl=document.getElementById("title");
-const tableBox=document.getElementById("tableBox");
-const matchdaysBox=document.getElementById("matchdaysBox");
+const platformTabs = document.getElementById("platformTabs");
+const leagueTabs = document.getElementById("leagueTabs");
+const titleEl = document.getElementById("title");
+const tableBox = document.getElementById("tableBox");
+const matchdaysBox = document.getElementById("matchdaysBox");
 
-const leagueView=document.getElementById("leagueView");
-const sheetPageView=document.getElementById("sheetPageView");
-const sheetPageTitle=document.getElementById("sheetPageTitle");
-const sheetPageBox=document.getElementById("sheetPageBox");
+const leagueView = document.getElementById("leagueView");
+const sheetPageView = document.getElementById("sheetPageView");
+const sheetPageTitle = document.getElementById("sheetPageTitle");
+const sheetPageBox = document.getElementById("sheetPageBox");
+
+function escapeHtml(str){
+  return String(str ?? "").replace(/[&<>"']/g, s => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[s]));
+}
 
 function gviz(sheet){
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
 }
 
 async function fetchSheet(sheet){
-  const res=await fetch(gviz(sheet));
-  const text=await res.text();
-  const json=JSON.parse(text.substring(47).slice(0,-2));
+  const res = await fetch(gviz(sheet));
+  const text = await res.text();
+  const json = JSON.parse(text.substring(47).slice(0,-2));
   return (json.table.rows || []).map(r => (r.c || []).map(c => c ? c.v : ""));
 }
 
 async function getActiveLeagues(platform){
-  const leagues=CONFIG[platform];
-  const active=[];
+  const leagues = CONFIG[platform];
+  const active = [];
 
   for(const league of leagues){
     try{
-      const rows=await fetchSheet(league);
-      const hasPlayer=rows.some(r => r[1] && r[1] !== "Spieler 1");
+      const rows = await fetchSheet(league);
+      const hasPlayer = rows.some(r => r[1] && r[1] !== "Spieler 1");
       if(hasPlayer) active.push(league);
     }catch(e){
       console.log("Fehler bei Liga:", league);
@@ -392,35 +422,35 @@ async function getActiveLeagues(platform){
 }
 
 function buildDiscordMap(rows){
-  const map={};
-  rows.forEach(r=>{
-    const player=String(r[0] ?? "").trim();
-    const discord=String(r[1] ?? "").trim();
-    if(player) map[player]=discord;
+  const map = {};
+  rows.forEach(r => {
+    const player = String(r[0] ?? "").trim();
+    const discord = String(r[1] ?? "").trim();
+    if(player) map[player] = discord;
   });
   return map;
 }
 
 function getMedal(rank){
-  if(rank==1) return "🥇";
-  if(rank==2) return "🥈";
-  if(rank==3) return "🥉";
+  if(rank == 1) return "🥇";
+  if(rank == 2) return "🥈";
+  if(rank == 3) return "🥉";
   return "";
 }
 
 function renderPlatformTabs(){
-  platformTabs.innerHTML="";
-  Object.keys(CONFIG).forEach(key=>{
-    const btn=document.createElement("button");
-    btn.innerText=key==="autodarts"?"Autodarts":"DartCounter";
+  platformTabs.innerHTML = "";
+  Object.keys(CONFIG).forEach(key => {
+    const btn = document.createElement("button");
+    btn.innerText = key === "autodarts" ? "Autodarts" : "DartCounter";
 
-    if(key===currentPlatform){
-      btn.classList.add(key==="autodarts"?"active-autodarts":"active-dartcounter");
+    if(key === currentPlatform){
+      btn.classList.add(key === "autodarts" ? "active-autodarts" : "active-dartcounter");
     }
 
-    btn.onclick=async()=>{
-      currentPlatform=key;
-      currentLeague=null;
+    btn.onclick = async () => {
+      currentPlatform = key;
+      currentLeague = null;
       renderPlatformTabs();
       await renderLeagueTabs();
       loadLeague();
@@ -431,31 +461,31 @@ function renderPlatformTabs(){
 }
 
 async function renderLeagueTabs(){
-  leagueTabs.innerHTML="Lädt…";
+  leagueTabs.innerHTML = "Lädt…";
 
-  const leagues=await getActiveLeagues(currentPlatform);
-  leagueTabs.innerHTML="";
+  const leagues = await getActiveLeagues(currentPlatform);
+  leagueTabs.innerHTML = "";
 
   if(!leagues.length){
-    currentLeague=null;
-    leagueTabs.innerHTML="<span class='rule-empty'>Keine aktive Liga</span>";
+    currentLeague = null;
+    leagueTabs.innerHTML = "<span class='rule-empty'>Keine aktive Liga</span>";
     return;
   }
 
   if(!currentLeague || !leagues.includes(currentLeague)){
-    currentLeague=leagues[0];
+    currentLeague = leagues[0];
   }
 
-  leagues.forEach(l=>{
-    const btn=document.createElement("button");
-    btn.innerText=l;
+  leagues.forEach(l => {
+    const btn = document.createElement("button");
+    btn.innerText = l;
 
-    if(l===currentLeague){
-      btn.classList.add(currentPlatform==="autodarts"?"active-autodarts":"active-dartcounter");
+    if(l === currentLeague){
+      btn.classList.add(currentPlatform === "autodarts" ? "active-autodarts" : "active-dartcounter");
     }
 
-    btn.onclick=async()=>{
-      currentLeague=l;
+    btn.onclick = async () => {
+      currentLeague = l;
       await renderLeagueTabs();
       loadLeague();
     };
@@ -465,19 +495,19 @@ async function renderLeagueTabs(){
 }
 
 function renderTable(rows, discordMap){
-  let html="<table><tr><th>Platz</th><th>Spieler</th><th>Siege</th><th>Niederlagen</th><th>Leg-Diff</th><th>Punkte</th></tr>";
+  let html = "<table><tr><th>Platz</th><th>Spieler</th><th>Siege</th><th>Niederlagen</th><th>Leg-Diff</th><th>Punkte</th></tr>";
 
   for(const r of rows){
     if(!r[1]) continue;
-    if(r[1]==="Spieler 1") break;
+    if(r[1] === "Spieler 1") break;
 
-    const rank=Number(r[0]) || 0;
-    const medal=getMedal(rank);
-    const playerName=String(r[1] ?? "").trim();
-    const discordName=discordMap[playerName] || "";
+    const rank = Number(r[0]) || 0;
+    const medal = getMedal(rank);
+    const playerName = String(r[1] ?? "").trim();
+    const discordName = discordMap[playerName] || "";
 
-    html+=`<tr>
-      <td>${medal ? `<span class="medal">${medal}</span>` : ""}${r[0]}</td>
+    html += `<tr>
+      <td>${medal ? `<span class="medal">${medal}</span>` : ""}${escapeHtml(r[0])}</td>
       <td>
         <div class="player-wrap">
           <a href="#" class="player-link" onclick="return false;">${escapeHtml(playerName)}</a>
@@ -491,43 +521,43 @@ function renderTable(rows, discordMap){
     </tr>`;
   }
 
-  html+="</table>";
-  tableBox.innerHTML=html;
+  html += "</table>";
+  tableBox.innerHTML = html;
 }
 
 function renderMatchdays(rows){
-  const groups={};
+  const groups = {};
 
-  rows.forEach(r=>{
+  rows.forEach(r => {
     if(!r[0] || !r[1] || !r[3]) return;
 
-    const key="Spieltag " + r[0];
+    const key = "Spieltag " + r[0];
 
-    if(!groups[key]) groups[key]=[];
+    if(!groups[key]) groups[key] = [];
 
     groups[key].push({
-      p1:r[1],
-      p2:r[3],
-      score:(r[5] && r[6]) ? `${r[5]}:${r[6]}` : "offen",
-      done:(r[5] && r[6])
+      p1: r[1],
+      p2: r[3],
+      score: (r[5] && r[6]) ? `${r[5]}:${r[6]}` : "offen",
+      done: (r[5] && r[6])
     });
   });
 
-  let html="";
+  let html = "";
 
   Object.keys(groups)
-    .sort((a,b)=>Number(a.split(" ")[1]) - Number(b.split(" ")[1]))
-    .forEach(key=>{
-      const done=groups[key].every(m=>m.done);
+    .sort((a,b) => Number(a.split(" ")[1]) - Number(b.split(" ")[1]))
+    .forEach(key => {
+      const done = groups[key].every(m => m.done);
 
-      html+=`<div class="group">
+      html += `<div class="group">
         <div class="group-head">
           <span>${escapeHtml(key)}</span>
           <span class="badge ${done ? "fertig" : "offen"}">${done ? "fertig" : "offen"}</span>
         </div>`;
 
-      groups[key].forEach(m=>{
-        html+=`<div class="match">
+      groups[key].forEach(m => {
+        html += `<div class="match">
           <div>${escapeHtml(m.p1)}</div>
           <div class="score ${m.done ? "fertig" : "offen"}">${escapeHtml(m.score)}</div>
           <div>${escapeHtml(m.p2)}</div>
@@ -535,29 +565,85 @@ function renderMatchdays(rows){
         </div>`;
       });
 
-      html+="</div>";
+      html += "</div>";
     });
 
-  matchdaysBox.innerHTML=html || "Keine Spieltage gefunden.";
+  matchdaysBox.innerHTML = html || "Keine Spieltage gefunden.";
 }
 
-function escapeHtml(str){
-  return String(str ?? "").replace(/[&<>"']/g, s => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  }[s]));
+/* ------------- Regelwerk / FAQ Fix ------------- */
+
+function splitSingleCellIntoItems(raw){
+  return raw
+    .replace(/\s+/g, " ")
+    .split(/(?=(?:\d+️⃣)|(?:\b\d+\.\s)|(?:\bFrage\s*\d+:)|(?:\bQ\d+:))/i)
+    .map(s => s.trim())
+    .filter(Boolean);
 }
 
-function renderStructuredSheet(rows){
+function renderSingleCellRules(raw, mode){
+  const parts = splitSingleCellIntoItems(raw);
+
+  if(!parts.length){
+    sheetPageBox.innerHTML = "<div class='rule-empty'>Kein Inhalt gefunden.</div>";
+    return;
+  }
+
+  if(mode === "faq"){
+    let html = `<div class="sheet-note">FAQ automatisch aus einem langen Sheet-Text aufgeteilt.</div>`;
+    parts.forEach((part, index) => {
+      const match = part.match(/^((?:\d+️⃣)|(?:\d+\.)|(?:Frage\s*\d+:)|(?:Q\d+:))/i);
+      const marker = match ? match[1] : `Frage ${index + 1}:`;
+      const text = part.replace(/^((?:\d+️⃣)|(?:\d+\.)|(?:Frage\s*\d+:)|(?:Q\d+:))\s*/i, "").trim();
+
+      html += `
+        <div class="qa-block">
+          <div class="qa-q">${escapeHtml(marker)} ${escapeHtml(text.split("?")[0] + (text.includes("?") ? "?" : ""))}</div>
+          <div class="qa-a">${escapeHtml(text.includes("?") ? text.substring(text.indexOf("?") + 1).trim() || "Antwort folgt." : text)}</div>
+        </div>
+      `;
+    });
+
+    sheetPageBox.innerHTML = html;
+    return;
+  }
+
+  let html = `<div class="sheet-note">Regelwerk automatisch aus einem langen Sheet-Text aufgeteilt.</div>`;
+  html += `<table class="rule-table">`;
+  html += `<tr><th style="width:90px;">Punkt</th><th>Inhalt</th></tr>`;
+
+  parts.forEach((part, index) => {
+    const match = part.match(/^((?:\d+️⃣)|(?:\d+\.))/);
+    const nr = match ? match[1] : `${index + 1}.`;
+    const text = part.replace(/^((?:\d+️⃣)|(?:\d+\.))\s*/, "").trim();
+
+    html += `
+      <tr>
+        <td><strong>${escapeHtml(nr)}</strong></td>
+        <td>${escapeHtml(text)}</td>
+      </tr>
+    `;
+  });
+
+  html += `</table>`;
+  sheetPageBox.innerHTML = html;
+}
+
+function renderStructuredSheet(rows, mode){
   const normalized = rows
     .map(r => r.map(v => String(v ?? "").trim()))
     .filter(r => r.some(v => v !== ""));
 
   if(!normalized.length){
     sheetPageBox.innerHTML = "<div class='rule-empty'>Kein Inhalt gefunden.</div>";
+    return;
+  }
+
+  const flatCells = normalized.flat().map(v => v.trim()).filter(Boolean);
+
+  /* Spezialfall: alles steckt in einer einzigen langen Zelle */
+  if(flatCells.length === 1){
+    renderSingleCellRules(flatCells[0], mode);
     return;
   }
 
@@ -576,6 +662,38 @@ function renderStructuredSheet(rows){
     return copy;
   });
 
+  if(mode === "faq"){
+    // FAQ hübscher darstellen
+    let html = "";
+    let firstRowLooksLikeHeader = trimmed[0].filter(Boolean).length > 1;
+
+    const dataRows = firstRowLooksLikeHeader ? trimmed.slice(1) : trimmed;
+
+    dataRows.forEach((row, index) => {
+      const filled = row.filter(v => v !== "");
+      if(!filled.length) return;
+
+      if(filled.length === 1){
+        html += `<div class="rule-section">${escapeHtml(filled[0])}</div>`;
+        return;
+      }
+
+      const q = row[0] || `Frage ${index + 1}`;
+      const a = row.slice(1).filter(Boolean).join(" ");
+
+      html += `
+        <div class="qa-block">
+          <div class="qa-q">${escapeHtml(q)}</div>
+          <div class="qa-a">${escapeHtml(a || "Antwort folgt.")}</div>
+        </div>
+      `;
+    });
+
+    sheetPageBox.innerHTML = html || "<div class='rule-empty'>Keine FAQ gefunden.</div>";
+    return;
+  }
+
+  // Regelwerk als Tabelle mit Abschnittsüberschriften
   let html = `<table class="rule-table">`;
 
   trimmed.forEach((row, rowIndex) => {
@@ -614,7 +732,8 @@ async function showSheetPage(sheetName, title){
 
   try{
     const rows = await fetchSheet(sheetName);
-    renderStructuredSheet(rows);
+    const mode = sheetName.toLowerCase() === "faq" ? "faq" : "regelwerk";
+    renderStructuredSheet(rows, mode);
   }catch(err){
     console.error(err);
     sheetPageBox.innerHTML = "Fehler beim Laden.";
@@ -626,17 +745,19 @@ function showLeaguePage(){
   leagueView.classList.remove("hidden");
 }
 
+/* ------------- Liga laden ------------- */
+
 async function loadLeague(){
   if(!currentLeague){
-    titleEl.innerText="Keine aktive Liga";
-    tableBox.innerHTML="";
-    matchdaysBox.innerHTML="";
+    titleEl.innerText = "Keine aktive Liga";
+    tableBox.innerHTML = "";
+    matchdaysBox.innerHTML = "";
     return;
   }
 
-  titleEl.innerText=currentLeague;
-  tableBox.innerHTML="Lädt…";
-  matchdaysBox.innerHTML="Lädt…";
+  titleEl.innerText = currentLeague;
+  tableBox.innerHTML = "Lädt…";
+  matchdaysBox.innerHTML = "Lädt…";
 
   const [liga, erg, spieler] = await Promise.all([
     fetchSheet(currentLeague),
@@ -644,7 +765,7 @@ async function loadLeague(){
     fetchSheet("Spieler_Discord")
   ]);
 
-  const discordMap=buildDiscordMap(spieler);
+  const discordMap = buildDiscordMap(spieler);
 
   renderTable(liga, discordMap);
   renderMatchdays(erg);
