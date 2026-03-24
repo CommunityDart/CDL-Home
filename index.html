@@ -556,21 +556,51 @@ function renderRegelwerkTable(rows){
     .filter(r => r.some(v => v !== ""));
 
   if(!normalized.length){
-    regelwerkBox.innerHTML = "Kein Regelwerk gefunden.";
+    regelwerkBox.innerHTML = "<div class='regelwerk-empty'>Kein Regelwerk gefunden.</div>";
     return;
   }
 
-  const maxCols = Math.max(...normalized.map(r => r.length));
+  // maximale wirklich genutzte Spaltenzahl bestimmen
+  let maxCols = 0;
+  normalized.forEach(row => {
+    let lastUsed = 0;
+    row.forEach((cell, i) => {
+      if(cell !== "") lastUsed = i + 1;
+    });
+    if(lastUsed > maxCols) maxCols = lastUsed;
+  });
+
+  const trimmed = normalized.map(row => {
+    const copy = row.slice(0, maxCols);
+    while(copy.length < maxCols) copy.push("");
+    return copy;
+  });
 
   let html = `<table class="regelwerk-table">`;
 
-  normalized.forEach((row, rowIndex) => {
-    html += "<tr>";
-    for(let i = 0; i < maxCols; i++){
-      const value = row[i] ?? "";
-      const tag = rowIndex === 0 ? "th" : "td";
-      html += `<${tag}>${value}</${tag}>`;
+  trimmed.forEach((row, rowIndex) => {
+    const filled = row.filter(v => v !== "");
+
+    // Zeile mit nur einem Eintrag = Abschnittsüberschrift
+    if(filled.length === 1 && maxCols > 1){
+      html += `<tr><td colspan="${maxCols}" class="regelwerk-section">${filled[0]}</td></tr>`;
+      return;
     }
+
+    // Erste Zeile als Header
+    if(rowIndex === 0){
+      html += "<tr>";
+      row.forEach(cell => {
+        html += `<th>${cell}</th>`;
+      });
+      html += "</tr>";
+      return;
+    }
+
+    html += "<tr>";
+    row.forEach(cell => {
+      html += `<td>${cell}</td>`;
+    });
     html += "</tr>";
   });
 
