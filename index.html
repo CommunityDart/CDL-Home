@@ -1,49 +1,246 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CDL Season 2</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#081018;color:#fff;}
+.wrap{max-width:1200px;margin:auto;padding:20px;}
+
+.header{display:flex;align-items:center;gap:15px;margin-bottom:20px;}
+.logo{width:70px;}
+.title-box h1{margin:0;font-size:28px;}
+.title-box p{margin:0;font-size:13px;color:#9fb3cc;}
+
+.tabs-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.row{display:flex;flex-wrap:wrap;gap:8px;}
+
+button{border:none;background:#18304d;color:#fff;padding:10px 14px;border-radius:8px;font-weight:700;cursor:pointer;}
+button.active-autodarts{background:#4d8cff;}
+button.active-dartcounter{background:#ff8c2a;}
+
+.card{background:#0f1a2b;border:1px solid #22324a;border-radius:14px;padding:16px;margin-bottom:16px;}
+
+table{width:100%;border-collapse:collapse;}
+th,td{padding:10px;border-bottom:1px solid #22324a;}
+th{background:#142338;}
+.center{text-align:center;}
+
+.top1{background:rgba(212,175,55,.18);}
+.top2{background:rgba(192,192,192,.12);}
+.top3{background:rgba(205,127,50,.14);}
+
+.matchdays{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+
+.group{border:1px solid #22324a;border-radius:10px;overflow:hidden;}
+.group-head{background:#142338;padding:8px 10px;display:flex;justify-content:space-between;font-size:14px;font-weight:700;}
+.badge{font-size:11px;padding:3px 8px;border-radius:999px;}
+.badge.offen{background:rgba(255,165,0,.18);color:#ffcc66;}
+.badge.fertig{background:rgba(0,200,100,.18);color:#8df0b0;}
+
+.match{display:grid;grid-template-columns:1fr auto 1fr auto;gap:8px;padding:8px 10px;border-top:1px solid #22324a;}
+.score{padding:3px 8px;border-radius:999px;background:#1a2b44;font-weight:700;}
+.score.offen{color:#ffcc66;}
+.score.fertig{color:#8df0b0;}
+.state{font-size:11px;color:#9fb3cc;text-transform:uppercase;}
+
+@media(max-width:900px){
+  .matchdays{grid-template-columns:1fr;}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<div class="header">
+  <img src="./logo.png" class="logo">
+  <div class="title-box">
+    <h1>CDL Season 2</h1>
+    <p>Community Dart Liga</p>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="row" id="platformTabs"></div>
+  <div class="row" id="leagueTabs"></div>
+</div>
+
+<div class="card">
+  <h2 id="title">Lädt…</h2>
+</div>
+
+<div class="card">
+  <h3>Tabelle</h3>
+  <div id="tableBox"></div>
+</div>
+
+<div class="card">
+  <h3>Spieltage</h3>
+  <div id="matchdaysBox" class="matchdays"></div>
+</div>
+
+</div>
+
 <script>
-function parseTable(rows){
-  const cleanedRows = rows
-    .map(r => {
-      const copy = [...r];
-      while (copy.length < 6) copy.push("");
-      return copy.slice(0, 6).map(clean);
-    })
-    .filter(r => r.some(v => v !== ""));
+const SHEET_ID="1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
 
-  const tableRows = [];
+const CONFIG={
+  autodarts:["Autodarts Liga 1","Autodarts Liga 2","Autodarts Liga 3","Autodarts Liga 4","Autodarts Liga 5","Autodarts Liga 6"],
+  dartcounter:["DartCounter Liga 1","DartCounter Liga 2","DartCounter Liga 3","DartCounter Liga 4","DartCounter Liga 5","DartCounter Liga 6"]
+};
 
-  for (const row of cleanedRows) {
-    const a = row[0];
-    const b = row[1];
-    const c = row[2];
-    const d = row[3];
-    const e = row[4];
-    const f = row[5];
+let currentPlatform="autodarts";
+let currentLeague=CONFIG[currentPlatform][0];
 
-    // Sobald der Spieltags-/Matchbereich beginnt -> Tabelle beenden
-    if (
-      /^spieler 1$/i.test(b) ||
-      /^discord 1$/i.test(c) ||
-      /^spieler 2$/i.test(d) ||
-      /^discord 2$/i.test(e)
-    ) {
-      break;
+const platformTabs=document.getElementById("platformTabs");
+const leagueTabs=document.getElementById("leagueTabs");
+const titleEl=document.getElementById("title");
+const tableBox=document.getElementById("tableBox");
+const matchdaysBox=document.getElementById("matchdaysBox");
+
+function gviz(sheet){
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
+}
+
+async function fetchSheet(sheet){
+  const res=await fetch(gviz(sheet));
+  const text=await res.text();
+  const json=JSON.parse(text.substring(47).slice(0,-2));
+  return json.table.rows.map(r=>r.c.map(c=>c?c.v:""));
+}
+
+function renderPlatformTabs(){
+  platformTabs.innerHTML="";
+  Object.keys(CONFIG).forEach(key=>{
+    const btn=document.createElement("button");
+    btn.innerText=key==="autodarts"?"Autodarts":"DartCounter";
+
+    if(key===currentPlatform){
+      btn.classList.add(key==="autodarts"?"active-autodarts":"active-dartcounter");
     }
 
-    const looksLikeTableRow =
-      isNumericOnly(a) &&
-      isTextPlayer(b) &&
-      (c === "" || isNumericOnly(c)) &&
-      (d === "" || isNumericOnly(d)) &&
-      (e === "" || /^-?\d+$/.test(e)) &&
-      (f === "" || isNumericOnly(f));
+    btn.onclick=()=>{
+      currentPlatform=key;
+      currentLeague=CONFIG[key][0];
+      renderPlatformTabs();
+      renderLeagueTabs();
+      load();
+    };
+    platformTabs.appendChild(btn);
+  });
+}
 
-    if (looksLikeTableRow) {
-      tableRows.push([a, b, c, d, e, f]);
+function renderLeagueTabs(){
+  leagueTabs.innerHTML="";
+  CONFIG[currentPlatform].forEach(l=>{
+    const btn=document.createElement("button");
+    btn.innerText=l;
+
+    if(l===currentLeague){
+      btn.classList.add(currentPlatform==="autodarts"?"active-autodarts":"active-dartcounter");
     }
+
+    btn.onclick=()=>{
+      currentLeague=l;
+      renderLeagueTabs();
+      load();
+    };
+    leagueTabs.appendChild(btn);
+  });
+}
+
+function renderTable(rows){
+  let html="<table><tr><th>Platz</th><th>Spieler</th><th>Siege</th><th>Niederlagen</th><th>Leg-Diff</th><th>Punkte</th></tr>";
+
+  for(let r of rows){
+    if(!r[1]) continue;
+
+    // STOP sobald Spielplan beginnt
+    if(r[1]==="Spieler 1") break;
+
+    html+=`<tr>
+      <td>${r[0]}</td>
+      <td><b>${r[1]}</b></td>
+      <td>${r[2]}</td>
+      <td>${r[3]}</td>
+      <td>${r[4]}</td>
+      <td>${r[5]}</td>
+    </tr>`;
   }
 
-  return {
-    tableCols: ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"],
-    tableRows
-  };
+  html+="</table>";
+  tableBox.innerHTML=html;
 }
+
+function renderMatchdays(rows){
+  let groups={};
+
+  rows.forEach(r=>{
+    const day=r[0];
+    const p1=r[1];
+    const p2=r[3];
+    const l1=r[5];
+    const l2=r[6];
+
+    if(!day||!p1||!p2) return;
+
+    const key="Spieltag "+day;
+
+    if(!groups[key]) groups[key]={matches:[]};
+
+    groups[key].matches.push({
+      p1,p2,
+      score:(l1&&l2)?`${l1}:${l2}`:"offen",
+      status:(l1&&l2)?"fertig":"offen"
+    });
+  });
+
+  let html="";
+
+  Object.keys(groups).sort((a,b)=>a.split(" ")[1]-b.split(" ")[1]).forEach(key=>{
+    const g=groups[key];
+    const done=g.matches.every(m=>m.status==="fertig");
+
+    html+=`<div class="group">
+      <div class="group-head">
+        <span>${key}</span>
+        <span class="badge ${done?"fertig":"offen"}">${done?"fertig":"offen"}</span>
+      </div>`;
+
+    g.matches.forEach(m=>{
+      html+=`<div class="match">
+        <div>${m.p1}</div>
+        <div class="score ${m.status}">${m.score}</div>
+        <div>${m.p2}</div>
+        <div class="state">${m.status}</div>
+      </div>`;
+    });
+
+    html+="</div>";
+  });
+
+  matchdaysBox.innerHTML=html;
+}
+
+async function load(){
+  titleEl.innerText=currentLeague;
+
+  const [liga,erg]=await Promise.all([
+    fetchSheet(currentLeague),
+    fetchSheet("Erg "+currentLeague)
+  ]);
+
+  renderTable(liga);
+  renderMatchdays(erg);
+}
+
+renderPlatformTabs();
+renderLeagueTabs();
+load();
 </script>
+
+</body>
+</html>
