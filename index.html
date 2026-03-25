@@ -1,9 +1,9 @@
-<!doctype html>
+ <!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CDL Season 2</title>
+  <title>Community Dart Liga</title>
 
   <style>
     body{
@@ -75,33 +75,6 @@
       text-decoration:none;
     }
 
-    .discord-btn{
-      background:#5865F2;
-      color:#fff;
-      padding:10px 16px;
-      border-radius:10px;
-      font-weight:700;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      transition:.2s ease;
-      box-shadow:0 0 16px rgba(88,101,242,.55);
-    }
-
-    .discord-btn:hover{
-      transform:translateY(-2px);
-      box-shadow:0 0 26px rgba(88,101,242,.9);
-      text-decoration:none;
-    }
-
-    .discord-icon{
-      width:18px;
-      height:18px;
-      filter:invert(1);
-      display:block;
-    }
-
     .tabs-wrap{
       display:flex;
       flex-direction:column;
@@ -159,7 +132,6 @@
       border-bottom:1px solid #22324a;
       text-align:center;
       vertical-align:middle;
-      word-break:break-word;
       transition:background .25s ease, border-color .25s ease;
     }
 
@@ -205,7 +177,7 @@
       border:1px solid #22324a;
       border-radius:10px;
       overflow:hidden;
-      transition:border-color .25s ease;
+      transition:border-color .25s ease, background .25s ease;
     }
 
     .group-head{
@@ -354,6 +326,7 @@
       text-decoration:underline;
     }
 
+    /* IMPRESSUM MODAL */
     .modal{
       display:none;
       position:fixed;
@@ -388,6 +361,7 @@
       font-weight:700;
     }
 
+    /* AUTODARTS THEME */
     body.autodarts-mode{
       background:#081018;
     }
@@ -421,6 +395,7 @@
       border-color:#22324a;
     }
 
+    /* DARTCOUNTER THEME */
     body.dartcounter-mode{
       background:#140d05;
     }
@@ -495,18 +470,14 @@
       <div class="header-left">
         <img src="./logo.png" class="logo" alt="Logo">
         <div class="title-box">
-          <h1>CDL Season 2</h1>
-          <p>Community Dart Liga</p>
+          <h1>Community Dart Liga</h1>
+          <p>CDL - Saison #2</p>
         </div>
       </div>
 
       <div class="header-actions">
         <a href="#" onclick="showSheetPage('Regelwerk','📘 Regelwerk'); return false;" class="top-link">📘 Regelwerk</a>
         <a href="#" onclick="showSheetPage('FAQ','❓ FAQ'); return false;" class="top-link">❓ FAQ</a>
-        <a href="DEIN_DISCORD_LINK" target="_blank" class="discord-btn">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg [cdn.jsdelivr.net]" alt="" class="discord-icon">
-          Community beitreten
-        </a>
       </div>
     </div>
 
@@ -541,7 +512,7 @@
   </div>
 
   <footer>
-    © CDL Season 2 ·
+    © Community Dart Liga ·
     <a href="#" onclick="openImpressum(); return false;">Impressum</a>
     ·
     <a href="DEIN_PAYPAL_LINK" target="_blank" class="footer-donate">💸 Spenden</a>
@@ -620,7 +591,7 @@
     }
 
     function gviz(sheet){
-      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}` [docs.google.com];
+      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
     }
 
     async function fetchSheet(sheet){
@@ -833,4 +804,237 @@
           const stripped = part.replace(/^((?:\d+️⃣)|(?:\d+\.)|(?:Frage\s*\d+:)|(?:Q\d+:))\s*/i, "").trim();
 
           const q = stripped.includes("?")
-            ? stripped.slice(0, stri
+            ? stripped.slice(0, stripped.indexOf("?") + 1).trim()
+            : stripped;
+
+          const a = stripped.includes("?")
+            ? stripped.slice(stripped.indexOf("?") + 1).trim() || "Antwort folgt."
+            : "Antwort folgt.";
+
+          html += `
+            <div class="qa-block">
+              <div class="qa-q">${escapeHtml(marker)} ${escapeHtml(q)}</div>
+              <div class="qa-a">${escapeHtml(a)}</div>
+            </div>
+          `;
+        });
+
+        sheetPageBox.innerHTML = html;
+        return;
+      }
+
+      let html = `<div class="sheet-note">Regelwerk automatisch aus einem langen Sheet-Text aufgeteilt.</div>`;
+      html += `<table class="rule-table">`;
+      html += `<tr><th style="width:90px;">Punkt</th><th>Inhalt</th></tr>`;
+
+      parts.forEach((part, index) => {
+        const match = part.match(/^((?:\d+️⃣)|(?:\d+\.))/);
+        const nr = match ? match[1] : `${index + 1}.`;
+        const text = part.replace(/^((?:\d+️⃣)|(?:\d+\.))\s*/, "").trim();
+
+        html += `
+          <tr>
+            <td><strong>${escapeHtml(nr)}</strong></td>
+            <td>${escapeHtml(text)}</td>
+          </tr>
+        `;
+      });
+
+      html += `</table>`;
+      sheetPageBox.innerHTML = html;
+    }
+
+    function renderStructuredSheet(rows, mode){
+      const normalized = rows
+        .map(r => r.map(v => String(v ?? "").trim()))
+        .filter(r => r.some(v => v !== ""));
+
+      if(!normalized.length){
+        sheetPageBox.innerHTML = "<div class='rule-empty'>Kein Inhalt gefunden.</div>";
+        return;
+      }
+
+      const flatCells = normalized.flat().map(v => v.trim()).filter(Boolean);
+
+      if(flatCells.length === 1){
+        renderSingleCellRules(flatCells[0], mode);
+        return;
+      }
+
+      let maxCols = 0;
+      normalized.forEach(row => {
+        let lastUsed = 0;
+        row.forEach((cell, i) => {
+          if(cell !== "") lastUsed = i + 1;
+        });
+        if(lastUsed > maxCols) maxCols = lastUsed;
+      });
+
+      const trimmed = normalized.map(row => {
+        const copy = row.slice(0, maxCols);
+        while(copy.length < maxCols) copy.push("");
+        return copy;
+      });
+
+      const firstRow = trimmed[0].map(v => v.toLowerCase());
+      const isFaqHeader =
+        mode === "faq" &&
+        firstRow[0] === "frage" &&
+        firstRow[1] === "antwort";
+
+      const isRegelwerkHeader =
+        mode === "regelwerk" &&
+        (
+          (firstRow[0] === "punkt" && firstRow[1] === "inhalt") ||
+          (firstRow[0] === "regel" && firstRow[1] === "inhalt")
+        );
+
+      const startIndex = (isFaqHeader || isRegelwerkHeader) ? 1 : 0;
+
+      if(mode === "faq"){
+        let html = "";
+
+        for(let i = startIndex; i < trimmed.length; i++){
+          const row = trimmed[i];
+          const filled = row.filter(v => v !== "");
+
+          if(!filled.length) continue;
+
+          if(filled.length === 1){
+            html += `<div class="rule-section">${escapeHtml(filled[0])}</div>`;
+            continue;
+          }
+
+          const frage = row[0] || "";
+          const antwort = row.slice(1).filter(Boolean).join(" ");
+
+          if(!frage && !antwort) continue;
+
+          html += `
+            <div class="qa-block">
+              <div class="qa-q">${escapeHtml(frage)}</div>
+              <div class="qa-a">${escapeHtml(antwort)}</div>
+            </div>
+          `;
+        }
+
+        sheetPageBox.innerHTML = html || "<div class='rule-empty'>Keine FAQ gefunden.</div>";
+        return;
+      }
+
+      let html = `<table class="rule-table">`;
+
+      if(isRegelwerkHeader){
+        html += `
+          <tr>
+            <th>${escapeHtml(trimmed[0][0])}</th>
+            <th>${escapeHtml(trimmed[0][1])}</th>
+          </tr>
+        `;
+      } else {
+        html += `
+          <tr>
+            <th>Punkt</th>
+            <th>Inhalt</th>
+          </tr>
+        `;
+      }
+
+      for(let i = startIndex; i < trimmed.length; i++){
+        const row = trimmed[i];
+        const filled = row.filter(v => v !== "");
+
+        if(!filled.length) continue;
+
+        if(filled.length === 1){
+          html += `<tr><td colspan="2" class="rule-section">${escapeHtml(filled[0])}</td></tr>`;
+          continue;
+        }
+
+        const punkt = row[0] || "";
+        const inhalt = row.slice(1).filter(Boolean).join(" ");
+
+        if(!punkt && !inhalt) continue;
+
+        html += `
+          <tr>
+            <td>${escapeHtml(punkt)}</td>
+            <td>${escapeHtml(inhalt)}</td>
+          </tr>
+        `;
+      }
+
+      html += "</table>";
+      sheetPageBox.innerHTML = html;
+    }
+
+    async function showSheetPage(sheetName, title){
+      leagueView.classList.add("hidden");
+      sheetPageView.classList.remove("hidden");
+      sheetPageTitle.innerText = title;
+      sheetPageBox.innerHTML = "Lädt…";
+
+      try{
+        const rows = await fetchSheet(sheetName);
+        const mode = sheetName.toLowerCase() === "faq" ? "faq" : "regelwerk";
+        renderStructuredSheet(rows, mode);
+      }catch(err){
+        console.error(err);
+        sheetPageBox.innerHTML = "Fehler beim Laden.";
+      }
+    }
+
+    function showLeaguePage(){
+      sheetPageView.classList.add("hidden");
+      leagueView.classList.remove("hidden");
+    }
+
+    function openImpressum(){
+      document.getElementById("impressumModal").style.display = "block";
+    }
+
+    function closeImpressum(){
+      document.getElementById("impressumModal").style.display = "none";
+    }
+
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape"){
+        closeImpressum();
+      }
+    });
+
+    async function loadLeague(){
+      if(!currentLeague){
+        titleEl.innerText = "Keine aktive Liga";
+        tableBox.innerHTML = "";
+        matchdaysBox.innerHTML = "";
+        return;
+      }
+
+      titleEl.innerText = currentLeague;
+      tableBox.innerHTML = "Lädt…";
+      matchdaysBox.innerHTML = "Lädt…";
+
+      const [liga, erg, spieler] = await Promise.all([
+        fetchSheet(currentLeague),
+        fetchSheet("Erg " + currentLeague),
+        fetchSheet("Spieler_Discord")
+      ]);
+
+      const discordMap = buildDiscordMap(spieler);
+
+      renderTable(liga, discordMap);
+      renderMatchdays(erg);
+    }
+
+    async function init(){
+      applyTheme(currentPlatform);
+      renderPlatformTabs();
+      await renderLeagueTabs();
+      loadLeague();
+    }
+
+    init();
+  </script>
+</body>
+</html>
