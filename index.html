@@ -148,6 +148,65 @@
       transition:background .25s ease,border-color .25s ease, box-shadow .25s ease;
     }
 
+    .highlight-card{
+      display:grid;
+      grid-template-columns:1.3fr 1fr 1fr 1fr;
+      gap:12px;
+      align-items:center;
+    }
+
+    .highlight-main{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .highlight-label{
+      font-size:12px;
+      color:#9fb3cc;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+
+    .highlight-value{
+      font-size:28px;
+      font-weight:700;
+      line-height:1;
+    }
+
+    .highlight-sub{
+      font-size:13px;
+      color:#9fb3cc;
+    }
+
+    .mini-stat{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:12px;
+      padding:12px;
+      text-align:center;
+    }
+
+    .mini-stat .mini-label{
+      font-size:12px;
+      color:#9fb3cc;
+      margin-bottom:6px;
+      text-transform:uppercase;
+    }
+
+    .mini-stat .mini-value{
+      font-size:22px;
+      font-weight:700;
+    }
+
+    .mini-open .mini-value{
+      color:#ffcc66;
+    }
+
+    .mini-done .mini-value{
+      color:#8df0b0;
+    }
+
     table{
       width:100%;
       border-collapse:collapse;
@@ -195,6 +254,12 @@
       margin-right:6px;
     }
 
+    .last-place{
+      color:#ff8a8a;
+      font-weight:700;
+      margin-left:6px;
+    }
+
     .matchdays{
       display:grid;
       grid-template-columns:repeat(2,1fr);
@@ -206,6 +271,7 @@
       border-radius:10px;
       overflow:hidden;
       transition:border-color .25s ease;
+      background:rgba(255,255,255,.01);
     }
 
     .group-head{
@@ -243,7 +309,15 @@
       padding:8px 10px;
       border-top:1px solid #22324a;
       align-items:center;
-      transition:border-color .25s ease;
+      transition:border-color .25s ease, background .25s ease;
+    }
+
+    .match.open-match{
+      background:rgba(255,165,0,.08);
+    }
+
+    .match.done-match{
+      background:rgba(0,200,100,.05);
     }
 
     .score{
@@ -251,6 +325,9 @@
       border-radius:999px;
       background:#1a2b44;
       transition:background .25s ease;
+      font-weight:700;
+      min-width:64px;
+      text-align:center;
     }
 
     .score.fertig{color:#8df0b0;}
@@ -429,7 +506,10 @@
     body.dartcounter-mode .discord-name,
     body.dartcounter-mode .sheet-note,
     body.dartcounter-mode .rule-empty,
-    body.dartcounter-mode footer{
+    body.dartcounter-mode footer,
+    body.dartcounter-mode .highlight-label,
+    body.dartcounter-mode .highlight-sub,
+    body.dartcounter-mode .mini-stat .mini-label{
       color:#d3b8a0;
     }
 
@@ -458,7 +538,8 @@
     body.dartcounter-mode th,
     body.dartcounter-mode td,
     body.dartcounter-mode .rule-table td,
-    body.dartcounter-mode .rule-table th{
+    body.dartcounter-mode .rule-table th,
+    body.dartcounter-mode .mini-stat{
       border-color:#50331d;
     }
 
@@ -475,6 +556,10 @@
       .matchdays{
         grid-template-columns:1fr;
       }
+
+      .highlight-card{
+        grid-template-columns:1fr 1fr;
+      }
     }
 
     @media(max-width:700px){
@@ -484,6 +569,19 @@
 
       .header-actions{
         width:100%;
+      }
+
+      .highlight-card{
+        grid-template-columns:1fr;
+      }
+
+      .match{
+        grid-template-columns:1fr auto 1fr;
+      }
+
+      .state{
+        grid-column:1 / -1;
+        text-align:left;
       }
     }
   </style>
@@ -504,7 +602,7 @@
         <a href="#" onclick="showSheetPage('Regelwerk','📘 Regelwerk'); return false;" class="top-link">📘 Regelwerk</a>
         <a href="#" onclick="showSheetPage('FAQ','❓ FAQ'); return false;" class="top-link">❓ FAQ</a>
         <a href="DEIN_DISCORD_LINK" target="_blank" class="discord-btn">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="" class="discord-icon">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg [cdn.jsdelivr.net]" alt="" class="discord-icon">
           Community beitreten
         </a>
       </div>
@@ -514,6 +612,29 @@
       <div class="tabs-wrap">
         <div class="row" id="platformTabs"></div>
         <div class="row" id="leagueTabs"></div>
+      </div>
+
+      <div class="card highlight-card" id="currentMatchdayCard">
+        <div class="highlight-main">
+          <div class="highlight-label">Aktueller Spieltag</div>
+          <div class="highlight-value" id="currentMatchdayValue">–</div>
+          <div class="highlight-sub" id="currentMatchdaySub">Daten werden geladen…</div>
+        </div>
+
+        <div class="mini-stat">
+          <div class="mini-label">Begegnungen</div>
+          <div class="mini-value" id="currentMatchdayTotal">–</div>
+        </div>
+
+        <div class="mini-stat mini-open">
+          <div class="mini-label">Offen</div>
+          <div class="mini-value" id="currentMatchdayOpen">–</div>
+        </div>
+
+        <div class="mini-stat mini-done">
+          <div class="mini-label">Fertig</div>
+          <div class="mini-value" id="currentMatchdayDone">–</div>
+        </div>
       </div>
 
       <div class="card">
@@ -609,6 +730,12 @@
     const sheetPageTitle = document.getElementById("sheetPageTitle");
     const sheetPageBox = document.getElementById("sheetPageBox");
 
+    const currentMatchdayValue = document.getElementById("currentMatchdayValue");
+    const currentMatchdaySub = document.getElementById("currentMatchdaySub");
+    const currentMatchdayTotal = document.getElementById("currentMatchdayTotal");
+    const currentMatchdayOpen = document.getElementById("currentMatchdayOpen");
+    const currentMatchdayDone = document.getElementById("currentMatchdayDone");
+
     function escapeHtml(str){
       return String(str ?? "").replace(/[&<>"']/g, s => ({
         "&":"&amp;",
@@ -620,7 +747,7 @@
     }
 
     function gviz(sheet){
-      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
+      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}` [docs.google.com];
     }
 
     async function fetchSheet(sheet){
@@ -727,20 +854,33 @@
       });
     }
 
-    function renderTable(rows, discordMap){
-      let html = "<table><tr><th>Platz</th><th>Spieler</th><th>Siege</th><th>Niederlagen</th><th>Leg-Diff</th><th>Punkte</th></tr>";
-
+    function getTableRows(rows){
+      const valid = [];
       for(const r of rows){
         if(!r[1]) continue;
         if(r[1] === "Spieler 1") break;
+        valid.push(r);
+      }
+      return valid;
+    }
 
+    function renderTable(rows, discordMap){
+      const validRows = getTableRows(rows);
+
+      let html = "<table><tr><th>Platz</th><th>Spieler</th><th>Siege</th><th>Niederlagen</th><th>Leg-Diff</th><th>Punkte</th></tr>";
+
+      validRows.forEach((r, index) => {
         const rank = Number(r[0]) || 0;
         const medal = getMedal(rank);
         const playerName = String(r[1] ?? "").trim();
         const discordName = discordMap[playerName] || "";
+        const isLast = index === validRows.length - 1;
 
         html += `<tr>
-          <td>${medal ? `<span class="medal">${medal}</span>` : ""}${escapeHtml(r[0])}</td>
+          <td>
+            ${medal ? `<span class="medal">${medal}</span>` : ""}${escapeHtml(r[0])}
+            ${isLast ? `<span class="last-place">⬇️</span>` : ""}
+          </td>
           <td>
             <div class="player-wrap">
               <a href="#" class="player-link" onclick="return false;">${escapeHtml(playerName)}</a>
@@ -752,54 +892,96 @@
           <td>${escapeHtml(r[4] ?? "")}</td>
           <td>${escapeHtml(r[5] ?? "")}</td>
         </tr>`;
-      }
+      });
 
       html += "</table>";
       tableBox.innerHTML = html;
     }
 
-    function renderMatchdays(rows){
+    function parseMatchdayGroups(rows){
       const groups = {};
 
       rows.forEach(r => {
         if(!r[0] || !r[1] || !r[3]) return;
 
-        const key = "Spieltag " + r[0];
+        const dayNum = String(r[0]).trim();
+        const key = "Spieltag " + dayNum;
+        const done = !!(r[5] && r[6]);
 
-        if(!groups[key]) groups[key] = [];
+        if(!groups[key]){
+          groups[key] = {
+            day: dayNum,
+            matches: [],
+            total: 0,
+            open: 0,
+            done: 0
+          };
+        }
 
-        groups[key].push({
+        groups[key].matches.push({
           p1: r[1],
           p2: r[3],
-          score: (r[5] && r[6]) ? `${r[5]}:${r[6]}` : "offen",
-          done: (r[5] && r[6])
+          score: done ? `${r[5]}:${r[6]}` : "offen",
+          done
         });
+
+        groups[key].total += 1;
+        if(done){
+          groups[key].done += 1;
+        } else {
+          groups[key].open += 1;
+        }
       });
+
+      return Object.values(groups).sort((a,b) => Number(a.day) - Number(b.day));
+    }
+
+    function renderCurrentMatchday(groups){
+      if(!groups.length){
+        currentMatchdayValue.textContent = "–";
+        currentMatchdaySub.textContent = "Keine Spieltage gefunden";
+        currentMatchdayTotal.textContent = "0";
+        currentMatchdayOpen.textContent = "0";
+        currentMatchdayDone.textContent = "0";
+        return;
+      }
+
+      let current = groups.find(g => g.open > 0);
+      if(!current) current = groups[groups.length - 1];
+
+      currentMatchdayValue.textContent = `Spieltag ${current.day}`;
+      currentMatchdaySub.textContent = current.open > 0 ? "Noch nicht alle Spiele sind abgeschlossen" : "Alle Spiele dieses Spieltags sind fertig";
+      currentMatchdayTotal.textContent = String(current.total);
+      currentMatchdayOpen.textContent = String(current.open);
+      currentMatchdayDone.textContent = String(current.done);
+    }
+
+    function renderMatchdays(rows){
+      const groups = parseMatchdayGroups(rows);
+      renderCurrentMatchday(groups);
 
       let html = "";
 
-      Object.keys(groups)
-        .sort((a,b) => Number(a.split(" ")[1]) - Number(b.split(" ")[1]))
-        .forEach(key => {
-          const done = groups[key].every(m => m.done);
+      groups.forEach(group => {
+        const doneAll = group.open === 0;
 
-          html += `<div class="group">
-            <div class="group-head">
-              <span>${escapeHtml(key)}</span>
-              <span class="badge ${done ? "fertig" : "offen"}">${done ? "fertig" : "offen"}</span>
-            </div>`;
+        html += `<div class="group">
+          <div class="group-head">
+            <span>${escapeHtml("Spieltag " + group.day)}</span>
+            <span class="badge ${doneAll ? "fertig" : "offen"}">${doneAll ? "fertig" : "offen"}</span>
+          </div>`;
 
-          groups[key].forEach(m => {
-            html += `<div class="match">
-              <div>${escapeHtml(m.p1)}</div>
-              <div class="score ${m.done ? "fertig" : "offen"}">${escapeHtml(m.score)}</div>
-              <div>${escapeHtml(m.p2)}</div>
-              <div class="state">${m.done ? "fertig" : "offen"}</div>
-            </div>`;
-          });
-
-          html += "</div>";
+        group.matches.forEach(m => {
+          html += `<div class="match ${m.done ? "done-match" : "open-match"}">
+            <div>${escapeHtml(m.p1)}</div>
+            <div class="score ${m.done ? "fertig" : "offen"}">${escapeHtml(m.score)}</div>
+            <div>${escapeHtml(m.p2)}</div>
+            <div class="state">${m.done ? "fertig" : "offen"}</div>
+          </div>`;
         });
+
+        html += "</div>";
+      });
 
       matchdaysBox.innerHTML = html || "Keine Spieltage gefunden.";
     }
@@ -1037,6 +1219,7 @@
         titleEl.innerText = "Keine aktive Liga";
         tableBox.innerHTML = "";
         matchdaysBox.innerHTML = "";
+        renderCurrentMatchday([]);
         return;
       }
 
