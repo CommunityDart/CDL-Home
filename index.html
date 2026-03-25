@@ -1,4 +1,8 @@
-<!doctype html>
+DCS-Auftrag: 3008306256 - Bestellnummer: 4303913040
+
+WMA13UZZ4SM955211 - EZ:  24.01.2025 - KM: 134832
+
+DEKRA GEBÜHR INCL. MWST <!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8">
@@ -11,6 +15,7 @@
       font-family:Arial,sans-serif;
       background:#081018;
       color:#fff;
+      transition:background .25s ease;
     }
 
     .wrap{
@@ -71,39 +76,7 @@
     .top-link:hover{
       opacity:.92;
       transform:translateY(-1px);
-    }
-
-    .donate-btn{
-      background:#00c244;
-      color:#fff;
-      border:none;
-      padding:10px 16px;
-      border-radius:8px;
-      font-weight:700;
-      cursor:pointer;
       text-decoration:none;
-      display:inline-block;
-      animation:pulseDonate 1.8s infinite;
-      box-shadow:0 0 0 rgba(0,194,68,0.45);
-    }
-
-    .donate-btn:hover{
-      opacity:.94;
-    }
-
-    @keyframes pulseDonate{
-      0%{
-        transform:scale(1);
-        box-shadow:0 0 0 0 rgba(0,194,68,0.45);
-      }
-      70%{
-        transform:scale(1.03);
-        box-shadow:0 0 0 12px rgba(0,194,68,0);
-      }
-      100%{
-        transform:scale(1);
-        box-shadow:0 0 0 0 rgba(0,194,68,0);
-      }
     }
 
     .tabs-wrap{
@@ -127,6 +100,12 @@
       border-radius:8px;
       font-weight:700;
       cursor:pointer;
+      transition:.2s ease;
+    }
+
+    button:hover{
+      transform:translateY(-1px);
+      opacity:.94;
     }
 
     button.active-autodarts{
@@ -143,6 +122,7 @@
       border-radius:14px;
       padding:16px;
       margin-bottom:16px;
+      transition:background .25s ease,border-color .25s ease, box-shadow .25s ease;
     }
 
     table{
@@ -156,6 +136,7 @@
       border-bottom:1px solid #22324a;
       text-align:center;
       vertical-align:middle;
+      transition:background .25s ease, border-color .25s ease;
     }
 
     th{
@@ -167,6 +148,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
+      gap:3px;
     }
 
     .discord-name{
@@ -199,6 +181,7 @@
       border:1px solid #22324a;
       border-radius:10px;
       overflow:hidden;
+      transition:border-color .25s ease, background .25s ease;
     }
 
     .group-head{
@@ -209,6 +192,7 @@
       font-size:14px;
       font-weight:700;
       gap:8px;
+      transition:background .25s ease;
     }
 
     .badge{
@@ -235,12 +219,14 @@
       padding:8px 10px;
       border-top:1px solid #22324a;
       align-items:center;
+      transition:border-color .25s ease;
     }
 
     .score{
       padding:3px 8px;
       border-radius:999px;
       background:#1a2b44;
+      transition:background .25s ease;
     }
 
     .score.fertig{color:#8df0b0;}
@@ -304,18 +290,164 @@
       border-radius:12px;
       overflow:hidden;
       margin-bottom:12px;
+      transition:border-color .25s ease;
     }
 
     .qa-q{
       background:#142338;
       padding:12px 14px;
       font-weight:700;
+      transition:background .25s ease;
     }
 
     .qa-a{
       padding:14px;
       line-height:1.6;
       color:#dbe6f7;
+    }
+
+    footer{
+      text-align:center;
+      padding:20px;
+      border-top:1px solid #22324a;
+      margin-top:30px;
+      color:#9fb3cc;
+      transition:border-color .25s ease;
+    }
+
+    footer a{
+      color:#7db3ff;
+      text-decoration:none;
+      margin:0 8px;
+    }
+
+    .footer-donate{
+      color:#00e676;
+      font-weight:700;
+    }
+
+    .footer-donate:hover{
+      text-decoration:underline;
+    }
+
+    /* IMPRESSUM MODAL */
+    .modal{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      z-index:9999;
+      padding:20px;
+    }
+
+    .modal-content{
+      max-width:700px;
+      margin:0 auto;
+      background:#0f1a2b;
+      border:1px solid #22324a;
+      border-radius:14px;
+      padding:20px;
+      max-height:85vh;
+      overflow:auto;
+      position:relative;
+    }
+
+    .close-btn{
+      position:absolute;
+      top:12px;
+      right:12px;
+      background:#18304d;
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      padding:8px 12px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    /* AUTODARTS THEME */
+    body.autodarts-mode{
+      background:#081018;
+    }
+
+    body.autodarts-mode .card{
+      background:#0f1a2b;
+      border-color:#22324a;
+      box-shadow:0 0 0 1px rgba(77,140,255,.04), 0 8px 20px rgba(0,0,0,.18);
+    }
+
+    body.autodarts-mode th,
+    body.autodarts-mode .group-head,
+    body.autodarts-mode .qa-q,
+    body.autodarts-mode .rule-section,
+    body.autodarts-mode .rule-table th{
+      background:#142338;
+    }
+
+    body.autodarts-mode .score{
+      background:#1a2b44;
+    }
+
+    body.autodarts-mode .group,
+    body.autodarts-mode .qa-block,
+    body.autodarts-mode footer,
+    body.autodarts-mode .match,
+    body.autodarts-mode th,
+    body.autodarts-mode td,
+    body.autodarts-mode .rule-table td,
+    body.autodarts-mode .rule-table th{
+      border-color:#22324a;
+    }
+
+    /* DARTCOUNTER THEME */
+    body.dartcounter-mode{
+      background:#140d05;
+    }
+
+    body.dartcounter-mode .title-box p,
+    body.dartcounter-mode .discord-name,
+    body.dartcounter-mode .sheet-note,
+    body.dartcounter-mode .rule-empty,
+    body.dartcounter-mode footer{
+      color:#d3b8a0;
+    }
+
+    body.dartcounter-mode .card{
+      background:#1a120a;
+      border-color:#50331d;
+      box-shadow:0 0 0 1px rgba(255,140,42,.05), 0 8px 20px rgba(0,0,0,.2);
+    }
+
+    body.dartcounter-mode th,
+    body.dartcounter-mode .group-head,
+    body.dartcounter-mode .qa-q,
+    body.dartcounter-mode .rule-section,
+    body.dartcounter-mode .rule-table th{
+      background:#2b1a0f;
+    }
+
+    body.dartcounter-mode .score{
+      background:#3a2414;
+    }
+
+    body.dartcounter-mode .group,
+    body.dartcounter-mode .qa-block,
+    body.dartcounter-mode footer,
+    body.dartcounter-mode .match,
+    body.dartcounter-mode th,
+    body.dartcounter-mode td,
+    body.dartcounter-mode .rule-table td,
+    body.dartcounter-mode .rule-table th{
+      border-color:#50331d;
+    }
+
+    body.dartcounter-mode .top-link{
+      background:#2b1a0f;
+    }
+
+    body.dartcounter-mode .player-link:hover,
+    body.dartcounter-mode footer a{
+      color:#ffb067;
     }
 
     @media(max-width:900px){
@@ -336,7 +468,7 @@
   </style>
 </head>
 
-<body>
+<body class="autodarts-mode">
   <div class="wrap">
     <div class="header">
       <div class="header-left">
@@ -350,7 +482,6 @@
       <div class="header-actions">
         <a href="#" onclick="showSheetPage('Regelwerk','📘 Regelwerk'); return false;" class="top-link">📘 Regelwerk</a>
         <a href="#" onclick="showSheetPage('FAQ','❓ FAQ'); return false;" class="top-link">❓ FAQ</a>
-        <a href="DEIN_PAYPAL_LINK" target="_blank" class="donate-btn">💸 Spenden</a>
       </div>
     </div>
 
@@ -381,6 +512,47 @@
         <h2 id="sheetPageTitle">Seite</h2>
         <div id="sheetPageBox">Lädt…</div>
       </div>
+    </div>
+  </div>
+
+  <footer>
+    © CDL Season 2 ·
+    <a href="#" onclick="openImpressum(); return false;">Impressum</a>
+    ·
+    <a href="DEIN_PAYPAL_LINK" target="_blank" class="footer-donate">💸 Spenden</a>
+  </footer>
+
+  <div id="impressumModal" class="modal" onclick="closeImpressum()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="close-btn" onclick="closeImpressum()">✕</button>
+
+      <h2>📄 Impressum</h2>
+
+      <h3>Angaben gemäß § 5 TMG</h3>
+      <p>
+        Max Mustermann<br>
+        Musterstraße 1<br>
+        12345 Musterstadt<br><br>
+        E-Mail: deine@email.de
+      </p>
+
+      <h3>Verantwortlich für den Inhalt nach § 18 MStV</h3>
+      <p>
+        Max Mustermann<br>
+        Adresse wie oben
+      </p>
+
+      <h3>Haftungsausschluss</h3>
+      <p>
+        Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt.
+        Für die Richtigkeit, Vollständigkeit und Aktualität übernehmen wir keine Gewähr.
+      </p>
+
+      <h3>Datenschutz</h3>
+      <p>
+        Diese Website verwendet keine Cookies und speichert keine personenbezogenen Daten.
+        Daten aus Google Sheets werden ausschließlich zur Darstellung der Liga verwendet.
+      </p>
     </div>
   </div>
 
@@ -467,8 +639,14 @@
       return "";
     }
 
+    function applyTheme(platform){
+      document.body.classList.remove("autodarts-mode","dartcounter-mode");
+      document.body.classList.add(platform === "dartcounter" ? "dartcounter-mode" : "autodarts-mode");
+    }
+
     function renderPlatformTabs(){
       platformTabs.innerHTML = "";
+
       Object.keys(CONFIG).forEach(key => {
         const btn = document.createElement("button");
         btn.innerText = key === "autodarts" ? "Autodarts" : "DartCounter";
@@ -479,6 +657,7 @@
 
         btn.onclick = async () => {
           currentPlatform = key;
+          applyTheme(key);
           currentLeague = null;
           renderPlatformTabs();
           await renderLeagueTabs();
@@ -814,6 +993,20 @@
       leagueView.classList.remove("hidden");
     }
 
+    function openImpressum(){
+      document.getElementById("impressumModal").style.display = "block";
+    }
+
+    function closeImpressum(){
+      document.getElementById("impressumModal").style.display = "none";
+    }
+
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape"){
+        closeImpressum();
+      }
+    });
+
     async function loadLeague(){
       if(!currentLeague){
         titleEl.innerText = "Keine aktive Liga";
@@ -839,6 +1032,7 @@
     }
 
     async function init(){
+      applyTheme(currentPlatform);
       renderPlatformTabs();
       await renderLeagueTabs();
       loadLeague();
