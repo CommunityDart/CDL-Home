@@ -1,4 +1,4 @@
- <!doctype html>
+<!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8">
@@ -72,6 +72,68 @@
     .top-link:hover{
       opacity:.92;
       transform:translateY(-1px);
+      text-decoration:none;
+    }
+
+    /* DISCORD BANNER */
+    .discord-banner{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+      background:linear-gradient(135deg,#5865F2,#4752C4);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px;
+      padding:18px 20px;
+      margin-bottom:20px;
+      box-shadow:0 8px 20px rgba(0,0,0,.22);
+      flex-wrap:wrap;
+    }
+
+    .discord-banner-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .discord-icon{
+      width:54px;
+      height:54px;
+      border-radius:14px;
+      background:rgba(255,255,255,.14);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      flex-shrink:0;
+    }
+
+    .discord-banner-text h3{
+      margin:0 0 4px;
+      font-size:22px;
+    }
+
+    .discord-banner-text p{
+      margin:0;
+      color:rgba(255,255,255,.9);
+      font-size:14px;
+    }
+
+    .discord-btn{
+      display:inline-block;
+      background:#fff;
+      color:#5865F2;
+      padding:12px 18px;
+      border-radius:10px;
+      font-weight:700;
+      text-decoration:none;
+      transition:.2s ease;
+      white-space:nowrap;
+    }
+
+    .discord-btn:hover{
+      transform:translateY(-1px);
+      background:#f2f3f5;
       text-decoration:none;
     }
 
@@ -446,6 +508,15 @@
       color:#ffb067;
     }
 
+    body.dartcounter-mode .discord-banner{
+      background:linear-gradient(135deg,#ff8c2a,#d96a0b);
+      border:1px solid rgba(255,255,255,.10);
+    }
+
+    body.dartcounter-mode .discord-btn{
+      color:#d96a0b;
+    }
+
     @media(max-width:900px){
       .matchdays{
         grid-template-columns:1fr;
@@ -459,6 +530,15 @@
 
       .header-actions{
         width:100%;
+      }
+
+      .discord-banner{
+        align-items:flex-start;
+      }
+
+      .discord-btn{
+        width:100%;
+        text-align:center;
       }
     }
   </style>
@@ -479,6 +559,20 @@
         <a href="#" onclick="showSheetPage('Regelwerk','📘 Regelwerk'); return false;" class="top-link">📘 Regelwerk</a>
         <a href="#" onclick="showSheetPage('FAQ','❓ FAQ'); return false;" class="top-link">❓ FAQ</a>
       </div>
+    </div>
+
+    <div class="discord-banner">
+      <div class="discord-banner-left">
+        <div class="discord-icon">💬</div>
+        <div class="discord-banner-text">
+          <h3>Jetzt unserem Discord beitreten</h3>
+          <p>Alle News, Spieltage, Ergebnisse und Austausch direkt auf unserem Server.</p>
+        </div>
+      </div>
+
+      <a href="DEIN_DISCORD_INVITE_LINK" target="_blank" class="discord-btn">
+        🚀 Zum Discord
+      </a>
     </div>
 
     <div id="leagueView">
@@ -553,7 +647,11 @@
   </div>
 
   <script>
-    const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
+    const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvwXvOeXiF76-dAW1Fpy4DNe0".replace("OvV", "Ovw"); 
+  </script>
+
+  <script>
+    const REAL_SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
 
     const CONFIG = {
       autodarts: [
@@ -591,7 +689,7 @@
     }
 
     function gviz(sheet){
-      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
+      return `https://docs.google.com/spreadsheets/d/${REAL_SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
     }
 
     async function fetchSheet(sheet){
