@@ -870,42 +870,76 @@
     }
 
     function renderMatchdays(rows){
-      const groups = {};
+  const groups = {};
 
-      rows.forEach(r => {
-        // Erwartet: Spalte A = Spieltag
-        const spieltag = String(r[0] ?? "").trim();
-        const p1 = String(r[1] ?? "").trim();
-        const p2 = String(r[3] ?? "").trim();
+  rows.forEach(r => {
+    const spieltag = String(r[0] ?? "").trim();
 
-        if(!spieltag || !p1 || !p2) return;
-        if(spieltag.toLowerCase() === "spieltag") return;
-        if(p1.toLowerCase() === "spieler 1") return;
+    // mögliche Spalten je nach Blattaufbau
+    const p1 = String(r[1] ?? r[2] ?? "").trim();
+    const p2 = String(r[3] ?? r[4] ?? "").trim();
 
-        const key = "Spieltag " + spieltag;
+    const legs1 = String(r[5] ?? "").trim();
+    const legs2 = String(r[6] ?? "").trim();
 
-        if(!groups[key]) groups[key] = [];
+    const statusRaw = String(r[7] ?? r[8] ?? "").trim().toLowerCase();
 
-        // Status möglichst robust:
-        // 1) wenn irgendwo "fertig/offen" steht
-        // 2) sonst Legs prüfen
-        const statusRaw = String(r[7] ?? r[8] ?? r[9] ?? "").trim().toLowerCase();
-        const done =
-          statusRaw === "fertig" ||
-          statusRaw === "done" ||
-          ((r[5] !== "" && r[5] != null) && (r[6] !== "" && r[6] != null));
+    if(!spieltag) return;
+    if(spieltag.toLowerCase() === "spieltag") return;
+    if(!p1 || !p2) return;
+    if(p1.toLowerCase() === "spieler 1") return;
 
-        groups[key].push({
-          p1,
-          p2,
-          score: done && r[5] != null && r[6] != null && r[5] !== "" && r[6] !== ""
-            ? `${r[5]}:${r[6]}`
-            : "offen",
-          done
-        });
+    const key = "Spieltag " + spieltag;
+
+    if(!groups[key]) groups[key] = [];
+
+    const done =
+      statusRaw === "fertig" ||
+      statusRaw === "done" ||
+      (legs1 !== "" && legs2 !== "");
+
+    groups[key].push({
+      p1,
+      p2,
+      score: done && legs1 !== "" && legs2 !== "" ? `${legs1}:${legs2}` : "offen",
+      done
+    });
+  });
+
+  let html = "";
+
+  Object.keys(groups)
+    .sort((a,b) => Number(a.replace("Spieltag ","")) - Number(b.replace("Spieltag ","")))
+    .forEach(key => {
+      const doneAll = groups[key].every(m => m.done);
+
+      html += `
+        <div class="group ${doneAll ? "group-done" : "group-open"}">
+          <div class="group-head">
+            <span>${escapeHtml(key)}</span>
+            <span class="badge ${doneAll ? "fertig" : "offen"}">
+              ${doneAll ? "fertig" : "offen"}
+            </span>
+          </div>
+      `;
+
+      groups[key].forEach(m => {
+        html += `
+          <div class="match ${m.done ? "done-match" : "open-match"}">
+            <div>${escapeHtml(m.p1)}</div>
+            <div class="score ${m.done ? "fertig" : "offen"}">${escapeHtml(m.score)}</div>
+            <div>${escapeHtml(m.p2)}</div>
+            <div class="state">${m.done ? "fertig" : "offen"}</div>
+          </div>
+        `;
       });
 
-      let html = "";
+      html += `</div>`;
+    });
+
+  matchdaysBox.innerHTML = html || "Keine Spieltage gefunden.";
+}
+
 
       Object.keys(groups)
         .sort((a,b) => Number(a.replace("Spieltag ","")) - Number(b.replace("Spieltag ","")))
