@@ -75,65 +75,23 @@
       text-decoration:none;
     }
 
-    /* DISCORD BANNER */
-    .discord-banner{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:20px;
-      background:linear-gradient(135deg,#5865F2,#4752C4);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:16px;
-      padding:18px 20px;
-      margin-bottom:20px;
-      box-shadow:0 8px 20px rgba(0,0,0,.22);
-      flex-wrap:wrap;
-    }
-
-    .discord-banner-left{
-      display:flex;
-      align-items:center;
-      gap:14px;
-    }
-
-    .discord-icon{
-      width:54px;
-      height:54px;
-      border-radius:14px;
-      background:rgba(255,255,255,.14);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:28px;
-      flex-shrink:0;
-    }
-
-    .discord-banner-text h3{
-      margin:0 0 4px;
-      font-size:22px;
-    }
-
-    .discord-banner-text p{
-      margin:0;
-      color:rgba(255,255,255,.9);
-      font-size:14px;
-    }
-
     .discord-btn{
-      display:inline-block;
-      background:#fff;
-      color:#5865F2;
-      padding:12px 18px;
+      background:#5865F2;
+      color:#fff;
+      padding:10px 16px;
       border-radius:10px;
       font-weight:700;
       text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       transition:.2s ease;
-      white-space:nowrap;
+      box-shadow:0 0 16px rgba(88,101,242,.55);
     }
 
     .discord-btn:hover{
-      transform:translateY(-1px);
-      background:#f2f3f5;
+      transform:translateY(-2px);
+      box-shadow:0 0 26px rgba(88,101,242,.9);
       text-decoration:none;
     }
 
@@ -194,6 +152,7 @@
       border-bottom:1px solid #22324a;
       text-align:center;
       vertical-align:middle;
+      word-break:break-word;
       transition:background .25s ease, border-color .25s ease;
     }
 
@@ -209,24 +168,21 @@
       gap:3px;
     }
 
-    .discord-name{
-      font-size:12px;
-      color:#9fb3cc;
-    }
-
     .player-link{
       color:#fff;
       text-decoration:none;
       font-weight:700;
     }
 
-    .player-link:hover{
-      color:#7db3ff;
-    }
-
     .medal{
       font-size:18px;
       margin-right:6px;
+    }
+
+    .last-place{
+      color:#ff4d4f;
+      font-weight:700;
+      margin-left:6px;
     }
 
     .matchdays{
@@ -239,7 +195,8 @@
       border:1px solid #22324a;
       border-radius:10px;
       overflow:hidden;
-      transition:border-color .25s ease, background .25s ease;
+      transition:border-color .25s ease, background .25s ease, box-shadow .25s ease;
+      background:rgba(255,255,255,.01);
     }
 
     .group-head{
@@ -251,6 +208,23 @@
       font-weight:700;
       gap:8px;
       transition:background .25s ease;
+    }
+
+    .group.group-done{
+      border-color:#2f6b4f;
+      box-shadow:0 0 0 1px rgba(141,240,176,.08);
+    }
+
+    .group.group-done .group-head{
+      background:#183427;
+    }
+
+    .group.group-open{
+      border-color:#6a4a1f;
+    }
+
+    .group.group-open .group-head{
+      background:#3a2410;
     }
 
     .badge{
@@ -277,7 +251,15 @@
       padding:8px 10px;
       border-top:1px solid #22324a;
       align-items:center;
-      transition:border-color .25s ease;
+      transition:border-color .25s ease, background .25s ease;
+    }
+
+    .match.open-match{
+      background:rgba(255,165,0,.08);
+    }
+
+    .match.done-match{
+      background:rgba(0,200,100,.05);
     }
 
     .score{
@@ -285,6 +267,9 @@
       border-radius:999px;
       background:#1a2b44;
       transition:background .25s ease;
+      font-weight:700;
+      min-width:64px;
+      text-align:center;
     }
 
     .score.fertig{color:#8df0b0;}
@@ -388,7 +373,6 @@
       text-decoration:underline;
     }
 
-    /* IMPRESSUM MODAL */
     .modal{
       display:none;
       position:fixed;
@@ -423,7 +407,6 @@
       font-weight:700;
     }
 
-    /* AUTODARTS THEME */
     body.autodarts-mode{
       background:#081018;
     }
@@ -457,13 +440,11 @@
       border-color:#22324a;
     }
 
-    /* DARTCOUNTER THEME */
     body.dartcounter-mode{
       background:#140d05;
     }
 
     body.dartcounter-mode .title-box p,
-    body.dartcounter-mode .discord-name,
     body.dartcounter-mode .sheet-note,
     body.dartcounter-mode .rule-empty,
     body.dartcounter-mode footer{
@@ -503,18 +484,8 @@
       background:#2b1a0f;
     }
 
-    body.dartcounter-mode .player-link:hover,
     body.dartcounter-mode footer a{
       color:#ffb067;
-    }
-
-    body.dartcounter-mode .discord-banner{
-      background:linear-gradient(135deg,#ff8c2a,#d96a0b);
-      border:1px solid rgba(255,255,255,.10);
-    }
-
-    body.dartcounter-mode .discord-btn{
-      color:#d96a0b;
     }
 
     @media(max-width:900px){
@@ -530,15 +501,6 @@
 
       .header-actions{
         width:100%;
-      }
-
-      .discord-banner{
-        align-items:flex-start;
-      }
-
-      .discord-btn{
-        width:100%;
-        text-align:center;
       }
     }
   </style>
@@ -558,21 +520,8 @@
       <div class="header-actions">
         <a href="#" onclick="showSheetPage('Regelwerk','📘 Regelwerk'); return false;" class="top-link">📘 Regelwerk</a>
         <a href="#" onclick="showSheetPage('FAQ','❓ FAQ'); return false;" class="top-link">❓ FAQ</a>
+        <a href="DEIN_DISCORD_LINK" target="_blank" class="discord-btn">🎮 Community beitreten</a>
       </div>
-    </div>
-
-    <div class="discord-banner">
-      <div class="discord-banner-left">
-        <div class="discord-icon">💬</div>
-        <div class="discord-banner-text">
-          <h3>Jetzt unserem Discord beitreten</h3>
-          <p>Alle News, Spieltage, Ergebnisse und Austausch direkt auf unserem Server.</p>
-        </div>
-      </div>
-
-      <a href="https://discord.gg/4RCESBVaSv" target="_blank" class="discord-btn">
-        🚀 Zum Discord
-      </a>
     </div>
 
     <div id="leagueView">
@@ -647,11 +596,7 @@
   </div>
 
   <script>
-    const SHEET_ID = "1gE5-Z6MXMAXp3feMGW1U8BpmELbLM5VMTANpLb7P_YY".replace("OvV", "Ovw"); 
-  </script>
-
-  <script>
-    const REAL_SHEET_ID = "1gE5-Z6MXMAXp3feMGW1U8BpmELbLM5VMTANpLb7P_YY";
+    const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
 
     const CONFIG = {
       autodarts: [
@@ -689,7 +634,7 @@
     }
 
     function gviz(sheet){
-      return `https://docs.google.com/spreadsheets/d/${REAL_SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}`;
+      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}&tqx=out:json&t=${Date.now()}` [docs.google.com];
     }
 
     async function fetchSheet(sheet){
@@ -714,16 +659,6 @@
       }
 
       return active;
-    }
-
-    function buildDiscordMap(rows){
-      const map = {};
-      rows.forEach(r => {
-        const player = String(r[0] ?? "").trim();
-        const discord = String(r[1] ?? "").trim();
-        if(player) map[player] = discord;
-      });
-      return map;
     }
 
     function getMedal(rank){
@@ -796,24 +731,34 @@
       });
     }
 
-    function renderTable(rows, discordMap){
+    function renderTable(rows){
       let html = "<table><tr><th>Platz</th><th>Spieler</th><th>Siege</th><th>Niederlagen</th><th>Leg-Diff</th><th>Punkte</th></tr>";
 
-      for(const r of rows){
-        if(!r[1]) continue;
-        if(r[1] === "Spieler 1") break;
+      const dataRows = rows.filter(r => {
+        const platz = String(r[0] ?? "").trim().toLowerCase();
+        const spieler = String(r[1] ?? "").trim().toLowerCase();
 
+        if(!r[0] || !r[1]) return false;
+        if(platz === "platz") return false;
+        if(spieler === "spieler") return false;
+        if(spieler === "discord") return false;
+
+        return !isNaN(Number(r[0]));
+      });
+
+      dataRows.forEach((r, index) => {
         const rank = Number(r[0]) || 0;
         const medal = getMedal(rank);
-        const playerName = String(r[1] ?? "").trim();
-        const discordName = discordMap[playerName] || "";
+        const isLast = index === dataRows.length - 1;
 
         html += `<tr>
-          <td>${medal ? `<span class="medal">${medal}</span>` : ""}${escapeHtml(r[0])}</td>
+          <td>
+            ${medal ? `<span class="medal">${medal}</span>` : ""}${escapeHtml(r[0])}
+            ${isLast ? `<span class="last-place">⬇️</span>` : ""}
+          </td>
           <td>
             <div class="player-wrap">
-              <a href="#" class="player-link" onclick="return false;">${escapeHtml(playerName)}</a>
-              ${discordName ? `<span class="discord-name">${escapeHtml(discordName)}</span>` : ""}
+              <span class="player-link">${escapeHtml(r[1])}</span>
             </div>
           </td>
           <td>${escapeHtml(r[2] ?? "")}</td>
@@ -821,7 +766,7 @@
           <td>${escapeHtml(r[4] ?? "")}</td>
           <td>${escapeHtml(r[5] ?? "")}</td>
         </tr>`;
-      }
+      });
 
       html += "</table>";
       tableBox.innerHTML = html;
@@ -831,35 +776,45 @@
       const groups = {};
 
       rows.forEach(r => {
-        if(!r[0] || !r[1] || !r[3]) return;
+        const spieltag = String(r[0] ?? "").trim();
+        const p1 = String(r[1] ?? "").trim();
+        const p2 = String(r[3] ?? "").trim();
 
-        const key = "Spieltag " + r[0];
+        if(!spieltag || !p1 || !p2) return;
+        if(spieltag.toLowerCase() === "spieltag") return;
+        if(p1.toLowerCase() === "spieler 1") return;
+
+        const key = "Spieltag " + spieltag;
 
         if(!groups[key]) groups[key] = [];
 
+        const done = r[5] !== "" && r[6] !== "" && r[5] != null && r[6] != null;
+
         groups[key].push({
-          p1: r[1],
-          p2: r[3],
-          score: (r[5] && r[6]) ? `${r[5]}:${r[6]}` : "offen",
-          done: (r[5] && r[6])
+          p1,
+          p2,
+          score: done ? `${r[5]}:${r[6]}` : "offen",
+          done
         });
       });
 
       let html = "";
 
       Object.keys(groups)
-        .sort((a,b) => Number(a.split(" ")[1]) - Number(b.split(" ")[1]))
+        .sort((a,b) => Number(a.replace("Spieltag ","")) - Number(b.replace("Spieltag ","")))
         .forEach(key => {
-          const done = groups[key].every(m => m.done);
+          const doneAll = groups[key].every(m => m.done);
 
-          html += `<div class="group">
+          html += `<div class="group ${doneAll ? "group-done" : "group-open"}">
             <div class="group-head">
               <span>${escapeHtml(key)}</span>
-              <span class="badge ${done ? "fertig" : "offen"}">${done ? "fertig" : "offen"}</span>
+              <span class="badge ${doneAll ? "fertig" : "offen"}">
+                ${doneAll ? "fertig" : "offen"}
+              </span>
             </div>`;
 
           groups[key].forEach(m => {
-            html += `<div class="match">
+            html += `<div class="match ${m.done ? "done-match" : "open-match"}">
               <div>${escapeHtml(m.p1)}</div>
               <div class="score ${m.done ? "fertig" : "offen"}">${escapeHtml(m.score)}</div>
               <div>${escapeHtml(m.p2)}</div>
@@ -867,7 +822,7 @@
             </div>`;
           });
 
-          html += "</div>";
+          html += `</div>`;
         });
 
       matchdaysBox.innerHTML = html || "Keine Spieltage gefunden.";
@@ -1113,15 +1068,12 @@
       tableBox.innerHTML = "Lädt…";
       matchdaysBox.innerHTML = "Lädt…";
 
-      const [liga, erg, spieler] = await Promise.all([
+      const [liga, erg] = await Promise.all([
         fetchSheet(currentLeague),
-        fetchSheet("Erg " + currentLeague),
-        fetchSheet("Spieler_Discord")
+        fetchSheet("Erg " + currentLeague)
       ]);
 
-      const discordMap = buildDiscordMap(spieler);
-
-      renderTable(liga, discordMap);
+      renderTable(liga);
       renderMatchdays(erg);
     }
 
