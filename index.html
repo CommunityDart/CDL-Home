@@ -1,24 +1,27 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Community Dart Liga</title>
 
   <style>
     :root{
-      --bg:#04101d;
-      --bg2:#020912;
-      --panel:#081a33;
-      --panel2:#0d2444;
-      --line:#1a3a63;
+      --bg:#06111c;
+      --bg2:#030812;
+      --panel:#0b1d36;
+      --panel2:#102646;
+      --line:#1c3d68;
       --text:#ffffff;
-      --muted:#9bb6d8;
-      --blue:#53a8ff;
-      --green:#4ef08b;
-      --orange:#ffbe55;
-      --shadow:0 0 0 1px rgba(83,168,255,.14),0 10px 30px rgba(0,0,0,.28);
-      --radius:18px;
+      --muted:#9db8d8;
+      --blue:#58a9ff;
+      --blue-soft:rgba(88,169,255,.12);
+      --orange:#ffb657;
+      --orange-soft:rgba(255,182,87,.12);
+      --green:#58eb93;
+      --danger:#ff7373;
+      --radius:20px;
+      --shadow:0 0 0 1px rgba(88,169,255,.12), 0 12px 36px rgba(0,0,0,.28);
     }
 
     *{box-sizing:border-box}
@@ -27,53 +30,123 @@
       font-family:Arial,Helvetica,sans-serif;
       color:var(--text);
       background:
-        radial-gradient(circle at top, rgba(45,111,189,.18), transparent 35%),
+        radial-gradient(circle at top, rgba(39,103,184,.18), transparent 34%),
         linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
       min-height:100vh;
     }
 
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
     .wrap{
-      width:min(1280px, calc(100% - 24px));
-      margin:16px auto 40px;
+      width:min(1300px, calc(100% - 24px));
+      margin:18px auto 38px;
     }
 
     .hero{
-      background:linear-gradient(180deg, rgba(8,26,51,.96), rgba(6,20,39,.96));
+      background:linear-gradient(180deg, rgba(9,28,53,.98), rgba(7,21,40,.98));
       border:1px solid var(--line);
-      border-radius:24px;
+      border-radius:26px;
       box-shadow:var(--shadow);
-      padding:18px 22px;
+      padding:22px 24px;
       margin-bottom:18px;
     }
 
     .eyebrow{
       color:var(--blue);
+      font-size:12px;
       text-transform:uppercase;
       letter-spacing:.14em;
-      font-size:12px;
       margin-bottom:6px;
     }
 
     h1{
       margin:0 0 6px;
-      font-size:36px;
-      line-height:1.05;
+      font-size:38px;
+      line-height:1.04;
     }
 
     .sub{
       color:var(--muted);
+      font-size:15px;
+    }
+
+    .discord-banner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:18px 20px;
+      margin:0 0 18px;
+      border:1px solid #2c5d95;
+      border-radius:22px;
+      background:
+        linear-gradient(135deg, rgba(20,44,79,.98), rgba(16,34,62,.98)),
+        linear-gradient(135deg, #5865F2, #2ea6ff);
+      box-shadow:var(--shadow);
+      flex-wrap:wrap;
+    }
+
+    .discord-left{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      min-width:260px;
+    }
+
+    .discord-icon{
+      width:58px;
+      height:58px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.08);
+      font-size:30px;
+      flex:0 0 auto;
+    }
+
+    .discord-title{
+      font-size:22px;
+      font-weight:800;
+      margin:0 0 4px;
+    }
+
+    .discord-text{
+      color:#d8e6fb;
       font-size:14px;
+    }
+
+    .discord-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:190px;
+      padding:13px 18px;
+      border-radius:14px;
+      background:#5865F2;
+      color:#fff;
+      font-weight:700;
+      transition:.2s ease;
+      box-shadow:0 8px 24px rgba(88,101,242,.28);
+    }
+
+    .discord-btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.05);
     }
 
     .top-grid{
       display:grid;
-      grid-template-columns:1.4fr repeat(3, minmax(180px, 220px));
+      grid-template-columns:1.3fr repeat(3, minmax(160px, 220px));
       gap:12px;
       margin-bottom:18px;
     }
 
     .card{
-      background:linear-gradient(180deg, rgba(8,26,51,.98), rgba(7,20,39,.98));
+      background:linear-gradient(180deg, rgba(9,28,53,.98), rgba(7,21,40,.98));
       border:1px solid var(--line);
       border-radius:22px;
       box-shadow:var(--shadow);
@@ -81,7 +154,7 @@
 
     .stat{
       padding:18px;
-      min-height:98px;
+      min-height:96px;
       display:flex;
       flex-direction:column;
       justify-content:center;
@@ -96,15 +169,21 @@
     }
 
     .stat .value{
-      font-size:18px;
-      font-weight:700;
-      line-height:1.2;
+      font-size:19px;
+      font-weight:800;
+      line-height:1.15;
+    }
+
+    .stat .small{
+      color:var(--muted);
+      font-size:14px;
+      margin-top:4px;
     }
 
     .stat .big{
-      font-size:46px;
+      font-size:44px;
       line-height:1;
-      font-weight:800;
+      font-weight:900;
     }
 
     .blue{color:var(--blue)}
@@ -116,47 +195,110 @@
       overflow:hidden;
     }
 
+    .league.autodarts .league-head{
+      background:linear-gradient(180deg, rgba(13,36,68,.98), rgba(9,25,47,.98));
+    }
+
+    .league.dartcounter .league-head{
+      background:linear-gradient(180deg, rgba(68,43,14,.95), rgba(51,30,7,.98));
+      border-bottom:1px solid rgba(255,182,87,.24);
+    }
+
     .league-head{
-      background:linear-gradient(180deg, rgba(11,31,60,.98), rgba(9,24,47,.98));
-      border-bottom:1px solid var(--line);
       padding:18px 20px;
+      border-bottom:1px solid var(--line);
     }
 
     .league-title{
       margin:0;
-      font-size:22px;
-      font-weight:800;
+      font-size:25px;
+      font-weight:900;
+    }
+
+    .league-sub{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:14px;
     }
 
     .league-body{
       padding:16px;
     }
 
+    .league-grid{
+      display:grid;
+      grid-template-columns: minmax(320px, 420px) 1fr;
+      gap:14px;
+      align-items:start;
+    }
+
+    .mini-box{
+      border:1px solid rgba(88,169,255,.12);
+      border-radius:16px;
+      padding:16px;
+      background:rgba(255,255,255,.02);
+    }
+
+    .mini-box h3{
+      margin:0 0 12px;
+      font-size:16px;
+      color:#e6f0fc;
+    }
+
     .badge-row{
       display:flex;
-      gap:8px;
       flex-wrap:wrap;
-      margin-bottom:14px;
+      gap:8px;
+      margin-bottom:12px;
     }
 
     .badge{
       padding:8px 12px;
       border-radius:999px;
       border:1px solid var(--line);
-      background:rgba(83,168,255,.08);
-      color:#d8e8fb;
+      background:rgba(88,169,255,.08);
+      color:#dceafe;
       font-size:13px;
     }
 
-    .section-title{
-      margin:0 0 14px;
+    .matchday-big{
+      font-size:34px;
+      font-weight:900;
+      line-height:1;
+      margin-bottom:6px;
+    }
+
+    .status-line{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:10px;
+    }
+
+    .progress{
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      overflow:hidden;
+      border:1px solid rgba(88,169,255,.08);
+    }
+
+    .progress-bar{
+      height:100%;
+      background:linear-gradient(90deg, var(--blue), var(--green));
+      width:0%;
+      transition:width .3s ease;
+    }
+
+    .table-title{
+      margin:0 0 12px;
       font-size:16px;
-      color:#e4effc;
+      color:#e6f0fc;
     }
 
     .table-wrap{
       overflow:auto;
-      border:1px solid rgba(83,168,255,.10);
+      border:1px solid rgba(88,169,255,.10);
       border-radius:14px;
     }
 
@@ -170,20 +312,20 @@
       background:#132a4b;
       color:#fff;
       padding:13px 12px;
-      border-bottom:1px solid var(--line);
       text-align:center;
       white-space:nowrap;
+      border-bottom:1px solid var(--line);
     }
 
     tbody td{
       padding:13px 12px;
-      border-bottom:1px solid rgba(83,168,255,.14);
       text-align:center;
+      border-bottom:1px solid rgba(88,169,255,.12);
       color:#fff;
     }
 
     tbody tr:hover{
-      background:rgba(83,168,255,.05);
+      background:rgba(88,169,255,.05);
     }
 
     td.player{
@@ -195,10 +337,8 @@
       margin-right:6px;
     }
 
-    .empty,
-    .loading,
-    .error{
-      padding:24px;
+    .empty, .loading, .error{
+      padding:26px;
       text-align:center;
       color:var(--muted);
     }
@@ -208,15 +348,64 @@
     }
 
     .footer{
-      text-align:center;
-      color:#7fa3cb;
-      font-size:13px;
-      margin-top:18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:24px;
+      padding:18px 20px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(9,28,53,.92), rgba(7,21,40,.92));
+      box-shadow:var(--shadow);
     }
 
-    @media (max-width: 980px){
+    .footer-left{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .footer-links{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .footer-link,
+    .donate-btn{
+      padding:11px 16px;
+      border-radius:12px;
+      font-weight:700;
+      transition:.2s ease;
+    }
+
+    .footer-link{
+      border:1px solid var(--line);
+      background:rgba(88,169,255,.08);
+      color:#e3efff;
+    }
+
+    .donate-btn{
+      background:linear-gradient(135deg, #ffb657, #ff8a57);
+      color:#fff;
+      box-shadow:0 8px 24px rgba(255,138,87,.25);
+    }
+
+    .footer-link:hover,
+    .donate-btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.04);
+    }
+
+    @media (max-width: 1050px){
       .top-grid{
         grid-template-columns:1fr 1fr;
+      }
+
+      .league-grid{
+        grid-template-columns:1fr;
       }
     }
 
@@ -226,7 +415,11 @@
       }
 
       h1{
-        font-size:28px;
+        font-size:29px;
+      }
+
+      .discord-title{
+        font-size:19px;
       }
     }
   </style>
@@ -239,11 +432,22 @@
       <div class="sub">Automatisch aus Google Sheets geladen</div>
     </section>
 
+    <section class="discord-banner">
+      <div class="discord-left">
+        <div class="discord-icon">🎯</div>
+        <div>
+          <div class="discord-title">Jetzt dem Discord beitreten</div>
+          <div class="discord-text">Liga-News, Ergebnisse, Austausch und alles Wichtige direkt auf dem Server.</div>
+        </div>
+      </div>
+      <a class="discord-btn" id="discordBtn" href="#" target="_blank" rel="noopener">Zum Discord</a>
+    </section>
+
     <section class="top-grid">
       <div class="card stat">
         <div class="label">Aktueller Spieltag</div>
         <div class="value" id="currentMatchdayText">Lädt...</div>
-        <div class="sub" id="currentMatchdaySub">Bitte warten</div>
+        <div class="small" id="currentMatchdaySub">Bitte warten</div>
       </div>
 
       <div class="card stat">
@@ -264,35 +468,120 @@
 
     <div id="content" class="loading card">Daten werden geladen...</div>
 
-    <div class="footer">Community Dart Liga</div>
+    <footer class="footer">
+      <div class="footer-left">Community Dart Liga</div>
+      <div class="footer-links">
+        <a class="footer-link" id="impressumLink" href="#" target="_blank" rel="noopener">Impressum</a>
+        <a class="donate-btn" id="donationLink" href="#" target="_blank" rel="noopener">💛 Spenden</a>
+      </div>
+    </footer>
   </div>
 
   <script>
     /************************************************************
-     * HIER DEINE SHEET-ID EINTRAGEN
+     * KONFIG
      ************************************************************/
-    const SPREADSHEET_ID = "1gE5-Z6MXMAXp3feMGW1U8BpmELbLM5VMTANpLb7P_YY";
+    const SPREADSHEET_ID = "1kan56xgDkKnLSr4vCQ7BDiaiXM2_4chhE7jOmTCU024";
+    const DISCORD_INVITE_LINK = "https://discord.gg/dein-link";
+    const IMPRESSUM_LINK = "https://deine-seite.de/impressum";
+    const DONATION_LINK = "https://paypal.me/deinlink";
 
-    /************************************************************
-     * LIGA-BLÄTTER
-     ************************************************************/
-    const LEAGUE_SHEETS = [
-      "Autodarts Liga 1",
-      "Autodarts Liga 2",
-      "Autodarts Liga 3",
-      "Autodarts Liga 4",
-      "Autodarts Liga 5",
-      "Autodarts Liga 6",
-      "Dartcounter Liga 1",
-      "Dartcounter Liga 2",
-      "Dartcounter Liga 3",
-      "Dartcounter Liga 4",
-      "Dartcounter Liga 5",
-      "Dartcounter Liga 6"
+    const LEAGUES = [
+      {
+        mode: "Autodarts",
+        number: 1,
+        sheet: "Autodarts Liga 1",
+        tableSheet: "Tabelle Autodarts Liga 1",
+        className: "autodarts"
+      },
+      {
+        mode: "Autodarts",
+        number: 2,
+        sheet: "Autodarts Liga 2",
+        tableSheet: "Tabelle Autodarts Liga 2",
+        className: "autodarts"
+      },
+      {
+        mode: "Autodarts",
+        number: 3,
+        sheet: "Autodarts Liga 3",
+        tableSheet: "Tabelle Autodarts Liga 3",
+        className: "autodarts"
+      },
+      {
+        mode: "Autodarts",
+        number: 4,
+        sheet: "Autodarts Liga 4",
+        tableSheet: "Tabelle Autodarts Liga 4",
+        className: "autodarts"
+      },
+      {
+        mode: "Autodarts",
+        number: 5,
+        sheet: "Autodarts Liga 5",
+        tableSheet: "Tabelle Autodarts Liga 5",
+        className: "autodarts"
+      },
+      {
+        mode: "Autodarts",
+        number: 6,
+        sheet: "Autodarts Liga 6",
+        tableSheet: "Tabelle Autodarts Liga 6",
+        className: "autodarts"
+      },
+      {
+        mode: "Dartcounter",
+        number: 1,
+        sheet: "Dartcounter Liga 1",
+        tableSheet: "Tabelle Dartcounter Liga 1",
+        className: "dartcounter"
+      },
+      {
+        mode: "Dartcounter",
+        number: 2,
+        sheet: "Dartcounter Liga 2",
+        tableSheet: "Tabelle Dartcounter Liga 2",
+        className: "dartcounter"
+      },
+      {
+        mode: "Dartcounter",
+        number: 3,
+        sheet: "Dartcounter Liga 3",
+        tableSheet: "Tabelle Dartcounter Liga 3",
+        className: "dartcounter"
+      },
+      {
+        mode: "Dartcounter",
+        number: 4,
+        sheet: "Dartcounter Liga 4",
+        tableSheet: "Tabelle Dartcounter Liga 4",
+        className: "dartcounter"
+      },
+      {
+        mode: "Dartcounter",
+        number: 5,
+        sheet: "Dartcounter Liga 5",
+        tableSheet: "Tabelle Dartcounter Liga 5",
+        className: "dartcounter"
+      },
+      {
+        mode: "Dartcounter",
+        number: 6,
+        sheet: "Dartcounter Liga 6",
+        tableSheet: "Tabelle Dartcounter Liga 6",
+        className: "dartcounter"
+      }
     ];
 
     /************************************************************
-     * HILFSFUNKTIONEN
+     * INIT LINKS
+     ************************************************************/
+    document.getElementById("discordBtn").href = DISCORD_INVITE_LINK;
+    document.getElementById("impressumLink").href = IMPRESSUM_LINK;
+    document.getElementById("donationLink").href = DONATION_LINK;
+
+    /************************************************************
+     * HELPERS
      ************************************************************/
     function normalize(str){
       return String(str ?? "")
@@ -303,14 +592,6 @@
         .replace(/[ö]/g, "oe")
         .replace(/[ü]/g, "ue")
         .replace(/[ß]/g, "ss");
-    }
-
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
     }
 
     function toNumber(value){
@@ -324,6 +605,26 @@
       return Number.isFinite(n) ? n : 0;
     }
 
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function medalForPlace(place){
+      if (place === 1) return "🥇";
+      if (place === 2) return "🥈";
+      if (place === 3) return "🥉";
+      return "";
+    }
+
+    function progressPercent(done, total){
+      if (!total) return 0;
+      return Math.max(0, Math.min(100, (done / total) * 100));
+    }
+
     function isFinishedStatus(value){
       const v = normalize(value);
       return v === "fertig" || v.includes("fertig") || v.includes("abgeschlossen");
@@ -334,20 +635,15 @@
       return v === "offen" || v.includes("offen") || v.includes("ausstehend");
     }
 
-    function medalForPlace(place){
-      if (place === 1) return "🥇";
-      if (place === 2) return "🥈";
-      if (place === 3) return "🥉";
-      return "";
-    }
-
     function getSheetUrl(sheetName){
       return `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
     }
 
     async function fetchSheetRows(sheetName){
       const res = await fetch(getSheetUrl(sheetName));
-      if (!res.ok) throw new Error(`Fehler beim Laden von ${sheetName}`);
+      if (!res.ok) {
+        throw new Error(`Fehler beim Laden von ${sheetName}`);
+      }
 
       const text = await res.text();
       const jsonText = text
@@ -366,190 +662,155 @@
       );
     }
 
+    /************************************************************
+     * MATCHDAY / LIGA BLATT
+     ************************************************************/
     function findMatchHeaderRow(rows){
-      for (let i = 0; i < rows.length; i++) {
+      for(let i = 0; i < rows.length; i++){
         const line = rows[i].map(normalize);
-
+        const hasSpieltag = line.some(v => v.includes("spieltag"));
         const hasSpieler1 = line.some(v => v === "spieler 1" || v.includes("spieler 1"));
         const hasSpieler2 = line.some(v => v === "spieler 2" || v.includes("spieler 2"));
-        const hasLegs1 = line.some(v => v === "legs 1" || v.includes("legs 1"));
-        const hasLegs2 = line.some(v => v === "legs 2" || v.includes("legs 2"));
-        const hasGewinner = line.some(v => v === "gewinner" || v.includes("gewinner"));
-        const hasStatus = line.some(v => v === "status" || v.includes("status"));
-
-        if (hasSpieler1 && hasSpieler2 && hasLegs1 && hasLegs2 && hasGewinner && hasStatus) {
+        const hasStatus = line.some(v => v.includes("status"));
+        if(hasSpieltag && hasSpieler1 && hasSpieler2 && hasStatus){
           return i;
         }
       }
       return -1;
     }
 
-    function mapMatchHeaderIndexes(headerRow){
+    function mapMatchHeaders(headerRow){
       const map = {};
-
       headerRow.forEach((cell, index) => {
         const h = normalize(cell);
-
         if (h === "spieltag" || h.includes("spieltag")) map.spieltag = index;
         if (h === "spieler 1" || h.includes("spieler 1")) map.spieler1 = index;
         if (h === "spieler 2" || h.includes("spieler 2")) map.spieler2 = index;
-        if (h === "legs 1" || h.includes("legs 1")) map.legs1 = index;
-        if (h === "legs 2" || h.includes("legs 2")) map.legs2 = index;
-        if (h === "gewinner" || h.includes("gewinner")) map.gewinner = index;
         if (h === "status" || h.includes("status")) map.status = index;
       });
-
       return map;
     }
 
-    function createEmptyPlayer(name){
-      return {
-        spieler: name,
-        siege: 0,
-        niederlagen: 0,
-        legPlus: 0,
-        legMinus: 0,
-        legDiff: 0,
-        punkte: 0,
-        spiele: 0
-      };
-    }
-
-    function ensurePlayer(tableMap, name){
-      const clean = String(name ?? "").trim();
-      if (!clean) return null;
-      if (!tableMap[clean]) tableMap[clean] = createEmptyPlayer(clean);
-      return tableMap[clean];
-    }
-
-    function parseLeagueFromMatchRows(rows){
+    function parseLeagueMatchStats(rows){
       const headerIndex = findMatchHeaderRow(rows);
-      if (headerIndex === -1) {
+      if (headerIndex === -1){
         return {
-          standings: [],
-          stats: {
-            currentMatchday: 0,
-            totalMatches: 0,
-            open: 0,
-            done: 0
-          }
+          totalMatches: 0,
+          open: 0,
+          done: 0,
+          currentMatchday: 0,
+          hasPlayers: false
         };
       }
 
-      const header = rows[headerIndex];
-      const idx = mapMatchHeaderIndexes(header);
+      const idx = mapMatchHeaders(rows[headerIndex]);
 
-      const players = {};
-      let currentMatchday = 0;
       let totalMatches = 0;
       let open = 0;
       let done = 0;
+      let currentMatchday = 0;
+      let hasPlayers = false;
 
-      for (let i = headerIndex + 1; i < rows.length; i++) {
+      for(let i = headerIndex + 1; i < rows.length; i++){
         const row = rows[i];
-
-        const spieltag = toNumber(row[idx.spieltag]);
         const spieler1 = String(row[idx.spieler1] ?? "").trim();
         const spieler2 = String(row[idx.spieler2] ?? "").trim();
-        const legs1 = toNumber(row[idx.legs1]);
-        const legs2 = toNumber(row[idx.legs2]);
-        const gewinner = String(row[idx.gewinner] ?? "").trim();
         const status = String(row[idx.status] ?? "").trim();
+        const spieltag = toNumber(row[idx.spieltag]);
 
-        if (!spieler1 || !spieler2) continue;
+        if(!spieler1 || !spieler2) continue;
 
+        hasPlayers = true;
         totalMatches++;
         currentMatchday = Math.max(currentMatchday, spieltag);
 
-        ensurePlayer(players, spieler1);
-        ensurePlayer(players, spieler2);
-
-        if (isFinishedStatus(status)) {
+        if(isFinishedStatus(status)){
           done++;
-
-          const p1 = players[spieler1];
-          const p2 = players[spieler2];
-
-          p1.spiele++;
-          p2.spiele++;
-
-          p1.legPlus += legs1;
-          p1.legMinus += legs2;
-
-          p2.legPlus += legs2;
-          p2.legMinus += legs1;
-
-          if (gewinner && players[gewinner]) {
-            if (gewinner === spieler1) {
-              p1.siege++;
-              p1.punkte += 2;
-              p2.niederlagen++;
-            } else if (gewinner === spieler2) {
-              p2.siege++;
-              p2.punkte += 2;
-              p1.niederlagen++;
-            }
-          } else {
-            if (legs1 > legs2) {
-              p1.siege++;
-              p1.punkte += 2;
-              p2.niederlagen++;
-            } else if (legs2 > legs1) {
-              p2.siege++;
-              p2.punkte += 2;
-              p1.niederlagen++;
-            }
-          }
-        } else if (isOpenStatus(status) || !status) {
+        } else if(isOpenStatus(status) || !status){
           open++;
         } else {
           open++;
         }
       }
 
-      const standings = Object.values(players)
-        .map(p => ({
-          ...p,
-          legDiff: p.legPlus - p.legMinus
-        }))
-        .filter(p => p.spieler)
-        .sort((a, b) => {
-          if (b.punkte !== a.punkte) return b.punkte - a.punkte;
-          if (b.legDiff !== a.legDiff) return b.legDiff - a.legDiff;
-          if (b.siege !== a.siege) return b.siege - a.siege;
-          return a.spieler.localeCompare(b.spieler, "de");
-        })
-        .map((p, index) => ({
-          platz: index + 1,
-          ...p
-        }));
+      return { totalMatches, open, done, currentMatchday, hasPlayers };
+    }
 
-      return {
-        standings,
-        stats: {
-          currentMatchday,
-          totalMatches,
-          open,
-          done
+    /************************************************************
+     * TABELLEN-BLATT
+     ************************************************************/
+    function findTableHeaderRow(rows){
+      for(let i = 0; i < rows.length; i++){
+        const line = rows[i].map(normalize);
+        const hasSpieler = line.some(v => v === "spieler" || v.includes("spieler"));
+        const hasPunkte = line.some(v => v === "punkte" || v.includes("punkte"));
+        if(hasSpieler && hasPunkte){
+          return i;
         }
-      };
+      }
+      return -1;
     }
 
-    function mergeStats(allStats){
-      return allStats.reduce((acc, s) => {
-        acc.currentMatchday = Math.max(acc.currentMatchday, s.currentMatchday || 0);
-        acc.totalMatches += s.totalMatches || 0;
-        acc.open += s.open || 0;
-        acc.done += s.done || 0;
-        return acc;
-      }, {
-        currentMatchday: 0,
-        totalMatches: 0,
-        open: 0,
-        done: 0
+    function mapTableHeaders(headerRow){
+      const map = {};
+      headerRow.forEach((cell, index) => {
+        const h = normalize(cell);
+        if (h === "platz" || h.includes("platz") || h.includes("rang")) map.platz = index;
+        if (h === "spieler" || h.includes("spieler") || h === "name") map.spieler = index;
+        if (h === "spiele" || h.includes("spiele")) map.spiele = index;
+        if (h === "siege" || h.includes("siege")) map.siege = index;
+        if (h === "niederlagen" || h.includes("niederlagen")) map.niederlagen = index;
+        if (h === "legs+" || h === "legs +" || h.includes("legs+")) map.legsPlus = index;
+        if (h === "legs-" || h === "legs -" || h.includes("legs-")) map.legsMinus = index;
+        if (h === "diff" || h.includes("diff") || h.includes("leg-diff")) map.diff = index;
+        if (h === "punkte" || h.includes("punkte")) map.punkte = index;
       });
+      return map;
     }
 
+    function parseTableRows(rows){
+      const headerIndex = findTableHeaderRow(rows);
+      if (headerIndex === -1) return [];
+
+      const idx = mapTableHeaders(rows[headerIndex]);
+      const result = [];
+
+      for(let i = headerIndex + 1; i < rows.length; i++){
+        const row = rows[i];
+        const spieler = String(row[idx.spieler] ?? "").trim();
+        if(!spieler) continue;
+
+        result.push({
+          platz: toNumber(row[idx.platz]),
+          spieler,
+          spiele: toNumber(row[idx.spiele]),
+          siege: toNumber(row[idx.siege]),
+          niederlagen: toNumber(row[idx.niederlagen]),
+          diff: toNumber(row[idx.diff]),
+          punkte: toNumber(row[idx.punkte])
+        });
+      }
+
+      const filtered = result.filter(r => r.spieler);
+
+      filtered.sort((a, b) => {
+        if (a.platz && b.platz) return a.platz - b.platz;
+        if (b.punkte !== a.punkte) return b.punkte - a.punkte;
+        if (b.diff !== a.diff) return b.diff - a.diff;
+        if (b.siege !== a.siege) return b.siege - a.siege;
+        return a.spieler.localeCompare(b.spieler, "de");
+      });
+
+      filtered.forEach((row, index) => {
+        if (!row.platz) row.platz = index + 1;
+      });
+
+      return filtered;
+    }
+
+    /************************************************************
+     * RENDER
+     ************************************************************/
     function renderTopStats(stats){
       const currentMatchdayText = document.getElementById("currentMatchdayText");
       const currentMatchdaySub = document.getElementById("currentMatchdaySub");
@@ -557,14 +818,14 @@
       const openCount = document.getElementById("openCount");
       const doneCount = document.getElementById("doneCount");
 
-      if (!stats.currentMatchday) {
+      if(!stats.currentMatchday){
         currentMatchdayText.textContent = "Kein Spieltag gefunden";
         currentMatchdaySub.textContent = "Bitte Liga-Blätter prüfen";
       } else {
         currentMatchdayText.textContent = `Spieltag ${stats.currentMatchday}`;
         currentMatchdaySub.textContent =
           stats.open === 0
-            ? "Alle Spiele dieses Spieltags sind fertig"
+            ? "Alle aktuell erfassten Spiele sind fertig"
             : `${stats.open} Begegnung(en) noch offen`;
       }
 
@@ -573,106 +834,152 @@
       doneCount.textContent = stats.done;
     }
 
-    function renderLeague(name, data){
-      const standings = data.standings;
-      const stats = data.stats;
+    function renderLeague(league){
+      const progress = progressPercent(league.stats.done, league.stats.totalMatches);
 
-      const badges = [
-        `<div class="badge">Spieler: ${standings.length}</div>`,
-        `<div class="badge">Begegnungen: ${stats.totalMatches}</div>`,
-        `<div class="badge">Offen: ${stats.open}</div>`,
-        `<div class="badge">Fertig: ${stats.done}</div>`
-      ];
-
-      const rows = standings.map(row => `
+      const rowsHtml = league.table.map(row => `
         <tr>
           <td>${medalForPlace(row.platz) ? `<span class="medal">${medalForPlace(row.platz)}</span>` : ""}${row.platz}</td>
           <td class="player">${escapeHtml(row.spieler)}</td>
+          <td>${row.spiele}</td>
           <td>${row.siege}</td>
           <td>${row.niederlagen}</td>
-          <td>${row.legDiff > 0 ? "+" : ""}${row.legDiff}</td>
+          <td>${row.diff > 0 ? "+" : ""}${row.diff}</td>
           <td>${row.punkte}</td>
         </tr>
       `).join("");
 
       return `
-        <section class="league card">
+        <section class="league card ${league.className}">
           <div class="league-head">
-            <h2 class="league-title">${escapeHtml(name)}</h2>
+            <h2 class="league-title">${escapeHtml(league.mode)} Liga ${league.number}</h2>
+            <div class="league-sub">${league.table.length} Spieler in der Tabelle</div>
           </div>
+
           <div class="league-body">
-            <div class="badge-row">${badges.join("")}</div>
-            <h3 class="section-title">Tabelle</h3>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Platz</th>
-                    <th>Spieler</th>
-                    <th>Siege</th>
-                    <th>Niederlagen</th>
-                    <th>Leg-Diff</th>
-                    <th>Punkte</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${rows}
-                </tbody>
-              </table>
+            <div class="league-grid">
+              <div class="mini-box">
+                <h3>Spieltag Übersicht</h3>
+
+                <div class="badge-row">
+                  <div class="badge">Spieltag: ${league.stats.currentMatchday || "-"}</div>
+                  <div class="badge">Begegnungen: ${league.stats.totalMatches}</div>
+                  <div class="badge">Offen: ${league.stats.open}</div>
+                  <div class="badge">Fertig: ${league.stats.done}</div>
+                </div>
+
+                <div class="matchday-big">Spieltag ${league.stats.currentMatchday || "-"}</div>
+                <div class="status-line">
+                  ${league.stats.open === 0
+                    ? "Alle eingetragenen Spiele sind abgeschlossen."
+                    : `${league.stats.open} Spiel(e) warten noch auf ein Ergebnis.`}
+                </div>
+
+                <div class="progress">
+                  <div class="progress-bar" style="width:${progress}%"></div>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="table-title">Tabelle</h3>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Platz</th>
+                        <th>Spieler</th>
+                        <th>Spiele</th>
+                        <th>Siege</th>
+                        <th>Niederlagen</th>
+                        <th>Leg-Diff</th>
+                        <th>Punkte</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${rowsHtml}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </section>
       `;
     }
 
+    /************************************************************
+     * LOAD
+     ************************************************************/
     async function loadPage(){
       const content = document.getElementById("content");
       content.className = "loading card";
       content.textContent = "Daten werden geladen...";
 
       try {
-        const results = await Promise.all(
-          LEAGUE_SHEETS.map(async (sheetName) => {
+        const leagueResults = await Promise.all(
+          LEAGUES.map(async (league) => {
             try {
-              const rows = await fetchSheetRows(sheetName);
-              const parsed = parseLeagueFromMatchRows(rows);
+              const [matchRows, tableRows] = await Promise.all([
+                fetchSheetRows(league.sheet),
+                fetchSheetRows(league.tableSheet)
+              ]);
+
+              const stats = parseLeagueMatchStats(matchRows);
+              const table = parseTableRows(tableRows);
+
               return {
-                name: sheetName,
-                ...parsed
+                ...league,
+                stats,
+                table
               };
             } catch (err) {
-              console.error("Fehler in Blatt:", sheetName, err);
+              console.error("Fehler bei Liga:", league.sheet, err);
               return {
-                name: sheetName,
-                standings: [],
+                ...league,
                 stats: {
-                  currentMatchday: 0,
                   totalMatches: 0,
                   open: 0,
-                  done: 0
-                }
+                  done: 0,
+                  currentMatchday: 0,
+                  hasPlayers: false
+                },
+                table: []
               };
             }
           })
         );
 
-        const visibleLeagues = results.filter(l => l.standings.length > 0);
-        const merged = mergeStats(results.map(r => r.stats));
+        const visibleLeagues = leagueResults.filter(league => {
+          return league.stats.hasPlayers && league.table.length > 0;
+        });
 
-        renderTopStats(merged);
+        const globalStats = visibleLeagues.reduce((acc, league) => {
+          acc.totalMatches += league.stats.totalMatches;
+          acc.open += league.stats.open;
+          acc.done += league.stats.done;
+          acc.currentMatchday = Math.max(acc.currentMatchday, league.stats.currentMatchday || 0);
+          return acc;
+        }, {
+          totalMatches: 0,
+          open: 0,
+          done: 0,
+          currentMatchday: 0
+        });
 
-        if (!visibleLeagues.length) {
+        renderTopStats(globalStats);
+
+        if(!visibleLeagues.length){
           content.className = "empty card";
-          content.textContent = "Keine Ligen mit Spielern gefunden.";
+          content.textContent = "Keine Ligen mit Spielern gefunden. Bitte Sheet-Struktur und Freigabe prüfen.";
           return;
         }
 
         content.className = "";
-        content.innerHTML = visibleLeagues.map(l => renderLeague(l.name, l)).join("");
+        content.innerHTML = visibleLeagues.map(renderLeague).join("");
       } catch (err) {
         console.error(err);
         content.className = "error card";
-        content.innerHTML = "Fehler beim Laden. Bitte Spreadsheet-ID, Freigabe und Blattnamen prüfen.";
+        content.innerHTML = "Fehler beim Laden der Website. Bitte Spreadsheet-ID, Freigabe und Blattnamen prüfen.";
       }
     }
 
