@@ -702,7 +702,7 @@
     }
 
     function looksLikeMatchday(text) {
-      return normalize(text).includes("spieltag");
+      return /^spieltag\s*\d+$/i.test(String(text || "").trim());
     }
 
     function looksLikeStatus(text) {
@@ -807,17 +807,42 @@
 
     function mapMatchRows(rows) {
       return rows.map((row, index) => {
-        const p1 = row[0] || "-";
-        const p2 = row[1] || "-";
-        const s1 = row[2] || "";
-        const s2 = row[3] || "";
-        const extra1 = row[4] || "";
-        const extra2 = row[5] || "";
-        const note = row[6] || "";
+        const cells = row.map(cell => String(cell || "").trim());
+        const nonEmpty = cells.filter(Boolean);
+        if (nonEmpty.length < 2) return null;
 
-        if (!String(p1).trim() && !String(p2).trim()) return null;
+        let matchNumber = `Match ${index + 1}`;
+        let p1 = "-";
+        let p2 = "-";
+        let s1 = "";
+        let s2 = "";
+        let note = "";
 
-        return { label: `Match ${index + 1}`, p1, p2, s1, s2, extra1, extra2, note };
+        if (/^\d+$/.test(cells[0]) && cells[1] && cells[2]) {
+          matchNumber = `Match ${cells[0]}`;
+          p1 = cells[1];
+          p2 = cells[2];
+          s1 = cells[3] || "";
+          s2 = cells[4] || "";
+          note = cells[5] || cells[3] || "";
+        } else {
+          p1 = cells[0] || "-";
+          p2 = cells[1] || "-";
+          s1 = cells[2] || "";
+          s2 = cells[3] || "";
+          note = cells[4] || "";
+        }
+
+        if (!p1 || !p2) return null;
+
+        return {
+          label: matchNumber,
+          p1,
+          p2,
+          s1,
+          s2,
+          note
+        };
       }).filter(Boolean);
     }
 
@@ -969,9 +994,7 @@
                 </div>
               </div>
               <div class="meta">
-                ${match.extra1 ? `<span class="tag">Info 1: ${escapeHtml(match.extra1)}</span>` : ""}
-                ${match.extra2 ? `<span class="tag">Info 2: ${escapeHtml(match.extra2)}</span>` : ""}
-                ${match.note ? `<span class="tag">Notiz: ${escapeHtml(match.note)}</span>` : ""}
+                ${match.note ? `<span class="tag">Status: ${escapeHtml(match.note)}</span>` : ""}
               </div>
             </article>
           `).join("")}
