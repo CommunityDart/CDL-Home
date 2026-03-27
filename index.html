@@ -16,7 +16,6 @@
       --blue:#58a9ff;
       --orange:#ffb657;
       --green:#58eb93;
-      --red:#ff7d7d;
       --radius:20px;
       --shadow:0 0 0 1px rgba(88,169,255,.12), 0 12px 36px rgba(0,0,0,.28);
     }
@@ -38,7 +37,7 @@
     }
 
     .wrap{
-      width:min(1340px, calc(100% - 24px));
+      width:min(1360px, calc(100% - 24px));
       margin:18px auto 38px;
     }
 
@@ -252,7 +251,7 @@
 
     .league-grid{
       display:grid;
-      grid-template-columns:minmax(300px, 390px) 1fr;
+      grid-template-columns:minmax(320px, 420px) 1fr;
       gap:14px;
       align-items:start;
     }
@@ -599,7 +598,6 @@
       if (value === null || value === undefined || value === "") return 0;
       const cleaned = String(value)
         .trim()
-        .replace(/\./g, "")
         .replace(",", ".")
         .replace(/[^\d.-]/g, "");
       const n = Number(cleaned);
@@ -651,7 +649,7 @@
       return rows.map(row =>
         (row.c || []).map(cell => {
           if (!cell) return "";
-          return cell.f ?? cell.v ?? "";
+          return cell.v ?? cell.f ?? "";
         })
       );
     }
@@ -820,7 +818,7 @@
 
       const matchdayNumbers = Object.keys(perMatchday)
         .map(Number)
-        .filter(n => Number.isFinite(n))
+        .filter(n => Number.isFinite(n) && n > 0)
         .sort((a, b) => a - b);
 
       let currentMatchday = 0;
@@ -858,7 +856,6 @@
       if (currentMatchday) {
         nextMatches = openMatches
           .filter(match => match.spieltag === currentMatchday)
-          .sort((a, b) => a.spieler1.localeCompare(b.spieler1, "de"))
           .slice(0, 6);
       }
       if (!nextMatches.length) {
@@ -903,7 +900,7 @@
 
       if(!stats.currentMatchday){
         currentMatchdayText.textContent = "Kein Spieltag gefunden";
-        currentMatchdaySub.textContent = "Bitte Sheet prüfen";
+        currentMatchdaySub.textContent = "Sheet-Struktur prüfen";
       } else {
         currentMatchdayText.textContent = `Spieltag ${stats.currentMatchday}`;
         currentMatchdaySub.textContent = stats.open === 0
@@ -1046,7 +1043,9 @@
 
     function renderPage(){
       const content = document.getElementById("content");
-      const visibleLeagues = allLeagueData.filter(l => l.mode === activeMode && l.hasPlayers && l.table.length > 0);
+      const visibleLeagues = allLeagueData.filter(
+        l => l.mode === activeMode && l.hasPlayers && l.table.length > 0
+      );
 
       renderTopStats(visibleLeagues);
 
