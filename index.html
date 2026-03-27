@@ -730,7 +730,11 @@
       let headerIndex = -1;
       for (let i = 0; i < searchRows.length; i++) {
         const joined = normalize(searchRows[i].join(" "));
-        if (joined.includes("platz") || joined.includes("spieler") || joined.includes("punkte") || joined.includes("siege") || joined.includes("spiele")) {
+        const hasPlatz = joined.includes("platz");
+        const hasSpieler = joined.includes("spieler");
+        const hasPoints = joined.includes("pkt") || joined.includes("punkte");
+
+        if (hasPlatz && hasSpieler && hasPoints) {
           headerIndex = i;
           break;
         }
@@ -740,27 +744,30 @@
 
       const standings = [];
       for (const row of searchRows.slice(headerIndex + 1)) {
-        const values = row.filter(cell => String(cell || "").trim() !== "");
-        if (values.length < 2) continue;
+        const rank = String(row[0] || "").trim();
+        const player = String(row[1] || "").trim();
+        const played = String(row[2] || "").trim();
+        const wins = String(row[3] || "").trim();
+        const draws = String(row[4] || "").trim();
+        const losses = String(row[5] || "").trim();
+        const legs = String(row[6] || "").trim();
+        const diff = String(row[7] || "").trim();
+        const points = String(row[8] || "").trim();
 
-        const rankCell = row[0] || "";
-        const playerCell = row[1] || row[0] || "";
-        const hasPlayerLike = String(playerCell).trim() && !looksLikeMatchday(playerCell) && !looksLikeStatus(playerCell);
-        const numericCount = row.filter(isNumericLike).length;
-
-        if (!hasPlayerLike) continue;
-        if (numericCount < 2 && !isNumericLike(rankCell)) continue;
+        if (!rank || !player) continue;
+        if (!/^\\d+$/.test(rank)) continue;
+        if (!points || !isNumericLike(points)) continue;
 
         standings.push({
-          rank: row[0] || String(standings.length + 1),
-          player: row[1] || row[0] || "-",
-          played: row[2] || "-",
-          wins: row[3] || "-",
-          draws: row[4] || "-",
-          losses: row[5] || "-",
-          legs: row[6] || "-",
-          diff: row[7] || "-",
-          points: row[8] || row[6] || "-"
+          rank,
+          player,
+          played: played || "-",
+          wins: wins || "-",
+          draws: draws || "-",
+          losses: losses || "-",
+          legs: legs || "-",
+          diff: diff || "-",
+          points
         });
       }
 
@@ -770,6 +777,13 @@
     function hasPlayersInSheet(rows) {
       const standings = extractStandings(rows);
       if (standings.length) return true;
+
+      for (const row of rows) {
+        const cells = row.map(cell => String(cell || "").trim()).filter(Boolean);
+        if (cells.length >= 3 && /^\\d+$/.test(cells[0]) && cells[1] && cells[2]) {
+          return true;
+        }
+      }
 
       const firstMatchdayIndex = findFirstMatchdayIndex(rows);
       const searchRows = firstMatchdayIndex >= 0 ? rows.slice(firstMatchdayIndex + 1) : rows;
