@@ -410,6 +410,98 @@
       white-space: nowrap;
     }
 
+    .table-wrap {
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 22px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      box-shadow: 0 14px 32px rgba(0,0,0,0.22);
+    }
+
+    .table-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      background: linear-gradient(90deg, rgba(57,168,255,0.10), rgba(255,145,47,0.08));
+    }
+
+    .table-head h3 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .table-head span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .standings {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .standings th,
+    .standings td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .standings th {
+      color: #bfd0e2;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(255,255,255,0.025);
+    }
+
+    .standings td:nth-child(1),
+    .standings td:nth-child(3),
+    .standings td:nth-child(4),
+    .standings td:nth-child(5),
+    .standings td:nth-child(6),
+    .standings td:nth-child(7),
+    .standings td:nth-child(8),
+    .standings td:nth-child(9) {
+      white-space: nowrap;
+    }
+
+    .standings tbody tr:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .standings .rank {
+      font-weight: 900;
+      width: 52px;
+    }
+
+    .standings .player {
+      font-weight: 800;
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      min-width: 32px;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-weight: 900;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .rank-1 { background: rgba(255,215,0,0.15); }
+    .rank-2 { background: rgba(192,192,192,0.15); }
+    .rank-3 { background: rgba(205,127,50,0.18); }
+
     .matchday-bar {
       display: flex;
       flex-wrap: wrap;
@@ -548,6 +640,16 @@
       backdrop-filter: blur(8px);
     }
 
+    .compact-note {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
+
     .empty,
     .error {
       padding: 24px;
@@ -645,11 +747,12 @@
         <div class="content-head">
           <div>
             <h2 id="title">Autodarts Liga 1</h2>
-            <p id="subtitle">Spieltage werden geladen …</p>
+            <p id="subtitle">Tabelle und Spieltage werden geladen …</p>
           </div>
           <div class="status" id="statusBox">Warte auf Daten …</div>
         </div>
 
+        <div id="tableArea"></div>
         <div class="matchday-bar" id="matchdayBar"></div>
         <div id="contentArea"></div>
       </main>
@@ -694,7 +797,12 @@
       mode: "autodarts",
       leagueIndex: 0,
       matchdays: [],
-      activeMatchday: 0
+      activeMatchday: 0,
+      leagueMeta: {
+        autodarts: [],
+        dartcounter: []
+      },
+      standings: []
     };
 
     const leagueList = document.getElementById("leagueList");
@@ -702,6 +810,7 @@
     const subtitle = document.getElementById("subtitle");
     const statusBox = document.getElementById("statusBox");
     const matchdayBar = document.getElementById("matchdayBar");
+    const tableArea = document.getElementById("tableArea");
     const contentArea = document.getElementById("contentArea");
     const sheetLink = document.getElementById("sheetLink");
 
@@ -815,6 +924,80 @@
       return groups;
     }
 
+    function isNumericLike(value) {
+      return /^-?\d+(?:[.,]\d+)?$/.test(String(value || "").trim());
+    }
+
+    function findFirstMatchdayIndex(rows) {
+      return rows.findIndex(row => looksLikeMatchday(row[0] || ""));
+    }
+
+    function extractStandings(rows) {
+      const firstMatchdayIndex = findFirstMatchdayIndex(rows);
+      const searchRows = firstMatchdayIndex >= 0 ? rows.slice(0, firstMatchdayIndex) : rows;
+
+      let headerIndex = -1;
+      for (let i = 0; i < searchRows.length; i++) {
+        const joined = normalize(searchRows[i].join(" "));
+        if (
+          joined.includes("platz") ||
+          joined.includes("spieler") ||
+          joined.includes("punkte") ||
+          joined.includes("siege") ||
+          joined.includes("spiele")
+        ) {
+          headerIndex = i;
+          break;
+        }
+      }
+
+      if (headerIndex === -1) return [];
+
+      const rowsAfterHeader = searchRows.slice(headerIndex + 1);
+      const standings = [];
+
+      for (const row of rowsAfterHeader) {
+        const player = row[1] || row[0] || "";
+        const values = row.filter(cell => String(cell || "").trim() !== "");
+        if (values.length < 2) continue;
+
+        const rankCell = row[0] || "";
+        const hasPlayerLike = String(player).trim() && !looksLikeMatchday(player) && !looksLikeStatus(player);
+        const numericCount = row.filter(isNumericLike).length;
+
+        if (!hasPlayerLike) continue;
+        if (numericCount < 2 && !isNumericLike(rankCell)) continue;
+
+        standings.push({
+          rank: row[0] || String(standings.length + 1),
+          player: row[1] || row[0] || "-",
+          played: row[2] || "-",
+          wins: row[3] || "-",
+          draws: row[4] || "-",
+          losses: row[5] || "-",
+          legs: row[6] || "-",
+          diff: row[7] || "-",
+          points: row[8] || row[6] || "-"
+        });
+      }
+
+      return standings;
+    }
+
+    function hasPlayersInSheet(rows) {
+      const standings = extractStandings(rows);
+      if (standings.length) return true;
+
+      const firstMatchdayIndex = findFirstMatchdayIndex(rows);
+      const searchRows = firstMatchdayIndex >= 0 ? rows.slice(firstMatchdayIndex + 1) : rows;
+      for (const row of searchRows) {
+        const p1 = String(row[0] || "").trim();
+        const p2 = String(row[1] || "").trim();
+        if (p1 && p2 && !looksLikeHeaderRow(row) && !looksLikeMatchday(p1)) return true;
+      }
+      return false;
+    }
+
     function mapMatchRows(rows) {
       return rows
         .map((row, index) => {
@@ -844,12 +1027,27 @@
 
     function renderLeagueButtons() {
       const cfg = CONFIG[state.mode];
+      const meta = state.leagueMeta[state.mode] || [];
       leagueList.innerHTML = "";
 
-      cfg.sheets.forEach((sheet, index) => {
+      const visibleLeagues = cfg.sheets
+        .map((sheet, index) => ({ sheet, index, meta: meta[index] }))
+        .filter(item => !item.meta || item.meta.hasPlayers !== false);
+
+      if (!visibleLeagues.length) {
+        leagueList.innerHTML = `<div class="empty">Keine Ligen mit Spielern gefunden.</div>`;
+        return;
+      }
+
+      if (!visibleLeagues.some(item => item.index === state.leagueIndex)) {
+        state.leagueIndex = visibleLeagues[0].index;
+      }
+
+      visibleLeagues.forEach(({ sheet, index, meta }) => {
         const button = document.createElement("button");
         button.className = `league-btn ${index === state.leagueIndex ? `active ${cfg.colorClass}` : ""}`;
-        button.innerHTML = `${sheet}<small>Spieltage aus diesem Blatt laden</small>`;
+        const playerCountText = meta && meta.playerCount ? `${meta.playerCount} Spieler` : "Liga aktiv";
+        button.innerHTML = `${sheet}<small>${playerCountText} • Tabelle + Spieltage</small>`;
         button.addEventListener("click", () => {
           state.leagueIndex = index;
           state.activeMatchday = 0;
@@ -867,6 +1065,54 @@
         const color = btn.dataset.mode === "autodarts" ? "blue" : "orange";
         btn.className = `mode-btn ${isActive ? `active ${color}` : ""}`;
       });
+    }
+
+    function renderStandings() {
+      if (!state.standings.length) {
+        tableArea.innerHTML = `<div class="compact-note">Für diese Liga wurde keine saubere Tabelle erkannt. Die Spieltage werden trotzdem angezeigt.</div>`;
+        return;
+      }
+
+      tableArea.innerHTML = `
+        <section class="table-wrap">
+          <div class="table-head">
+            <h3>Aktuelle Tabelle</h3>
+            <span>${state.standings.length} Spieler</span>
+          </div>
+          <div style="overflow:auto;">
+            <table class="standings">
+              <thead>
+                <tr>
+                  <th>Platz</th>
+                  <th>Spieler</th>
+                  <th>Sp.</th>
+                  <th>S</th>
+                  <th>U</th>
+                  <th>N</th>
+                  <th>Legs</th>
+                  <th>Diff.</th>
+                  <th>Pkt.</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${state.standings.map((row, i) => `
+                  <tr>
+                    <td class="rank"><span class="rank-badge ${i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : ''}">${escapeHtml(row.rank)}</span></td>
+                    <td class="player">${escapeHtml(row.player)}</td>
+                    <td>${escapeHtml(row.played)}</td>
+                    <td>${escapeHtml(row.wins)}</td>
+                    <td>${escapeHtml(row.draws)}</td>
+                    <td>${escapeHtml(row.losses)}</td>
+                    <td>${escapeHtml(row.legs)}</td>
+                    <td>${escapeHtml(row.diff)}</td>
+                    <td><strong>${escapeHtml(row.points)}</strong></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      `;
     }
 
     function renderMatchdayButtons() {
@@ -897,7 +1143,7 @@
 
       const matches = mapMatchRows(group.rows);
 
-      subtitle.textContent = `${colorLabel} • ${currentSheetName()} • ${group.title}${group.status ? ` • Status: ${group.status}` : ""}`;
+      subtitle.textContent = `${colorLabel} • ${currentSheetName()} • Tabelle + ${group.title}${group.status ? ` • Status: ${group.status}` : ""}`;
 
       if (!matches.length) {
         contentArea.innerHTML = `<div class="empty">Dieser Spieltag wurde gefunden, aber darunter konnten keine Paarungen gelesen werden. Erwartet werden pro Zeile mindestens Spieler 1 und Spieler 2.</div>`;
@@ -943,10 +1189,11 @@
       const sheetName = currentSheetName();
       const url = googleSheetCsvUrl(sheetName);
       title.textContent = sheetName;
-      subtitle.textContent = "Lade Spieltage aus Google Sheets …";
+      subtitle.textContent = "Lade Tabelle und Spieltage aus Google Sheets …";
       statusBox.textContent = "Lädt …";
+      tableArea.innerHTML = `<div class="empty">Tabelle wird geladen …</div>`;
       matchdayBar.innerHTML = "";
-      contentArea.innerHTML = `<div class="empty">Daten werden geladen …</div>`;
+      contentArea.innerHTML = `<div class="empty">Spieltage werden geladen …</div>`;
 
       try {
         const response = await fetch(url);
@@ -955,19 +1202,23 @@
         const csv = await response.text();
         const rows = parseCSV(csv);
         const groups = groupMatchdays(rows);
+        const standings = extractStandings(rows);
 
         state.matchdays = groups;
+        state.standings = standings;
         state.activeMatchday = 0;
 
         statusBox.textContent = groups.length
           ? `${groups.length} Spieltage gefunden`
           : "Keine Spieltage gefunden";
 
+        renderStandings();
         renderMatchdayButtons();
         renderMatches();
       } catch (error) {
         console.error(error);
         statusBox.textContent = "Fehler beim Laden";
+        tableArea.innerHTML = "";
         contentArea.innerHTML = `
           <div class="error">
             Das Blatt <strong>${escapeHtml(sheetName)}</strong> konnte nicht geladen werden.<br><br>
@@ -978,6 +1229,34 @@
             4. In Spalte A stehen Einträge wie <strong>Spieltag 1</strong>, <strong>Spieltag 2</strong> usw.
           </div>
         `;
+      }
+    }
+
+    async function buildLeagueMeta() {
+      for (const mode of Object.keys(CONFIG)) {
+        const sheets = CONFIG[mode].sheets;
+        const results = await Promise.all(
+          sheets.map(async (sheet) => {
+            try {
+              const response = await fetch(googleSheetCsvUrl(sheet));
+              if (!response.ok) throw new Error(`HTTP ${response.status}`);
+              const csv = await response.text();
+              const rows = parseCSV(csv);
+              const standings = extractStandings(rows);
+              const hasPlayers = hasPlayersInSheet(rows);
+              return {
+                hasPlayers,
+                playerCount: standings.length || 0
+              };
+            } catch (e) {
+              return {
+                hasPlayers: false,
+                playerCount: 0
+              };
+            }
+          })
+        );
+        state.leagueMeta[mode] = results;
       }
     }
 
