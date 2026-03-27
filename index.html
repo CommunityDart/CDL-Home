@@ -7,20 +7,17 @@
 
   <style>
     :root{
-      --bg:#050d16;
-      --panel:#0b1b33;
-      --panel-2:#112544;
-      --line:#1d3a63;
+      --bg:#04101d;
+      --bg2:#020912;
+      --panel:#081a33;
+      --panel2:#0d2444;
+      --line:#1a3a63;
       --text:#ffffff;
-      --muted:#9db7d8;
-      --blue:#56a8ff;
-      --green:#57e389;
-      --orange:#ffb347;
-      --gold:#ffcc4d;
-      --silver:#cbd5e1;
-      --bronze:#d18b47;
-      --danger:#ff6b6b;
-      --shadow:0 0 0 1px rgba(86,168,255,.15), 0 10px 30px rgba(0,0,0,.25);
+      --muted:#9bb6d8;
+      --blue:#53a8ff;
+      --green:#4ef08b;
+      --orange:#ffbe55;
+      --shadow:0 0 0 1px rgba(83,168,255,.14),0 10px 30px rgba(0,0,0,.28);
       --radius:18px;
     }
 
@@ -28,48 +25,38 @@
     html,body{margin:0;padding:0}
     body{
       font-family:Arial,Helvetica,sans-serif;
-      background:
-        radial-gradient(circle at top, rgba(31,82,145,.18), transparent 35%),
-        linear-gradient(180deg, #04101d 0%, #02070e 100%);
       color:var(--text);
+      background:
+        radial-gradient(circle at top, rgba(45,111,189,.18), transparent 35%),
+        linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
       min-height:100vh;
     }
 
     .wrap{
-      width:min(1280px, calc(100% - 28px));
-      margin:20px auto 40px;
+      width:min(1280px, calc(100% - 24px));
+      margin:16px auto 40px;
     }
 
     .hero{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      padding:18px 22px;
+      background:linear-gradient(180deg, rgba(8,26,51,.96), rgba(6,20,39,.96));
       border:1px solid var(--line);
-      border-radius:22px;
-      background:linear-gradient(180deg, rgba(11,27,51,.96), rgba(8,19,38,.96));
+      border-radius:24px;
       box-shadow:var(--shadow);
-      margin-bottom:20px;
-      flex-wrap:wrap;
-    }
-
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
+      padding:18px 22px;
+      margin-bottom:18px;
     }
 
     .eyebrow{
       color:var(--blue);
-      font-size:12px;
-      letter-spacing:.12em;
       text-transform:uppercase;
+      letter-spacing:.14em;
+      font-size:12px;
+      margin-bottom:6px;
     }
 
     h1{
-      margin:0;
-      font-size:34px;
+      margin:0 0 6px;
+      font-size:36px;
       line-height:1.05;
     }
 
@@ -80,49 +67,49 @@
 
     .top-grid{
       display:grid;
-      grid-template-columns:1.2fr repeat(3, minmax(150px, 220px));
+      grid-template-columns:1.4fr repeat(3, minmax(180px, 220px));
       gap:12px;
       margin-bottom:18px;
     }
 
     .card{
-      background:linear-gradient(180deg, rgba(11,27,51,.98), rgba(10,22,42,.98));
+      background:linear-gradient(180deg, rgba(8,26,51,.98), rgba(7,20,39,.98));
       border:1px solid var(--line);
-      border-radius:var(--radius);
+      border-radius:22px;
       box-shadow:var(--shadow);
     }
 
     .stat{
-      padding:18px 18px 16px;
-      min-height:88px;
+      padding:18px;
+      min-height:98px;
       display:flex;
       flex-direction:column;
       justify-content:center;
     }
 
     .stat .label{
-      color:#b9d1ee;
+      color:#bdd3ee;
       font-size:12px;
       text-transform:uppercase;
-      letter-spacing:.08em;
-      margin-bottom:4px;
+      letter-spacing:.12em;
+      margin-bottom:6px;
     }
 
     .stat .value{
       font-size:18px;
       font-weight:700;
+      line-height:1.2;
     }
 
     .stat .big{
-      font-size:42px;
+      font-size:46px;
       line-height:1;
       font-weight:800;
-      margin-top:2px;
     }
 
-    .big.green{color:var(--green)}
-    .big.orange{color:var(--orange)}
-    .big.blue{color:var(--blue)}
+    .blue{color:var(--blue)}
+    .orange{color:var(--orange)}
+    .green{color:var(--green)}
 
     .league{
       margin-top:18px;
@@ -130,9 +117,9 @@
     }
 
     .league-head{
-      padding:18px 20px;
+      background:linear-gradient(180deg, rgba(11,31,60,.98), rgba(9,24,47,.98));
       border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(13,33,63,.95), rgba(10,25,48,.95));
+      padding:18px 20px;
     }
 
     .league-title{
@@ -145,15 +132,31 @@
       padding:16px;
     }
 
+    .badge-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .badge{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(83,168,255,.08);
+      color:#d8e8fb;
+      font-size:13px;
+    }
+
     .section-title{
       margin:0 0 14px;
       font-size:16px;
-      color:#d9e8fb;
+      color:#e4effc;
     }
 
     .table-wrap{
       overflow:auto;
-      border:1px solid rgba(86,168,255,.08);
+      border:1px solid rgba(83,168,255,.10);
       border-radius:14px;
     }
 
@@ -164,25 +167,23 @@
     }
 
     thead th{
-      text-align:center;
       background:#132a4b;
       color:#fff;
       padding:13px 12px;
-      font-size:14px;
       border-bottom:1px solid var(--line);
+      text-align:center;
       white-space:nowrap;
     }
 
     tbody td{
-      text-align:center;
       padding:13px 12px;
-      border-bottom:1px solid rgba(86,168,255,.14);
+      border-bottom:1px solid rgba(83,168,255,.14);
+      text-align:center;
       color:#fff;
-      font-size:15px;
     }
 
     tbody tr:hover{
-      background:rgba(86,168,255,.05);
+      background:rgba(83,168,255,.05);
     }
 
     td.player{
@@ -194,26 +195,10 @@
       margin-right:6px;
     }
 
-    .badge-row{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin:0 0 14px;
-    }
-
-    .badge{
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(86,168,255,.08);
-      color:#dcebff;
-      font-size:13px;
-    }
-
-    .loading,
     .empty,
+    .loading,
     .error{
-      padding:22px;
+      padding:24px;
       text-align:center;
       color:var(--muted);
     }
@@ -224,10 +209,9 @@
 
     .footer{
       text-align:center;
-      color:#7fa2ca;
+      color:#7fa3cb;
       font-size:13px;
       margin-top:18px;
-      opacity:.9;
     }
 
     @media (max-width: 980px){
@@ -249,15 +233,13 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="hero">
-      <div class="brand">
-        <div class="eyebrow">Community Dart Liga</div>
-        <h1>Tabellen & Spieltage</h1>
-        <div class="sub">Automatisch aus Google Sheets geladen</div>
-      </div>
-    </div>
+    <section class="hero">
+      <div class="eyebrow">Community Dart Liga</div>
+      <h1>Tabellen & Spieltage</h1>
+      <div class="sub">Automatisch aus Google Sheets geladen</div>
+    </section>
 
-    <div class="top-grid" id="topGrid">
+    <section class="top-grid">
       <div class="card stat">
         <div class="label">Aktueller Spieltag</div>
         <div class="value" id="currentMatchdayText">Lädt...</div>
@@ -278,21 +260,22 @@
         <div class="label">Fertig</div>
         <div class="big green" id="doneCount">-</div>
       </div>
-    </div>
+    </section>
 
     <div id="content" class="loading card">Daten werden geladen...</div>
 
-    <div class="footer">
-      Community Dart Liga
-    </div>
+    <div class="footer">Community Dart Liga</div>
   </div>
 
   <script>
     /************************************************************
-     * KONFIG
+     * HIER DEINE SHEET-ID EINTRAGEN
      ************************************************************/
-    const SPREADSHEET_ID = "1gE5-Z6MXMAXp3feMGW1U8BpmELbLM5VMTANpLb7P_YY";
+    const SPREADSHEET_ID = "DEINE_SPREADSHEET_ID_HIER";
 
+    /************************************************************
+     * LIGA-BLÄTTER
+     ************************************************************/
     const LEAGUE_SHEETS = [
       "Autodarts Liga 1",
       "Autodarts Liga 2",
@@ -308,23 +291,8 @@
       "Dartcounter Liga 6"
     ];
 
-    const ERG_SHEETS = [
-      "Erg Autodarts Liga 1",
-      "Erg Autodarts Liga 2",
-      "Erg Autodarts Liga 3",
-      "Erg Autodarts Liga 4",
-      "Erg Autodarts Liga 5",
-      "Erg Autodarts Liga 6",
-      "Erg Dartcounter Liga 1",
-      "Erg Dartcounter Liga 2",
-      "Erg Dartcounter Liga 3",
-      "Erg Dartcounter Liga 4",
-      "Erg Dartcounter Liga 5",
-      "Erg Dartcounter Liga 6"
-    ];
-
     /************************************************************
-     * HELPERS
+     * HILFSFUNKTIONEN
      ************************************************************/
     function normalize(str){
       return String(str ?? "")
@@ -337,23 +305,33 @@
         .replace(/[ß]/g, "ss");
     }
 
-    function toNumber(value){
-      if (value === null || value === undefined) return 0;
-      const cleaned = String(value)
-        .trim()
-        .replace(/\./g, "")
-        .replace(",", ".")
-        .replace(/[^\d.-]/g, "");
-      const num = Number(cleaned);
-      return Number.isFinite(num) ? num : 0;
-    }
-
     function escapeHtml(str){
       return String(str ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
+    }
+
+    function toNumber(value){
+      if (value === null || value === undefined || value === "") return 0;
+      const cleaned = String(value)
+        .trim()
+        .replace(/\./g, "")
+        .replace(",", ".")
+        .replace(/[^\d.-]/g, "");
+      const n = Number(cleaned);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function isFinishedStatus(value){
+      const v = normalize(value);
+      return v === "fertig" || v.includes("fertig") || v.includes("abgeschlossen");
+    }
+
+    function isOpenStatus(value){
+      const v = normalize(value);
+      return v === "offen" || v.includes("offen") || v.includes("ausstehend");
     }
 
     function medalForPlace(place){
@@ -363,14 +341,6 @@
       return "";
     }
 
-    function looksLikePlayerName(value){
-      const v = String(value ?? "").trim();
-      if (!v) return false;
-      if (/^spieltag\s+\d+/i.test(v)) return false;
-      if (/^(fertig|offen|abgeschlossen)$/i.test(v)) return false;
-      return /[a-zA-ZäöüÄÖÜß]/.test(v);
-    }
-
     function getSheetUrl(sheetName){
       return `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
     }
@@ -378,8 +348,8 @@
     async function fetchSheetRows(sheetName){
       const res = await fetch(getSheetUrl(sheetName));
       if (!res.ok) throw new Error(`Fehler beim Laden von ${sheetName}`);
-      const text = await res.text();
 
+      const text = await res.text();
       const jsonText = text
         .replace(/^\/\*O_o\*\/\s*/, "")
         .replace(/^google\.visualization\.Query\.setResponse\(/, "")
@@ -396,196 +366,243 @@
       );
     }
 
-    function findHeaderRow(rows){
+    function findMatchHeaderRow(rows){
       for (let i = 0; i < rows.length; i++) {
         const line = rows[i].map(normalize);
-        const hasSpieler = line.some(c => c.includes("spieler"));
-        const hasPunkte = line.some(c => c.includes("punkte"));
-        if (hasSpieler && hasPunkte) return i;
+
+        const hasSpieler1 = line.some(v => v === "spieler 1" || v.includes("spieler 1"));
+        const hasSpieler2 = line.some(v => v === "spieler 2" || v.includes("spieler 2"));
+        const hasLegs1 = line.some(v => v === "legs 1" || v.includes("legs 1"));
+        const hasLegs2 = line.some(v => v === "legs 2" || v.includes("legs 2"));
+        const hasGewinner = line.some(v => v === "gewinner" || v.includes("gewinner"));
+        const hasStatus = line.some(v => v === "status" || v.includes("status"));
+
+        if (hasSpieler1 && hasSpieler2 && hasLegs1 && hasLegs2 && hasGewinner && hasStatus) {
+          return i;
+        }
       }
       return -1;
     }
 
-    function mapHeaderIndexes(headerRow){
+    function mapMatchHeaderIndexes(headerRow){
       const map = {};
+
       headerRow.forEach((cell, index) => {
         const h = normalize(cell);
 
-        if (!map.platz && (h === "platz" || h.includes("rang"))) map.platz = index;
-        if (!map.spieler && (h === "spieler" || h.includes("name"))) map.spieler = index;
-        if (!map.siege && (h === "siege" || h === "s" || h.includes("gewonnen"))) map.siege = index;
-        if (!map.niederlagen && (h === "niederlagen" || h === "n" || h.includes("verloren"))) map.niederlagen = index;
-        if (!map.legDiff && (h.includes("leg-diff") || h.includes("legdiff") || h.includes("leg diff") || h.includes("diff"))) map.legDiff = index;
-        if (!map.punkte && h.includes("punkte")) map.punkte = index;
+        if (h === "spieltag" || h.includes("spieltag")) map.spieltag = index;
+        if (h === "spieler 1" || h.includes("spieler 1")) map.spieler1 = index;
+        if (h === "spieler 2" || h.includes("spieler 2")) map.spieler2 = index;
+        if (h === "legs 1" || h.includes("legs 1")) map.legs1 = index;
+        if (h === "legs 2" || h.includes("legs 2")) map.legs2 = index;
+        if (h === "gewinner" || h.includes("gewinner")) map.gewinner = index;
+        if (h === "status" || h.includes("status")) map.status = index;
       });
+
       return map;
     }
 
-    function parseLeagueTable(rows){
-      const headerIndex = findHeaderRow(rows);
-      if (headerIndex === -1) return [];
+    function createEmptyPlayer(name){
+      return {
+        spieler: name,
+        siege: 0,
+        niederlagen: 0,
+        legPlus: 0,
+        legMinus: 0,
+        legDiff: 0,
+        punkte: 0,
+        spiele: 0
+      };
+    }
+
+    function ensurePlayer(tableMap, name){
+      const clean = String(name ?? "").trim();
+      if (!clean) return null;
+      if (!tableMap[clean]) tableMap[clean] = createEmptyPlayer(clean);
+      return tableMap[clean];
+    }
+
+    function parseLeagueFromMatchRows(rows){
+      const headerIndex = findMatchHeaderRow(rows);
+      if (headerIndex === -1) {
+        return {
+          standings: [],
+          stats: {
+            currentMatchday: 0,
+            totalMatches: 0,
+            open: 0,
+            done: 0
+          }
+        };
+      }
 
       const header = rows[headerIndex];
-      const idx = mapHeaderIndexes(header);
+      const idx = mapMatchHeaderIndexes(header);
 
-      if (idx.spieler === undefined) return [];
-
-      const result = [];
+      const players = {};
+      let currentMatchday = 0;
+      let totalMatches = 0;
+      let open = 0;
+      let done = 0;
 
       for (let i = headerIndex + 1; i < rows.length; i++) {
         const row = rows[i];
-        const spieler = String(row[idx.spieler] ?? "").trim();
 
-        if (!spieler) continue;
-        if (!looksLikePlayerName(spieler)) continue;
+        const spieltag = toNumber(row[idx.spieltag]);
+        const spieler1 = String(row[idx.spieler1] ?? "").trim();
+        const spieler2 = String(row[idx.spieler2] ?? "").trim();
+        const legs1 = toNumber(row[idx.legs1]);
+        const legs2 = toNumber(row[idx.legs2]);
+        const gewinner = String(row[idx.gewinner] ?? "").trim();
+        const status = String(row[idx.status] ?? "").trim();
 
-        const rawPunkte = idx.punkte !== undefined ? row[idx.punkte] : "";
-        const rawSiege = idx.siege !== undefined ? row[idx.siege] : "";
-        const rawNiederlagen = idx.niederlagen !== undefined ? row[idx.niederlagen] : "";
-        const rawLegDiff = idx.legDiff !== undefined ? row[idx.legDiff] : "";
-        const rawPlatz = idx.platz !== undefined ? row[idx.platz] : "";
+        if (!spieler1 || !spieler2) continue;
 
-        const punkte = toNumber(rawPunkte);
-        const siege = toNumber(rawSiege);
-        const niederlagen = toNumber(rawNiederlagen);
-        const legDiff = toNumber(rawLegDiff);
-        let platz = toNumber(rawPlatz);
+        totalMatches++;
+        currentMatchday = Math.max(currentMatchday, spieltag);
 
-        const suspicious =
-          String(rawPunkte ?? "").trim().toLowerCase() === spieler.toLowerCase() ||
-          String(rawSiege ?? "").trim().toLowerCase() === spieler.toLowerCase() ||
-          String(rawNiederlagen ?? "").trim().toLowerCase() === spieler.toLowerCase();
+        ensurePlayer(players, spieler1);
+        ensurePlayer(players, spieler2);
 
-        if (suspicious) continue;
+        if (isFinishedStatus(status)) {
+          done++;
 
-        result.push({
-          platz,
-          spieler,
-          siege,
-          niederlagen,
-          legDiff,
-          punkte
-        });
-      }
+          const p1 = players[spieler1];
+          const p2 = players[spieler2];
 
-      const cleaned = result.filter(r => r.spieler);
+          p1.spiele++;
+          p2.spiele++;
 
-      cleaned.sort((a, b) => {
-        if (b.punkte !== a.punkte) return b.punkte - a.punkte;
-        if (b.legDiff !== a.legDiff) return b.legDiff - a.legDiff;
-        if (b.siege !== a.siege) return b.siege - a.siege;
-        return a.spieler.localeCompare(b.spieler, "de");
-      });
+          p1.legPlus += legs1;
+          p1.legMinus += legs2;
 
-      cleaned.forEach((row, i) => {
-        row.platz = i + 1;
-      });
+          p2.legPlus += legs2;
+          p2.legMinus += legs1;
 
-      return cleaned;
-    }
-
-    function parseMatchdayStatsFromErgRows(rows){
-      const allText = rows
-        .flat()
-        .map(v => String(v ?? "").trim())
-        .filter(Boolean);
-
-      let currentMatchday = 0;
-      let totalMatches = 0;
-      let done = 0;
-      let open = 0;
-
-      for (const line of allText) {
-        const md = line.match(/spieltag\s*(\d+)/i);
-        if (md) {
-          const n = Number(md[1]);
-          if (Number.isFinite(n) && n > currentMatchday) currentMatchday = n;
+          if (gewinner && players[gewinner]) {
+            if (gewinner === spieler1) {
+              p1.siege++;
+              p1.punkte += 2;
+              p2.niederlagen++;
+            } else if (gewinner === spieler2) {
+              p2.siege++;
+              p2.punkte += 2;
+              p1.niederlagen++;
+            }
+          } else {
+            if (legs1 > legs2) {
+              p1.siege++;
+              p1.punkte += 2;
+              p2.niederlagen++;
+            } else if (legs2 > legs1) {
+              p2.siege++;
+              p2.punkte += 2;
+              p1.niederlagen++;
+            }
+          }
+        } else if (isOpenStatus(status) || !status) {
+          open++;
+        } else {
+          open++;
         }
-
-        if (/fertig|abgeschlossen/i.test(line)) done++;
-        if (/offen|nicht fertig|ausstehend/i.test(line)) open++;
       }
 
-      totalMatches = done + open;
+      const standings = Object.values(players)
+        .map(p => ({
+          ...p,
+          legDiff: p.legPlus - p.legMinus
+        }))
+        .filter(p => p.spieler)
+        .sort((a, b) => {
+          if (b.punkte !== a.punkte) return b.punkte - a.punkte;
+          if (b.legDiff !== a.legDiff) return b.legDiff - a.legDiff;
+          if (b.siege !== a.siege) return b.siege - a.siege;
+          return a.spieler.localeCompare(b.spieler, "de");
+        })
+        .map((p, index) => ({
+          platz: index + 1,
+          ...p
+        }));
 
       return {
-        currentMatchday,
-        totalMatches,
-        done,
-        open
+        standings,
+        stats: {
+          currentMatchday,
+          totalMatches,
+          open,
+          done
+        }
       };
     }
 
     function mergeStats(allStats){
-      let currentMatchday = 0;
-      let totalMatches = 0;
-      let done = 0;
-      let open = 0;
-
-      allStats.forEach(stat => {
-        currentMatchday = Math.max(currentMatchday, stat.currentMatchday || 0);
-        totalMatches += stat.totalMatches || 0;
-        done += stat.done || 0;
-        open += stat.open || 0;
+      return allStats.reduce((acc, s) => {
+        acc.currentMatchday = Math.max(acc.currentMatchday, s.currentMatchday || 0);
+        acc.totalMatches += s.totalMatches || 0;
+        acc.open += s.open || 0;
+        acc.done += s.done || 0;
+        return acc;
+      }, {
+        currentMatchday: 0,
+        totalMatches: 0,
+        open: 0,
+        done: 0
       });
-
-      return { currentMatchday, totalMatches, done, open };
     }
 
     function renderTopStats(stats){
-      const currentText = document.getElementById("currentMatchdayText");
-      const currentSub = document.getElementById("currentMatchdaySub");
+      const currentMatchdayText = document.getElementById("currentMatchdayText");
+      const currentMatchdaySub = document.getElementById("currentMatchdaySub");
       const matchesCount = document.getElementById("matchesCount");
       const openCount = document.getElementById("openCount");
       const doneCount = document.getElementById("doneCount");
 
       if (!stats.currentMatchday) {
-        currentText.textContent = "Kein Spieltag gefunden";
-        currentSub.textContent = "Bitte Erg-Blätter prüfen";
+        currentMatchdayText.textContent = "Kein Spieltag gefunden";
+        currentMatchdaySub.textContent = "Bitte Liga-Blätter prüfen";
       } else {
-        currentText.textContent = `Spieltag ${stats.currentMatchday}`;
-        currentSub.textContent =
+        currentMatchdayText.textContent = `Spieltag ${stats.currentMatchday}`;
+        currentMatchdaySub.textContent =
           stats.open === 0
             ? "Alle Spiele dieses Spieltags sind fertig"
             : `${stats.open} Begegnung(en) noch offen`;
       }
 
-      matchesCount.textContent = stats.totalMatches || 0;
-      openCount.textContent = stats.open || 0;
-      doneCount.textContent = stats.done || 0;
+      matchesCount.textContent = stats.totalMatches;
+      openCount.textContent = stats.open;
+      doneCount.textContent = stats.done;
     }
 
-    function renderLeague(leagueName, rows){
-      const badges = [];
-      const totalPlayers = rows.length;
-      const totalPoints = rows.reduce((sum, r) => sum + r.punkte, 0);
+    function renderLeague(name, data){
+      const standings = data.standings;
+      const stats = data.stats;
 
-      badges.push(`<div class="badge">Spieler: ${totalPlayers}</div>`);
-      badges.push(`<div class="badge">Gesamtpunkte: ${totalPoints}</div>`);
+      const badges = [
+        `<div class="badge">Spieler: ${standings.length}</div>`,
+        `<div class="badge">Begegnungen: ${stats.totalMatches}</div>`,
+        `<div class="badge">Offen: ${stats.open}</div>`,
+        `<div class="badge">Fertig: ${stats.done}</div>`
+      ];
 
-      const tableRows = rows.map((row) => {
-        const medal = medalForPlace(row.platz);
-        return `
-          <tr>
-            <td>${medal ? `<span class="medal">${medal}</span>` : ""}${row.platz}</td>
-            <td class="player">${escapeHtml(row.spieler)}</td>
-            <td>${row.siege}</td>
-            <td>${row.niederlagen}</td>
-            <td>${row.legDiff}</td>
-            <td>${row.punkte}</td>
-          </tr>
-        `;
-      }).join("");
+      const rows = standings.map(row => `
+        <tr>
+          <td>${medalForPlace(row.platz) ? `<span class="medal">${medalForPlace(row.platz)}</span>` : ""}${row.platz}</td>
+          <td class="player">${escapeHtml(row.spieler)}</td>
+          <td>${row.siege}</td>
+          <td>${row.niederlagen}</td>
+          <td>${row.legDiff > 0 ? "+" : ""}${row.legDiff}</td>
+          <td>${row.punkte}</td>
+        </tr>
+      `).join("");
 
       return `
         <section class="league card">
           <div class="league-head">
-            <h2 class="league-title">${escapeHtml(leagueName)}</h2>
+            <h2 class="league-title">${escapeHtml(name)}</h2>
           </div>
           <div class="league-body">
             <div class="badge-row">${badges.join("")}</div>
             <h3 class="section-title">Tabelle</h3>
-
             <div class="table-wrap">
               <table>
                 <thead>
@@ -599,7 +616,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  ${tableRows}
+                  ${rows}
                 </tbody>
               </table>
             </div>
@@ -614,34 +631,35 @@
       content.textContent = "Daten werden geladen...";
 
       try {
-        const leaguePromises = LEAGUE_SHEETS.map(async (sheetName) => {
-          try {
-            const rows = await fetchSheetRows(sheetName);
-            const parsed = parseLeagueTable(rows);
-            return { name: sheetName, rows: parsed };
-          } catch (err) {
-            console.error("Fehler Liga:", sheetName, err);
-            return { name: sheetName, rows: [] };
-          }
-        });
+        const results = await Promise.all(
+          LEAGUE_SHEETS.map(async (sheetName) => {
+            try {
+              const rows = await fetchSheetRows(sheetName);
+              const parsed = parseLeagueFromMatchRows(rows);
+              return {
+                name: sheetName,
+                ...parsed
+              };
+            } catch (err) {
+              console.error("Fehler in Blatt:", sheetName, err);
+              return {
+                name: sheetName,
+                standings: [],
+                stats: {
+                  currentMatchday: 0,
+                  totalMatches: 0,
+                  open: 0,
+                  done: 0
+                }
+              };
+            }
+          })
+        );
 
-        const ergPromises = ERG_SHEETS.map(async (sheetName) => {
-          try {
-            const rows = await fetchSheetRows(sheetName);
-            return parseMatchdayStatsFromErgRows(rows);
-          } catch (err) {
-            console.error("Fehler Erg:", sheetName, err);
-            return { currentMatchday: 0, totalMatches: 0, done: 0, open: 0 };
-          }
-        });
+        const visibleLeagues = results.filter(l => l.standings.length > 0);
+        const merged = mergeStats(results.map(r => r.stats));
 
-        const leagueData = await Promise.all(leaguePromises);
-        const ergData = await Promise.all(ergPromises);
-
-        const visibleLeagues = leagueData.filter(l => l.rows.length > 0);
-        const mergedStats = mergeStats(ergData);
-
-        renderTopStats(mergedStats);
+        renderTopStats(merged);
 
         if (!visibleLeagues.length) {
           content.className = "empty card";
@@ -650,11 +668,11 @@
         }
 
         content.className = "";
-        content.innerHTML = visibleLeagues.map(l => renderLeague(l.name, l.rows)).join("");
+        content.innerHTML = visibleLeagues.map(l => renderLeague(l.name, l)).join("");
       } catch (err) {
         console.error(err);
         content.className = "error card";
-        content.innerHTML = "Fehler beim Laden der Website. Bitte Spreadsheet-ID und Blattnamen prüfen.";
+        content.innerHTML = "Fehler beim Laden. Bitte Spreadsheet-ID, Freigabe und Blattnamen prüfen.";
       }
     }
 
