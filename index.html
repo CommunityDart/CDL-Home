@@ -16,12 +16,14 @@
       --blue:#58a9ff;
       --orange:#ffb657;
       --green:#58eb93;
+      --purple:#5865F2;
       --radius:20px;
       --shadow:0 0 0 1px rgba(88,169,255,.12), 0 12px 36px rgba(0,0,0,.28);
     }
 
     *{box-sizing:border-box}
     html,body{margin:0;padding:0}
+
     body{
       font-family:Arial,Helvetica,sans-serif;
       color:var(--text);
@@ -37,7 +39,7 @@
     }
 
     .wrap{
-      width:min(1360px, calc(100% - 24px));
+      width:min(1380px, calc(100% - 24px));
       margin:18px auto 38px;
     }
 
@@ -125,7 +127,7 @@
     }
 
     .discord-btn{
-      background:#5865F2;
+      background:var(--purple);
       color:#fff;
     }
 
@@ -251,7 +253,7 @@
 
     .league-grid{
       display:grid;
-      grid-template-columns:minmax(320px, 420px) 1fr;
+      grid-template-columns:minmax(320px, 430px) 1fr;
       gap:14px;
       align-items:start;
     }
@@ -596,10 +598,7 @@
 
     function toNumber(value){
       if (value === null || value === undefined || value === "") return 0;
-      const cleaned = String(value)
-        .trim()
-        .replace(",", ".")
-        .replace(/[^\d.-]/g, "");
+      const cleaned = String(value).trim().replace(",", ".").replace(/[^\d.-]/g, "");
       const n = Number(cleaned);
       return Number.isFinite(n) ? n : 0;
     }
@@ -654,38 +653,19 @@
       );
     }
 
-    function findMatchHeaderRow(rows){
-      for(let i = 0; i < rows.length; i++){
-        const line = rows[i].map(normalize);
+    function findHeaderRow(rows){
+      for (let i = 0; i < rows.length; i++) {
+        const rowText = rows[i].map(normalize).join(" | ");
         if (
-          line.some(v => v.includes("spieltag")) &&
-          line.some(v => v.includes("spieler 1")) &&
-          line.some(v => v.includes("spieler 2")) &&
-          line.some(v => v.includes("status"))
-        ) return i;
+          rowText.includes("spieltag") &&
+          rowText.includes("spieler 1") &&
+          rowText.includes("spieler 2") &&
+          rowText.includes("status")
+        ) {
+          return i;
+        }
       }
       return -1;
-    }
-
-    function mapMatchHeaders(headerRow){
-      const map = {};
-      headerRow.forEach((cell, index) => {
-        const h = normalize(cell);
-        if (h.includes("spieltag")) map.spieltag = index;
-        if (h.includes("spieler 1")) map.spieler1 = index;
-        if (h.includes("spieler 2")) map.spieler2 = index;
-        if (h.includes("legs 1")) map.legs1 = index;
-        if (h.includes("legs 2")) map.legs2 = index;
-        if (h.includes("gewinner")) map.gewinner = index;
-        if (h.includes("status")) map.status = index;
-        if (h.includes("discord 1")) map.discord1 = index;
-        if (h.includes("discord 2")) map.discord2 = index;
-        if (h.includes("highfinish 1")) map.highfinish1 = index;
-        if (h.includes("highfinish 2")) map.highfinish2 = index;
-        if (h === "180 1" || h.includes("180 1")) map.d180_1 = index;
-        if (h === "180 2" || h.includes("180 2")) map.d180_2 = index;
-      });
-      return map;
     }
 
     function ensurePlayer(players, name){
@@ -707,8 +687,9 @@
     }
 
     function parseLeagueData(rows){
-      const headerIndex = findMatchHeaderRow(rows);
-      if (headerIndex === -1){
+      const headerIndex = findHeaderRow(rows);
+
+      if (headerIndex === -1) {
         return {
           totalMatches: 0,
           open: 0,
@@ -722,7 +703,6 @@
         };
       }
 
-      const idx = mapMatchHeaders(rows[headerIndex]);
       const players = {};
       const perMatchday = {};
       const finishedMatches = [];
@@ -736,21 +716,21 @@
       for (let i = headerIndex + 1; i < rows.length; i++) {
         const row = rows[i];
 
-        const spieltag = toNumber(row[idx.spieltag]);
-        const spieler1Name = String(row[idx.spieler1] ?? "").trim();
-        const spieler2Name = String(row[idx.spieler2] ?? "").trim();
-        const status = String(row[idx.status] ?? "").trim();
-        const legs1 = idx.legs1 !== undefined ? toNumber(row[idx.legs1]) : 0;
-        const legs2 = idx.legs2 !== undefined ? toNumber(row[idx.legs2]) : 0;
-        const gewinner = idx.gewinner !== undefined ? String(row[idx.gewinner] ?? "").trim() : "";
-        const discord1 = idx.discord1 !== undefined ? String(row[idx.discord1] ?? "").trim() : "";
-        const discord2 = idx.discord2 !== undefined ? String(row[idx.discord2] ?? "").trim() : "";
-        const highfinish1 = idx.highfinish1 !== undefined ? String(row[idx.highfinish1] ?? "").trim() : "";
-        const highfinish2 = idx.highfinish2 !== undefined ? String(row[idx.highfinish2] ?? "").trim() : "";
-        const d180_1 = idx.d180_1 !== undefined ? String(row[idx.d180_1] ?? "").trim() : "";
-        const d180_2 = idx.d180_2 !== undefined ? String(row[idx.d180_2] ?? "").trim() : "";
+        const spieltag     = toNumber(row[0]);   // A
+        const spieler1Name = String(row[1] ?? "").trim();  // B
+        const spieler2Name = String(row[2] ?? "").trim();  // C
+        const legs1        = toNumber(row[3]);   // D
+        const legs2        = toNumber(row[4]);   // E
+        const gewinner     = String(row[5] ?? "").trim();  // F
+        const status       = String(row[6] ?? "").trim();  // G
+        const discord1     = String(row[7] ?? "").trim();  // H
+        const discord2     = String(row[8] ?? "").trim();  // I
+        const highfinish1  = String(row[9] ?? "").trim();  // J
+        const highfinish2  = String(row[10] ?? "").trim(); // K
+        const d180_1       = String(row[11] ?? "").trim(); // L
+        const d180_2       = String(row[12] ?? "").trim(); // M
 
-        if (!spieler1Name || !spieler2Name || !spieltag) continue;
+        if (!spieltag || !spieler1Name || !spieler2Name) continue;
 
         hasPlayers = true;
         totalMatches++;
@@ -900,7 +880,7 @@
 
       if(!stats.currentMatchday){
         currentMatchdayText.textContent = "Kein Spieltag gefunden";
-        currentMatchdaySub.textContent = "Sheet-Struktur prüfen";
+        currentMatchdaySub.textContent = "Bitte Sheet prüfen";
       } else {
         currentMatchdayText.textContent = `Spieltag ${stats.currentMatchday}`;
         currentMatchdaySub.textContent = stats.open === 0
