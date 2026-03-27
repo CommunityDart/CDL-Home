@@ -534,4 +534,471 @@
     </div>
 
     <div class="footer">CDL Website • Datenquelle: Google Sheets</div>
-  <
+  </div>
+
+  <script>
+    const SHEET_ID = "1kan56xgDkKnLSr4vCQ7BDiaiXM2_4chhE7jOmTCU024";
+
+    const CONFIG = {
+      autodarts: {
+        label: "Autodarts",
+        colorClass: "blue",
+        sheets: [
+          "Autodarts Liga 1",
+          "Autodarts Liga 2",
+          "Autodarts Liga 3",
+          "Autodarts Liga 4",
+          "Autodarts Liga 5",
+          "Autodarts Liga 6"
+        ]
+      },
+      dartcounter: {
+        label: "DartCounter",
+        colorClass: "orange",
+        sheets: [
+          "DartCounter Liga 1",
+          "DartCounter Liga 2",
+          "DartCounter Liga 3",
+          "DartCounter Liga 4",
+          "DartCounter Liga 5",
+          "DartCounter Liga 6"
+        ]
+      }
+    };
+
+    const state = {
+      mode: "autodarts",
+      leagueIndex: 0,
+      matchdays: [],
+      activeMatchday: 0,
+      standings: [],
+      leagueMeta: {
+        autodarts: [],
+        dartcounter: []
+      }
+    };
+
+    const leagueList = document.getElementById("leagueList");
+    const title = document.getElementById("title");
+    const subtitle = document.getElementById("subtitle");
+    const statusBox = document.getElementById("statusBox");
+    const tableArea = document.getElementById("tableArea");
+    const matchdayBar = document.getElementById("matchdayBar");
+    const contentArea = document.getElementById("contentArea");
+    const sheetLink = document.getElementById("sheetLink");
+
+    sheetLink.href = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+
+    function currentSheetName() {
+      return CONFIG[state.mode].sheets[state.leagueIndex];
+    }
+
+    function googleSheetCsvUrl(sheetName) {
+      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let value = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            value += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',' && !inQuotes) {
+          row.push(value.trim());
+          value = "";
+        } else if ((char === '\n' || char === '\r') && !inQuotes) {
+          if (char === '\r' && next === '\n') i++;
+          row.push(value.trim());
+          if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
+          row = [];
+          value = "";
+        } else {
+          value += char;
+        }
+      }
+
+      if (value.length || row.length) {
+        row.push(value.trim());
+        if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function normalize(str) {
+      return String(str || "")
+        .toLowerCase()
+        .replace(/ä/g, "ae")
+        .replace(/ö/g, "oe")
+        .replace(/ü/g, "ue")
+        .replace(/ß/g, "ss")
+        .trim();
+    }
+
+    function looksLikeMatchday(text) {
+      return normalize(text).includes("spieltag");
+    }
+
+    function looksLikeStatus(text) {
+      const t = normalize(text);
+      return t === "fertig" || t === "offen" || t === "abgeschlossen" || t === "running" || t === "laufend";
+    }
+
+    function looksLikeHeaderRow(row) {
+      const joined = normalize(row.join(" "));
+      return joined.includes("spieler 1") || joined.includes("spieler1") || joined.includes("spieler 2") || joined.includes("spieler2") || joined.includes("heim") || joined.includes("auswaerts") || joined.includes("auswärts");
+    }
+
+    function isNumericLike(value) {
+      return /^-?\d+(?:[.,]\d+)?$$/.test(String(value || "").trim());
+    }
+
+    function findFirstMatchdayIndex(rows) {
+      return rows.findIndex(row => looksLikeMatchday(row[0] || ""));
+    }
+
+    function extractStandings(rows) {
+      const firstMatchdayIndex = findFirstMatchdayIndex(rows);
+      const searchRows = firstMatchdayIndex >= 0 ? rows.slice(0, firstMatchdayIndex) : rows;
+
+      let headerIndex = -1;
+      for (let i = 0; i < searchRows.length; i++) {
+        const joined = normalize(searchRows[i].join(" "));
+        if (joined.includes("platz") || joined.includes("spieler") || joined.includes("punkte") || joined.includes("siege") || joined.includes("spiele")) {
+          headerIndex = i;
+          break;
+        }
+      }
+
+      if (headerIndex === -1) return [];
+
+      const standings = [];
+      for (const row of searchRows.slice(headerIndex + 1)) {
+        const values = row.filter(cell => String(cell || "").trim() !== "");
+        if (values.length < 2) continue;
+
+        const rankCell = row[0] || "";
+        const playerCell = row[1] || row[0] || "";
+        const hasPlayerLike = String(playerCell).trim() && !looksLikeMatchday(playerCell) && !looksLikeStatus(playerCell);
+        const numericCount = row.filter(isNumericLike).length;
+
+        if (!hasPlayerLike) continue;
+        if (numericCount < 2 && !isNumericLike(rankCell)) continue;
+
+        standings.push({
+          rank: row[0] || String(standings.length + 1),
+          player: row[1] || row[0] || "-",
+          played: row[2] || "-",
+          wins: row[3] || "-",
+          draws: row[4] || "-",
+          losses: row[5] || "-",
+          legs: row[6] || "-",
+          diff: row[7] || "-",
+          points: row[8] || row[6] || "-"
+        });
+      }
+
+      return standings;
+    }
+
+    function hasPlayersInSheet(rows) {
+      const standings = extractStandings(rows);
+      if (standings.length) return true;
+
+      const firstMatchdayIndex = findFirstMatchdayIndex(rows);
+      const searchRows = firstMatchdayIndex >= 0 ? rows.slice(firstMatchdayIndex + 1) : rows;
+      for (const row of searchRows) {
+        const p1 = String(row[0] || "").trim();
+        const p2 = String(row[1] || "").trim();
+        if (p1 && p2 && !looksLikeHeaderRow(row) && !looksLikeMatchday(p1)) return true;
+      }
+      return false;
+    }
+
+    function groupMatchdays(rows) {
+      const groups = [];
+      let current = null;
+
+      for (const row of rows) {
+        const first = row[0] || "";
+
+        if (looksLikeMatchday(first)) {
+          if (current) groups.push(current);
+          current = { title: first, status: looksLikeStatus(row[1]) ? row[1] : "", rows: [] };
+          continue;
+        }
+
+        if (!current) continue;
+        if (looksLikeHeaderRow(row)) continue;
+
+        const hasRealData = row.some(cell => String(cell || "").trim() !== "");
+        if (hasRealData) current.rows.push(row);
+      }
+
+      if (current) groups.push(current);
+      return groups;
+    }
+
+    function mapMatchRows(rows) {
+      return rows.map((row, index) => {
+        const p1 = row[0] || "-";
+        const p2 = row[1] || "-";
+        const s1 = row[2] || "";
+        const s2 = row[3] || "";
+        const extra1 = row[4] || "";
+        const extra2 = row[5] || "";
+        const note = row[6] || "";
+
+        if (!String(p1).trim() && !String(p2).trim()) return null;
+
+        return { label: `Match ${index + 1}`, p1, p2, s1, s2, extra1, extra2, note };
+      }).filter(Boolean);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderModeButtons() {
+      document.querySelectorAll(".mode-btn").forEach(btn => {
+        const isActive = btn.dataset.mode === state.mode;
+        const color = btn.dataset.mode === "autodarts" ? "blue" : "orange";
+        btn.className = `mode-btn ${isActive ? `active ${color}` : ""}`;
+      });
+    }
+
+    function renderLeagueButtons() {
+      const cfg = CONFIG[state.mode];
+      const meta = state.leagueMeta[state.mode] || [];
+      leagueList.innerHTML = "";
+
+      const visible = cfg.sheets
+        .map((sheet, index) => ({ sheet, index, meta: meta[index] }))
+        .filter(item => !item.meta || item.meta.hasPlayers !== false);
+
+      if (!visible.length) {
+        leagueList.innerHTML = `<div class="empty">Keine Ligen mit Spielern gefunden.</div>`;
+        return;
+      }
+
+      if (!visible.some(item => item.index === state.leagueIndex)) {
+        state.leagueIndex = visible[0].index;
+      }
+
+      visible.forEach(({ sheet, index, meta }) => {
+        const button = document.createElement("button");
+        button.className = `league-btn ${index === state.leagueIndex ? `active ${cfg.colorClass}` : ""}`;
+        const count = meta && meta.playerCount ? `${meta.playerCount} Spieler` : "Liga aktiv";
+        button.innerHTML = `${sheet}<small>${count} • Tabelle + Spieltage</small>`;
+        button.addEventListener("click", () => {
+          state.leagueIndex = index;
+          state.activeMatchday = 0;
+          renderModeButtons();
+          renderLeagueButtons();
+          loadLeague();
+        });
+        leagueList.appendChild(button);
+      });
+    }
+
+    function renderStandings() {
+      if (!state.standings.length) {
+        tableArea.innerHTML = `<div class="compact-note">Für diese Liga wurde keine saubere Tabelle erkannt. Die Spieltage werden trotzdem angezeigt.</div>`;
+        return;
+      }
+
+      tableArea.innerHTML = `
+        <section class="table-wrap">
+          <div class="table-head">
+            <h3>Aktuelle Tabelle</h3>
+            <span>${state.standings.length} Spieler</span>
+          </div>
+          <div style="overflow:auto;">
+            <table class="standings">
+              <thead>
+                <tr>
+                  <th>Platz</th>
+                  <th>Spieler</th>
+                  <th>Sp.</th>
+                  <th>S</th>
+                  <th>U</th>
+                  <th>N</th>
+                  <th>Legs</th>
+                  <th>Diff.</th>
+                  <th>Pkt.</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${state.standings.map((row, i) => `
+                  <tr>
+                    <td class="rank"><span class="rank-badge ${i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : ''}">${escapeHtml(row.rank)}</span></td>
+                    <td class="player">${escapeHtml(row.player)}</td>
+                    <td>${escapeHtml(row.played)}</td>
+                    <td>${escapeHtml(row.wins)}</td>
+                    <td>${escapeHtml(row.draws)}</td>
+                    <td>${escapeHtml(row.losses)}</td>
+                    <td>${escapeHtml(row.legs)}</td>
+                    <td>${escapeHtml(row.diff)}</td>
+                    <td><strong>${escapeHtml(row.points)}</strong></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderMatchdayButtons() {
+      const colorClass = CONFIG[state.mode].colorClass;
+      matchdayBar.innerHTML = "";
+      state.matchdays.forEach((day, index) => {
+        const btn = document.createElement("button");
+        btn.className = `matchday-chip ${index === state.activeMatchday ? `active ${colorClass}` : ""}`;
+        btn.textContent = day.title || `Spieltag ${index + 1}`;
+        btn.addEventListener("click", () => {
+          state.activeMatchday = index;
+          renderMatchdayButtons();
+          renderMatches();
+        });
+        matchdayBar.appendChild(btn);
+      });
+    }
+
+    function renderMatches() {
+      const group = state.matchdays[state.activeMatchday];
+      const colorLabel = CONFIG[state.mode].label;
+
+      if (!group) {
+        contentArea.innerHTML = `<div class="empty">Keine Spieltage gefunden. Prüfe bitte, ob im Blatt in Spalte A Einträge wie <strong>Spieltag 1</strong>, <strong>Spieltag 2</strong> usw. stehen.</div>`;
+        return;
+      }
+
+      const matches = mapMatchRows(group.rows);
+      subtitle.textContent = `${colorLabel} • ${currentSheetName()} • Tabelle + ${group.title}${group.status ? ` • Status: ${group.status}` : ""}`;
+
+      if (!matches.length) {
+        contentArea.innerHTML = `<div class="empty">Dieser Spieltag wurde gefunden, aber darunter konnten keine Paarungen gelesen werden. Erwartet werden pro Zeile mindestens Spieler 1 und Spieler 2.</div>`;
+        return;
+      }
+
+      contentArea.innerHTML = `
+        <div class="cards">
+          ${matches.map(match => `
+            <article class="match-card">
+              <div class="label">${match.label}</div>
+              <div class="players">
+                <div class="player-row">
+                  <div class="player-name">${escapeHtml(match.p1)}</div>
+                  <div class="score">${escapeHtml(match.s1 || "-")}</div>
+                </div>
+                <div class="player-row">
+                  <div class="player-name">${escapeHtml(match.p2)}</div>
+                  <div class="score">${escapeHtml(match.s2 || "-")}</div>
+                </div>
+              </div>
+              <div class="meta">
+                ${match.extra1 ? `<span class="tag">Info 1: ${escapeHtml(match.extra1)}</span>` : ""}
+                ${match.extra2 ? `<span class="tag">Info 2: ${escapeHtml(match.extra2)}</span>` : ""}
+                ${match.note ? `<span class="tag">Notiz: ${escapeHtml(match.note)}</span>` : ""}
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    async function loadLeague() {
+      const sheetName = currentSheetName();
+      const url = googleSheetCsvUrl(sheetName);
+      title.textContent = sheetName;
+      subtitle.textContent = "Lade Tabelle und Spieltage aus Google Sheets …";
+      statusBox.textContent = "Lädt …";
+      tableArea.innerHTML = `<div class="empty">Tabelle wird geladen …</div>`;
+      matchdayBar.innerHTML = "";
+      contentArea.innerHTML = `<div class="empty">Spieltage werden geladen …</div>`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const csv = await response.text();
+        const rows = parseCSV(csv);
+
+        state.standings = extractStandings(rows);
+        state.matchdays = groupMatchdays(rows);
+        state.activeMatchday = 0;
+
+        statusBox.textContent = state.matchdays.length ? `${state.matchdays.length} Spieltage gefunden` : "Keine Spieltage gefunden";
+        renderStandings();
+        renderMatchdayButtons();
+        renderMatches();
+      } catch (error) {
+        console.error(error);
+        statusBox.textContent = "Fehler beim Laden";
+        tableArea.innerHTML = "";
+        contentArea.innerHTML = `
+          <div class="error">
+            Das Blatt <strong>${escapeHtml(sheetName)}</strong> konnte nicht geladen werden.<br><br>
+            Prüfe bitte diese Punkte:<br>
+            1. Die <strong>SHEET_ID</strong> ist korrekt.<br>
+            2. Das Google Sheet ist öffentlich freigegeben.<br>
+            3. Das Blatt heißt exakt <strong>${escapeHtml(sheetName)}</strong>.<br>
+            4. Im Blatt stehen oben die Tabellenzeilen und darunter in Spalte A Einträge wie <strong>Spieltag 1</strong>, <strong>Spieltag 2</strong> usw.
+          </div>
+        `;
+      }
+    }
+
+    async function buildLeagueMeta() {
+      for (const mode of Object.keys(CONFIG)) {
+        const results = await Promise.all(CONFIG[mode].sheets.map(async (sheet) => {
+          try {
+            const response = await fetch(googleSheetCsvUrl(sheet));
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const csv = await response.text();
+            const rows = parseCSV(csv);
+            const standings = extractStandings(rows);
+            return { hasPlayers: hasPlayersInSheet(rows), playerCount: standings.length || 0 };
+          } catch (e) {
+            return { hasPlayers: false, playerCount: 0 };
+          }
+        }));
+        state.leagueMeta[mode] = results;
+      }
+    }
+
+    document.querySelectorAll(".mode-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        state.mode = btn.dataset.mode;
+        state.activeMatchday = 0;
+        renderModeButtons();
+        renderLeagueButtons();
+        await loadLeague();
+      });
+    });
+
+    (async () => {
+      renderModeButtons();
+      await buildLeagueMeta();
+      renderLeagueButtons();
+      await loadLeague();
+    })();
+  </script>
+</body>
+</html>
