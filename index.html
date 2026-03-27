@@ -31,7 +31,10 @@
       min-height:100vh;
     }
 
-    a{color:inherit;text-decoration:none}
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
 
     .wrap{
       width:min(1320px, calc(100% - 24px));
@@ -95,6 +98,7 @@
       justify-content:center;
       background:rgba(255,255,255,.08);
       font-size:30px;
+      flex:0 0 auto;
     }
 
     .discord-title{
@@ -115,11 +119,19 @@
       padding:13px 18px;
       border-radius:14px;
       font-weight:700;
+      transition:.2s ease;
     }
 
     .discord-btn{
       background:#5865F2;
       color:#fff;
+    }
+
+    .discord-btn:hover,
+    .footer-link:hover,
+    .donate-btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.04);
     }
 
     .top-grid{
@@ -297,9 +309,17 @@
       color:#fff;
     }
 
+    tbody tr:hover{
+      background:rgba(88,169,255,.05);
+    }
+
     td.player{
       text-align:left;
       font-weight:700;
+    }
+
+    .medal{
+      margin-right:6px;
     }
 
     .footer{
@@ -342,16 +362,26 @@
       color:var(--muted);
     }
 
-    .error{color:#ffd0d0}
+    .error{
+      color:#ffd0d0;
+    }
 
     @media (max-width: 1050px){
-      .top-grid{grid-template-columns:1fr 1fr}
-      .league-grid{grid-template-columns:1fr}
+      .top-grid{
+        grid-template-columns:1fr 1fr;
+      }
+      .league-grid{
+        grid-template-columns:1fr;
+      }
     }
 
     @media (max-width: 640px){
-      .top-grid{grid-template-columns:1fr}
-      h1{font-size:29px}
+      .top-grid{
+        grid-template-columns:1fr;
+      }
+      h1{
+        font-size:29px;
+      }
     }
   </style>
 </head>
@@ -446,7 +476,11 @@
 
     function toNumber(value){
       if (value === null || value === undefined || value === "") return 0;
-      const cleaned = String(value).trim().replace(/\./g, "").replace(",", ".").replace(/[^\d.-]/g, "");
+      const cleaned = String(value)
+        .trim()
+        .replace(/\./g, "")
+        .replace(",", ".")
+        .replace(/[^\d.-]/g, "");
       const n = Number(cleaned);
       return Number.isFinite(n) ? n : 0;
     }
@@ -509,7 +543,9 @@
           line.some(v => v.includes("spieler 1")) &&
           line.some(v => v.includes("spieler 2")) &&
           line.some(v => v.includes("status"))
-        ) return i;
+        ) {
+          return i;
+        }
       }
       return -1;
     }
@@ -528,35 +564,87 @@
 
     function parseLeagueMatchStats(rows){
       const headerIndex = findMatchHeaderRow(rows);
-      if (headerIndex === -1) return { totalMatches: 0, open: 0, done: 0, currentMatchday: 0, hasPlayers: false };
+      if (headerIndex === -1){
+        return {
+          totalMatches: 0,
+          open: 0,
+          done: 0,
+          currentMatchday: 0,
+          totalMatchdays: 0,
+          hasPlayers: false
+        };
+      }
 
       const idx = mapMatchHeaders(rows[headerIndex]);
-      let totalMatches = 0, open = 0, done = 0, currentMatchday = 0, hasPlayers = false;
+
+      let totalMatches = 0;
+      let open = 0;
+      let done = 0;
+      let hasPlayers = false;
+
+      const perMatchday = {};
 
       for(let i = headerIndex + 1; i < rows.length; i++){
         const row = rows[i];
+        const spieltag = toNumber(row[idx.spieltag]);
         const spieler1 = String(row[idx.spieler1] ?? "").trim();
         const spieler2 = String(row[idx.spieler2] ?? "").trim();
         const status = String(row[idx.status] ?? "").trim();
-        const spieltag = toNumber(row[idx.spieltag]);
 
-        if(!spieler1 || !spieler2) continue;
+        if (!spieler1 || !spieler2 || !spieltag) continue;
 
         hasPlayers = true;
         totalMatches++;
-        currentMatchday = Math.max(currentMatchday, spieltag);
 
-        if(isFinishedStatus(status)) done++;
-        else open++;
+        if (!perMatchday[spieltag]) {
+          perMatchday[spieltag] = { total: 0, open: 0, done: 0 };
+        }
+
+        perMatchday[spieltag].total++;
+
+        if (isFinishedStatus(status)) {
+          done++;
+          perMatchday[spieltag].done++;
+        } else {
+          open++;
+          perMatchday[spieltag].open++;
+        }
       }
 
-      return { totalMatches, open, done, currentMatchday, hasPlayers };
+      const matchdayNumbers = Object.keys(perMatchday)
+        .map(Number)
+        .filter(n => Number.isFinite(n))
+        .sort((a, b) => a - b);
+
+      let currentMatchday = 0;
+
+      for (const md of matchdayNumbers) {
+        if (perMatchday[md].open > 0) {
+          currentMatchday = md;
+          break;
+        }
+      }
+
+      if (!currentMatchday && matchdayNumbers.length) {
+        currentMatchday = matchdayNumbers[matchdayNumbers.length - 1];
+      }
+
+      return {
+        totalMatches,
+        open,
+        done,
+        currentMatchday,
+        totalMatchdays: matchdayNumbers.length,
+        hasPlayers
+      };
     }
 
     function findTableHeaderRow(rows){
       for(let i = 0; i < rows.length; i++){
         const line = rows[i].map(normalize);
-        if (line.some(v => v.includes("spieler")) && line.some(v => v.includes("punkte"))) return i;
+        if (line.some(v => v.includes("spieler")) && line.some(v => v.includes("punkte"))) {
+          return i;
+        }
       }
       return -1;
     }
@@ -600,6 +688,7 @@
       }
 
       const filtered = result.filter(r => r.spieler);
+
       filtered.sort((a, b) => {
         if (a.platz && b.platz) return a.platz - b.platz;
         if (b.punkte !== a.punkte) return b.punkte - a.punkte;
@@ -655,22 +744,30 @@
             <h2 class="league-title">${escapeHtml(league.mode)} Liga ${league.number}</h2>
             <div class="league-sub">${league.table.length} Spieler in der Tabelle</div>
           </div>
+
           <div class="league-body">
             <div class="league-grid">
               <div class="mini-box">
                 <h3>Spieltag Übersicht</h3>
+
                 <div class="badge-row">
-                  <div class="badge">Spieltag: ${league.stats.currentMatchday || "-"}</div>
+                  <div class="badge">Aktuell: Spieltag ${league.stats.currentMatchday || "-"}</div>
+                  <div class="badge">Spieltage gesamt: ${league.stats.totalMatchdays || 0}</div>
                   <div class="badge">Begegnungen: ${league.stats.totalMatches}</div>
                   <div class="badge">Offen: ${league.stats.open}</div>
                   <div class="badge">Fertig: ${league.stats.done}</div>
                 </div>
-                <div class="matchday-big">Spieltag ${league.stats.currentMatchday || "-"}</div>
+
+                <div class="matchday-big">
+                  ${league.stats.currentMatchday ? `Spieltag ${league.stats.currentMatchday}` : "Kein Spieltag"}
+                </div>
+
                 <div class="status-line">
                   ${league.stats.open === 0
                     ? "Alle eingetragenen Spiele sind abgeschlossen."
                     : `${league.stats.open} Spiel(e) warten noch auf ein Ergebnis.`}
                 </div>
+
                 <div class="progress">
                   <div class="progress-bar" style="width:${progress}%"></div>
                 </div>
@@ -724,7 +821,14 @@
               console.error("Fehler bei Liga:", league.sheet, err);
               return {
                 ...league,
-                stats: { totalMatches: 0, open: 0, done: 0, currentMatchday: 0, hasPlayers: false },
+                stats: {
+                  totalMatches: 0,
+                  open: 0,
+                  done: 0,
+                  currentMatchday: 0,
+                  totalMatchdays: 0,
+                  hasPlayers: false
+                },
                 table: []
               };
             }
@@ -739,7 +843,12 @@
           acc.done += league.stats.done;
           acc.currentMatchday = Math.max(acc.currentMatchday, league.stats.currentMatchday || 0);
           return acc;
-        }, { totalMatches: 0, open: 0, done: 0, currentMatchday: 0 });
+        }, {
+          totalMatches: 0,
+          open: 0,
+          done: 0,
+          currentMatchday: 0
+        });
 
         renderTopStats(globalStats);
 
