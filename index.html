@@ -19,7 +19,6 @@
       --orange:#ffb657;
       --orange-soft:rgba(255,182,87,.12);
       --green:#58eb93;
-      --danger:#ff7373;
       --radius:20px;
       --shadow:0 0 0 1px rgba(88,169,255,.12), 0 12px 36px rgba(0,0,0,.28);
     }
@@ -41,7 +40,7 @@
     }
 
     .wrap{
-      width:min(1300px, calc(100% - 24px));
+      width:min(1320px, calc(100% - 24px));
       margin:18px auto 38px;
     }
 
@@ -82,9 +81,7 @@
       margin:0 0 18px;
       border:1px solid #2c5d95;
       border-radius:22px;
-      background:
-        linear-gradient(135deg, rgba(20,44,79,.98), rgba(16,34,62,.98)),
-        linear-gradient(135deg, #5865F2, #2ea6ff);
+      background:linear-gradient(135deg, rgba(20,44,79,.98), rgba(16,34,62,.98));
       box-shadow:var(--shadow);
       flex-wrap:wrap;
     }
@@ -140,7 +137,7 @@
 
     .top-grid{
       display:grid;
-      grid-template-columns:1.3fr repeat(3, minmax(160px, 220px));
+      grid-template-columns:1.35fr repeat(3, minmax(160px, 220px));
       gap:12px;
       margin-bottom:18px;
     }
@@ -227,7 +224,7 @@
 
     .league-grid{
       display:grid;
-      grid-template-columns: minmax(320px, 420px) 1fr;
+      grid-template-columns:minmax(320px, 420px) 1fr;
       gap:14px;
       align-items:start;
     }
@@ -478,111 +475,30 @@
   </div>
 
   <script>
-    /************************************************************
-     * KONFIG
-     ************************************************************/
-    const SPREADSHEET_ID = "1kan56xgDkKnLSr4vCQ7BDiaiXM2_4chhE7jOmTCU024";
+    const SPREADSHEET_ID = "DEINE_SPREADSHEET_ID_HIER";
     const DISCORD_INVITE_LINK = "https://discord.gg/dein-link";
     const IMPRESSUM_LINK = "https://deine-seite.de/impressum";
     const DONATION_LINK = "https://paypal.me/deinlink";
 
     const LEAGUES = [
-      {
-        mode: "Autodarts",
-        number: 1,
-        sheet: "Autodarts Liga 1",
-        tableSheet: "Tabelle Autodarts Liga 1",
-        className: "autodarts"
-      },
-      {
-        mode: "Autodarts",
-        number: 2,
-        sheet: "Autodarts Liga 2",
-        tableSheet: "Tabelle Autodarts Liga 2",
-        className: "autodarts"
-      },
-      {
-        mode: "Autodarts",
-        number: 3,
-        sheet: "Autodarts Liga 3",
-        tableSheet: "Tabelle Autodarts Liga 3",
-        className: "autodarts"
-      },
-      {
-        mode: "Autodarts",
-        number: 4,
-        sheet: "Autodarts Liga 4",
-        tableSheet: "Tabelle Autodarts Liga 4",
-        className: "autodarts"
-      },
-      {
-        mode: "Autodarts",
-        number: 5,
-        sheet: "Autodarts Liga 5",
-        tableSheet: "Tabelle Autodarts Liga 5",
-        className: "autodarts"
-      },
-      {
-        mode: "Autodarts",
-        number: 6,
-        sheet: "Autodarts Liga 6",
-        tableSheet: "Tabelle Autodarts Liga 6",
-        className: "autodarts"
-      },
-      {
-        mode: "Dartcounter",
-        number: 1,
-        sheet: "Dartcounter Liga 1",
-        tableSheet: "Tabelle Dartcounter Liga 1",
-        className: "dartcounter"
-      },
-      {
-        mode: "Dartcounter",
-        number: 2,
-        sheet: "Dartcounter Liga 2",
-        tableSheet: "Tabelle Dartcounter Liga 2",
-        className: "dartcounter"
-      },
-      {
-        mode: "Dartcounter",
-        number: 3,
-        sheet: "Dartcounter Liga 3",
-        tableSheet: "Tabelle Dartcounter Liga 3",
-        className: "dartcounter"
-      },
-      {
-        mode: "Dartcounter",
-        number: 4,
-        sheet: "Dartcounter Liga 4",
-        tableSheet: "Tabelle Dartcounter Liga 4",
-        className: "dartcounter"
-      },
-      {
-        mode: "Dartcounter",
-        number: 5,
-        sheet: "Dartcounter Liga 5",
-        tableSheet: "Tabelle Dartcounter Liga 5",
-        className: "dartcounter"
-      },
-      {
-        mode: "Dartcounter",
-        number: 6,
-        sheet: "Dartcounter Liga 6",
-        tableSheet: "Tabelle Dartcounter Liga 6",
-        className: "dartcounter"
-      }
+      { mode: "Autodarts", number: 1, sheet: "Autodarts Liga 1", tableSheet: "Tabelle Autodarts Liga 1", className: "autodarts" },
+      { mode: "Autodarts", number: 2, sheet: "Autodarts Liga 2", tableSheet: "Tabelle Autodarts Liga 2", className: "autodarts" },
+      { mode: "Autodarts", number: 3, sheet: "Autodarts Liga 3", tableSheet: "Tabelle Autodarts Liga 3", className: "autodarts" },
+      { mode: "Autodarts", number: 4, sheet: "Autodarts Liga 4", tableSheet: "Tabelle Autodarts Liga 4", className: "autodarts" },
+      { mode: "Autodarts", number: 5, sheet: "Autodarts Liga 5", tableSheet: "Tabelle Autodarts Liga 5", className: "autodarts" },
+      { mode: "Autodarts", number: 6, sheet: "Autodarts Liga 6", tableSheet: "Tabelle Autodarts Liga 6", className: "autodarts" },
+      { mode: "Dartcounter", number: 1, sheet: "Dartcounter Liga 1", tableSheet: "Tabelle Dartcounter Liga 1", className: "dartcounter" },
+      { mode: "Dartcounter", number: 2, sheet: "Dartcounter Liga 2", tableSheet: "Tabelle Dartcounter Liga 2", className: "dartcounter" },
+      { mode: "Dartcounter", number: 3, sheet: "Dartcounter Liga 3", tableSheet: "Tabelle Dartcounter Liga 3", className: "dartcounter" },
+      { mode: "Dartcounter", number: 4, sheet: "Dartcounter Liga 4", tableSheet: "Tabelle Dartcounter Liga 4", className: "dartcounter" },
+      { mode: "Dartcounter", number: 5, sheet: "Dartcounter Liga 5", tableSheet: "Tabelle Dartcounter Liga 5", className: "dartcounter" },
+      { mode: "Dartcounter", number: 6, sheet: "Dartcounter Liga 6", tableSheet: "Tabelle Dartcounter Liga 6", className: "dartcounter" }
     ];
 
-    /************************************************************
-     * INIT LINKS
-     ************************************************************/
     document.getElementById("discordBtn").href = DISCORD_INVITE_LINK;
     document.getElementById("impressumLink").href = IMPRESSUM_LINK;
     document.getElementById("donationLink").href = DONATION_LINK;
 
-    /************************************************************
-     * HELPERS
-     ************************************************************/
     function normalize(str){
       return String(str ?? "")
         .trim()
@@ -641,15 +557,13 @@
 
     async function fetchSheetRows(sheetName){
       const res = await fetch(getSheetUrl(sheetName));
-      if (!res.ok) {
-        throw new Error(`Fehler beim Laden von ${sheetName}`);
-      }
+      if (!res.ok) throw new Error(`Fehler beim Laden von ${sheetName}`);
 
       const text = await res.text();
       const jsonText = text
-        .replace(/^\/\*O_o\*\/\s*/, "")
-        .replace(/^google\.visualization\.Query\.setResponse\(/, "")
-        .replace(/\);\s*$/, "");
+        .replace(/^\/\\*O_o\\*\\/\\s*/, "")
+        .replace(/^google\\.visualization\\.Query\\.setResponse\\(/, "")
+        .replace(/\\);\\s*$/, "");
 
       const data = JSON.parse(jsonText);
       const rows = data.table?.rows || [];
@@ -662,9 +576,6 @@
       );
     }
 
-    /************************************************************
-     * MATCHDAY / LIGA BLATT
-     ************************************************************/
     function findMatchHeaderRow(rows){
       for(let i = 0; i < rows.length; i++){
         const line = rows[i].map(normalize);
@@ -672,9 +583,7 @@
         const hasSpieler1 = line.some(v => v === "spieler 1" || v.includes("spieler 1"));
         const hasSpieler2 = line.some(v => v === "spieler 2" || v.includes("spieler 2"));
         const hasStatus = line.some(v => v.includes("status"));
-        if(hasSpieltag && hasSpieler1 && hasSpieler2 && hasStatus){
-          return i;
-        }
+        if(hasSpieltag && hasSpieler1 && hasSpieler2 && hasStatus) return i;
       }
       return -1;
     }
@@ -694,17 +603,10 @@
     function parseLeagueMatchStats(rows){
       const headerIndex = findMatchHeaderRow(rows);
       if (headerIndex === -1){
-        return {
-          totalMatches: 0,
-          open: 0,
-          done: 0,
-          currentMatchday: 0,
-          hasPlayers: false
-        };
+        return { totalMatches: 0, open: 0, done: 0, currentMatchday: 0, hasPlayers: false };
       }
 
       const idx = mapMatchHeaders(rows[headerIndex]);
-
       let totalMatches = 0;
       let open = 0;
       let done = 0;
@@ -726,8 +628,6 @@
 
         if(isFinishedStatus(status)){
           done++;
-        } else if(isOpenStatus(status) || !status){
-          open++;
         } else {
           open++;
         }
@@ -736,17 +636,12 @@
       return { totalMatches, open, done, currentMatchday, hasPlayers };
     }
 
-    /************************************************************
-     * TABELLEN-BLATT
-     ************************************************************/
     function findTableHeaderRow(rows){
       for(let i = 0; i < rows.length; i++){
         const line = rows[i].map(normalize);
         const hasSpieler = line.some(v => v === "spieler" || v.includes("spieler"));
         const hasPunkte = line.some(v => v === "punkte" || v.includes("punkte"));
-        if(hasSpieler && hasPunkte){
-          return i;
-        }
+        if(hasSpieler && hasPunkte) return i;
       }
       return -1;
     }
@@ -760,8 +655,6 @@
         if (h === "spiele" || h.includes("spiele")) map.spiele = index;
         if (h === "siege" || h.includes("siege")) map.siege = index;
         if (h === "niederlagen" || h.includes("niederlagen")) map.niederlagen = index;
-        if (h === "legs+" || h === "legs +" || h.includes("legs+")) map.legsPlus = index;
-        if (h === "legs-" || h === "legs -" || h.includes("legs-")) map.legsMinus = index;
         if (h === "diff" || h.includes("diff") || h.includes("leg-diff")) map.diff = index;
         if (h === "punkte" || h.includes("punkte")) map.punkte = index;
       });
@@ -808,15 +701,13 @@
       return filtered;
     }
 
-    /************************************************************
-     * RENDER
-     ************************************************************/
     function renderTopStats(stats){
+      document.getElementById("matchesCount").textContent = stats.totalMatches;
+      document.getElementById("openCount").textContent = stats.open;
+      document.getElementById("doneCount").textContent = stats.done;
+
       const currentMatchdayText = document.getElementById("currentMatchdayText");
       const currentMatchdaySub = document.getElementById("currentMatchdaySub");
-      const matchesCount = document.getElementById("matchesCount");
-      const openCount = document.getElementById("openCount");
-      const doneCount = document.getElementById("doneCount");
 
       if(!stats.currentMatchday){
         currentMatchdayText.textContent = "Kein Spieltag gefunden";
@@ -828,10 +719,6 @@
             ? "Alle aktuell erfassten Spiele sind fertig"
             : `${stats.open} Begegnung(en) noch offen`;
       }
-
-      matchesCount.textContent = stats.totalMatches;
-      openCount.textContent = stats.open;
-      doneCount.textContent = stats.done;
     }
 
     function renderLeague(league){
@@ -907,9 +794,6 @@
       `;
     }
 
-    /************************************************************
-     * LOAD
-     ************************************************************/
     async function loadPage(){
       const content = document.getElementById("content");
       content.className = "loading card";
@@ -924,34 +808,23 @@
                 fetchSheetRows(league.tableSheet)
               ]);
 
-              const stats = parseLeagueMatchStats(matchRows);
-              const table = parseTableRows(tableRows);
-
               return {
                 ...league,
-                stats,
-                table
+                stats: parseLeagueMatchStats(matchRows),
+                table: parseTableRows(tableRows)
               };
             } catch (err) {
               console.error("Fehler bei Liga:", league.sheet, err);
               return {
                 ...league,
-                stats: {
-                  totalMatches: 0,
-                  open: 0,
-                  done: 0,
-                  currentMatchday: 0,
-                  hasPlayers: false
-                },
+                stats: { totalMatches: 0, open: 0, done: 0, currentMatchday: 0, hasPlayers: false },
                 table: []
               };
             }
           })
         );
 
-        const visibleLeagues = leagueResults.filter(league => {
-          return league.stats.hasPlayers && league.table.length > 0;
-        });
+        const visibleLeagues = leagueResults.filter(league => league.stats.hasPlayers && league.table.length > 0);
 
         const globalStats = visibleLeagues.reduce((acc, league) => {
           acc.totalMatches += league.stats.totalMatches;
@@ -970,7 +843,7 @@
 
         if(!visibleLeagues.length){
           content.className = "empty card";
-          content.textContent = "Keine Ligen mit Spielern gefunden. Bitte Sheet-Struktur und Freigabe prüfen.";
+          content.textContent = "Keine Ligen mit Spielern gefunden. Bitte Freigabe, Blattnamen und Tabellen prüfen.";
           return;
         }
 
