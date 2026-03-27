@@ -445,18 +445,18 @@
     const DONATION_LINK = "https://paypal.me/deinlink";
 
     const LEAGUES = [
-      { mode: "Autodarts", number: 1, sheet: "Autodarts Liga 1", tableSheet: "Tabelle Autodarts Liga 1", className: "autodarts" },
-      { mode: "Autodarts", number: 2, sheet: "Autodarts Liga 2", tableSheet: "Tabelle Autodarts Liga 2", className: "autodarts" },
-      { mode: "Autodarts", number: 3, sheet: "Autodarts Liga 3", tableSheet: "Tabelle Autodarts Liga 3", className: "autodarts" },
-      { mode: "Autodarts", number: 4, sheet: "Autodarts Liga 4", tableSheet: "Tabelle Autodarts Liga 4", className: "autodarts" },
-      { mode: "Autodarts", number: 5, sheet: "Autodarts Liga 5", tableSheet: "Tabelle Autodarts Liga 5", className: "autodarts" },
-      { mode: "Autodarts", number: 6, sheet: "Autodarts Liga 6", tableSheet: "Tabelle Autodarts Liga 6", className: "autodarts" },
-      { mode: "Dartcounter", number: 1, sheet: "Dartcounter Liga 1", tableSheet: "Tabelle Dartcounter Liga 1", className: "dartcounter" },
-      { mode: "Dartcounter", number: 2, sheet: "Dartcounter Liga 2", tableSheet: "Tabelle Dartcounter Liga 2", className: "dartcounter" },
-      { mode: "Dartcounter", number: 3, sheet: "Dartcounter Liga 3", tableSheet: "Tabelle Dartcounter Liga 3", className: "dartcounter" },
-      { mode: "Dartcounter", number: 4, sheet: "Dartcounter Liga 4", tableSheet: "Tabelle Dartcounter Liga 4", className: "dartcounter" },
-      { mode: "Dartcounter", number: 5, sheet: "Dartcounter Liga 5", tableSheet: "Tabelle Dartcounter Liga 5", className: "dartcounter" },
-      { mode: "Dartcounter", number: 6, sheet: "Dartcounter Liga 6", tableSheet: "Tabelle Dartcounter Liga 6", className: "dartcounter" }
+      { mode: "Autodarts", number: 1, sheet: "Autodarts Liga 1", className: "autodarts" },
+      { mode: "Autodarts", number: 2, sheet: "Autodarts Liga 2", className: "autodarts" },
+      { mode: "Autodarts", number: 3, sheet: "Autodarts Liga 3", className: "autodarts" },
+      { mode: "Autodarts", number: 4, sheet: "Autodarts Liga 4", className: "autodarts" },
+      { mode: "Autodarts", number: 5, sheet: "Autodarts Liga 5", className: "autodarts" },
+      { mode: "Autodarts", number: 6, sheet: "Autodarts Liga 6", className: "autodarts" },
+      { mode: "Dartcounter", number: 1, sheet: "Dartcounter Liga 1", className: "dartcounter" },
+      { mode: "Dartcounter", number: 2, sheet: "Dartcounter Liga 2", className: "dartcounter" },
+      { mode: "Dartcounter", number: 3, sheet: "Dartcounter Liga 3", className: "dartcounter" },
+      { mode: "Dartcounter", number: 4, sheet: "Dartcounter Liga 4", className: "dartcounter" },
+      { mode: "Dartcounter", number: 5, sheet: "Dartcounter Liga 5", className: "dartcounter" },
+      { mode: "Dartcounter", number: 6, sheet: "Dartcounter Liga 6", className: "dartcounter" }
     ];
 
     document.getElementById("discordBtn").href = DISCORD_INVITE_LINK;
@@ -557,12 +557,33 @@
         if (h.includes("spieltag")) map.spieltag = index;
         if (h.includes("spieler 1")) map.spieler1 = index;
         if (h.includes("spieler 2")) map.spieler2 = index;
+        if (h.includes("legs 1")) map.legs1 = index;
+        if (h.includes("legs 2")) map.legs2 = index;
+        if (h.includes("gewinner")) map.gewinner = index;
         if (h.includes("status")) map.status = index;
       });
       return map;
     }
 
-    function parseLeagueMatchStats(rows){
+    function ensurePlayer(players, name){
+      const clean = String(name ?? "").trim();
+      if (!clean) return null;
+      if (!players[clean]) {
+        players[clean] = {
+          spieler: clean,
+          spiele: 0,
+          siege: 0,
+          niederlagen: 0,
+          legsPlus: 0,
+          legsMinus: 0,
+          diff: 0,
+          punkte: 0
+        };
+      }
+      return players[clean];
+    }
+
+    function parseLeagueData(rows){
       const headerIndex = findMatchHeaderRow(rows);
       if (headerIndex === -1){
         return {
@@ -571,40 +592,70 @@
           done: 0,
           currentMatchday: 0,
           totalMatchdays: 0,
-          hasPlayers: false
+          hasPlayers: false,
+          table: []
         };
       }
 
       const idx = mapMatchHeaders(rows[headerIndex]);
+      const players = {};
+      const perMatchday = {};
 
       let totalMatches = 0;
       let open = 0;
       let done = 0;
       let hasPlayers = false;
 
-      const perMatchday = {};
-
-      for(let i = headerIndex + 1; i < rows.length; i++){
+      for (let i = headerIndex + 1; i < rows.length; i++) {
         const row = rows[i];
-        const spieltag = toNumber(row[idx.spieltag]);
-        const spieler1 = String(row[idx.spieler1] ?? "").trim();
-        const spieler2 = String(row[idx.spieler2] ?? "").trim();
-        const status = String(row[idx.status] ?? "").trim();
 
-        if (!spieler1 || !spieler2 || !spieltag) continue;
+        const spieltag = toNumber(row[idx.spieltag]);
+        const spieler1Name = String(row[idx.spieler1] ?? "").trim();
+        const spieler2Name = String(row[idx.spieler2] ?? "").trim();
+        const status = String(row[idx.status] ?? "").trim();
+        const legs1 = idx.legs1 !== undefined ? toNumber(row[idx.legs1]) : 0;
+        const legs2 = idx.legs2 !== undefined ? toNumber(row[idx.legs2]) : 0;
+        const gewinner = idx.gewinner !== undefined ? String(row[idx.gewinner] ?? "").trim() : "";
+
+        if (!spieler1Name || !spieler2Name || !spieltag) continue;
 
         hasPlayers = true;
         totalMatches++;
 
+        const p1 = ensurePlayer(players, spieler1Name);
+        const p2 = ensurePlayer(players, spieler2Name);
+
         if (!perMatchday[spieltag]) {
           perMatchday[spieltag] = { total: 0, open: 0, done: 0 };
         }
-
         perMatchday[spieltag].total++;
 
         if (isFinishedStatus(status)) {
           done++;
           perMatchday[spieltag].done++;
+
+          p1.spiele++;
+          p2.spiele++;
+
+          p1.legsPlus += legs1;
+          p1.legsMinus += legs2;
+          p2.legsPlus += legs2;
+          p2.legsMinus += legs1;
+
+          let winnerName = gewinner;
+          if (!winnerName && legs1 !== legs2) {
+            winnerName = legs1 > legs2 ? spieler1Name : spieler2Name;
+          }
+
+          if (winnerName === spieler1Name) {
+            p1.siege++;
+            p1.punkte += 2;
+            p2.niederlagen++;
+          } else if (winnerName === spieler2Name) {
+            p2.siege++;
+            p2.punkte += 2;
+            p1.niederlagen++;
+          }
         } else {
           open++;
           perMatchday[spieltag].open++;
@@ -617,17 +668,31 @@
         .sort((a, b) => a - b);
 
       let currentMatchday = 0;
-
       for (const md of matchdayNumbers) {
         if (perMatchday[md].open > 0) {
           currentMatchday = md;
           break;
         }
       }
-
       if (!currentMatchday && matchdayNumbers.length) {
         currentMatchday = matchdayNumbers[matchdayNumbers.length - 1];
       }
+
+      const table = Object.values(players)
+        .map(player => ({
+          ...player,
+          diff: player.legsPlus - player.legsMinus
+        }))
+        .sort((a, b) => {
+          if (b.punkte !== a.punkte) return b.punkte - a.punkte;
+          if (b.diff !== a.diff) return b.diff - a.diff;
+          if (b.siege !== a.siege) return b.siege - a.siege;
+          return a.spieler.localeCompare(b.spieler, "de");
+        })
+        .map((player, index) => ({
+          platz: index + 1,
+          ...player
+        }));
 
       return {
         totalMatches,
@@ -635,73 +700,9 @@
         done,
         currentMatchday,
         totalMatchdays: matchdayNumbers.length,
-        hasPlayers
+        hasPlayers,
+        table
       };
-    }
-
-    function findTableHeaderRow(rows){
-      for(let i = 0; i < rows.length; i++){
-        const line = rows[i].map(normalize);
-        if (line.some(v => v.includes("spieler")) && line.some(v => v.includes("punkte"))) {
-          return i;
-        }
-      }
-      return -1;
-    }
-
-    function mapTableHeaders(headerRow){
-      const map = {};
-      headerRow.forEach((cell, index) => {
-        const h = normalize(cell);
-        if (h.includes("platz") || h.includes("rang")) map.platz = index;
-        if (h === "spieler" || h.includes("spieler") || h === "name") map.spieler = index;
-        if (h.includes("spiele")) map.spiele = index;
-        if (h.includes("siege")) map.siege = index;
-        if (h.includes("niederlagen")) map.niederlagen = index;
-        if (h === "diff" || h.includes("diff")) map.diff = index;
-        if (h.includes("punkte")) map.punkte = index;
-      });
-      return map;
-    }
-
-    function parseTableRows(rows){
-      const headerIndex = findTableHeaderRow(rows);
-      if (headerIndex === -1) return [];
-
-      const idx = mapTableHeaders(rows[headerIndex]);
-      const result = [];
-
-      for(let i = headerIndex + 1; i < rows.length; i++){
-        const row = rows[i];
-        const spieler = String(row[idx.spieler] ?? "").trim();
-        if(!spieler) continue;
-
-        result.push({
-          platz: toNumber(row[idx.platz]),
-          spieler,
-          spiele: toNumber(row[idx.spiele]),
-          siege: toNumber(row[idx.siege]),
-          niederlagen: toNumber(row[idx.niederlagen]),
-          diff: toNumber(row[idx.diff]),
-          punkte: toNumber(row[idx.punkte])
-        });
-      }
-
-      const filtered = result.filter(r => r.spieler);
-
-      filtered.sort((a, b) => {
-        if (a.platz && b.platz) return a.platz - b.platz;
-        if (b.punkte !== a.punkte) return b.punkte - a.punkte;
-        if (b.diff !== a.diff) return b.diff - a.diff;
-        if (b.siege !== a.siege) return b.siege - a.siege;
-        return a.spieler.localeCompare(b.spieler, "de");
-      });
-
-      filtered.forEach((row, index) => {
-        if (!row.platz) row.platz = index + 1;
-      });
-
-      return filtered;
     }
 
     function renderTopStats(stats){
@@ -724,7 +725,7 @@
     }
 
     function renderLeague(league){
-      const progress = progressPercent(league.stats.done, league.stats.totalMatches);
+      const progress = progressPercent(league.done, league.totalMatches);
 
       const rowsHtml = league.table.map(row => `
         <tr>
@@ -742,7 +743,7 @@
         <section class="league card ${league.className}">
           <div class="league-head">
             <h2 class="league-title">${escapeHtml(league.mode)} Liga ${league.number}</h2>
-            <div class="league-sub">${league.table.length} Spieler in der Tabelle</div>
+            <div class="league-sub">${league.table.length} Spieler in der Liga</div>
           </div>
 
           <div class="league-body">
@@ -751,21 +752,21 @@
                 <h3>Spieltag Übersicht</h3>
 
                 <div class="badge-row">
-                  <div class="badge">Aktuell: Spieltag ${league.stats.currentMatchday || "-"}</div>
-                  <div class="badge">Spieltage gesamt: ${league.stats.totalMatchdays || 0}</div>
-                  <div class="badge">Begegnungen: ${league.stats.totalMatches}</div>
-                  <div class="badge">Offen: ${league.stats.open}</div>
-                  <div class="badge">Fertig: ${league.stats.done}</div>
+                  <div class="badge">Aktuell: Spieltag ${league.currentMatchday || "-"}</div>
+                  <div class="badge">Spieltage gesamt: ${league.totalMatchdays || 0}</div>
+                  <div class="badge">Begegnungen: ${league.totalMatches}</div>
+                  <div class="badge">Offen: ${league.open}</div>
+                  <div class="badge">Fertig: ${league.done}</div>
                 </div>
 
                 <div class="matchday-big">
-                  ${league.stats.currentMatchday ? `Spieltag ${league.stats.currentMatchday}` : "Kein Spieltag"}
+                  ${league.currentMatchday ? `Spieltag ${league.currentMatchday}` : "Kein Spieltag"}
                 </div>
 
                 <div class="status-line">
-                  ${league.stats.open === 0
+                  ${league.open === 0
                     ? "Alle eingetragenen Spiele sind abgeschlossen."
-                    : `${league.stats.open} Spiel(e) warten noch auf ein Ergebnis.`}
+                    : `${league.open} Spiel(e) warten noch auf ein Ergebnis.`}
                 </div>
 
                 <div class="progress">
@@ -807,41 +808,34 @@
         const leagueResults = await Promise.all(
           LEAGUES.map(async (league) => {
             try {
-              const [matchRows, tableRows] = await Promise.all([
-                fetchSheetRows(league.sheet),
-                fetchSheetRows(league.tableSheet)
-              ]);
-
+              const rows = await fetchSheetRows(league.sheet);
               return {
                 ...league,
-                stats: parseLeagueMatchStats(matchRows),
-                table: parseTableRows(tableRows)
+                ...parseLeagueData(rows)
               };
             } catch (err) {
               console.error("Fehler bei Liga:", league.sheet, err);
               return {
                 ...league,
-                stats: {
-                  totalMatches: 0,
-                  open: 0,
-                  done: 0,
-                  currentMatchday: 0,
-                  totalMatchdays: 0,
-                  hasPlayers: false
-                },
+                totalMatches: 0,
+                open: 0,
+                done: 0,
+                currentMatchday: 0,
+                totalMatchdays: 0,
+                hasPlayers: false,
                 table: []
               };
             }
           })
         );
 
-        const visibleLeagues = leagueResults.filter(l => l.stats.hasPlayers && l.table.length > 0);
+        const visibleLeagues = leagueResults.filter(l => l.hasPlayers && l.table.length > 0);
 
         const globalStats = visibleLeagues.reduce((acc, league) => {
-          acc.totalMatches += league.stats.totalMatches;
-          acc.open += league.stats.open;
-          acc.done += league.stats.done;
-          acc.currentMatchday = Math.max(acc.currentMatchday, league.stats.currentMatchday || 0);
+          acc.totalMatches += league.totalMatches;
+          acc.open += league.open;
+          acc.done += league.done;
+          acc.currentMatchday = Math.max(acc.currentMatchday, league.currentMatchday || 0);
           return acc;
         }, {
           totalMatches: 0,
@@ -852,9 +846,9 @@
 
         renderTopStats(globalStats);
 
-        if(!visibleLeagues.length){
+        if (!visibleLeagues.length) {
           content.className = "empty card";
-          content.textContent = "Keine Ligen mit Spielern gefunden. Prüfe Freigabe, Blattnamen und Tabellen.";
+          content.textContent = "Keine Ligen mit Spielern gefunden. Prüfe Freigabe und Blattnamen.";
           return;
         }
 
