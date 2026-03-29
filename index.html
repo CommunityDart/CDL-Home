@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dart Liga</title>
+  <title>Community Dart Liga</title>
   <style>
     :root{
       --bg:#03131b;
@@ -52,17 +52,17 @@
     }
 
     .wrap{
-      width:min(1400px, calc(100% - 28px));
+      width:min(1400px, calc(100% - 24px));
       margin:0 auto;
-      padding:18px 0 42px;
+      padding:14px 0 34px;
     }
 
     .hero{
       display:flex;
       justify-content:space-between;
       align-items:end;
-      gap:18px;
-      margin-bottom:18px;
+      gap:14px;
+      margin-bottom:14px;
       flex-wrap:wrap;
     }
 
@@ -76,11 +76,11 @@
     }
 
     .title-block p{
-      margin:10px 0 0;
+      margin:8px 0 0;
       color:var(--muted);
       font-size:14px;
       max-width:760px;
-      line-height:1.5;
+      line-height:1.45;
     }
 
     .top-controls{
@@ -90,13 +90,12 @@
       align-items:center;
     }
 
-    .button,
     .mode-btn{
       border:1px solid rgba(75,135,165,.28);
       background:rgba(4,25,36,.96);
       color:var(--text);
       border-radius:12px;
-      min-height:48px;
+      min-height:46px;
       padding:0 16px;
       font-size:15px;
       outline:none;
@@ -105,7 +104,6 @@
       transition:.16s ease;
     }
 
-    .button:hover,
     .mode-btn:hover{
       border-color:var(--accent-border);
       background:#082738;
@@ -119,8 +117,8 @@
 
     .discord-banner{
       position:relative;
-      margin:0 0 22px;
-      padding:24px 26px;
+      margin:0 0 18px;
+      padding:22px 24px;
       border-radius:22px;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.12);
@@ -147,7 +145,7 @@
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:20px;
+      gap:18px;
       flex-wrap:wrap;
     }
 
@@ -161,7 +159,7 @@
     .discord-text p{
       margin:8px 0 0;
       font-size:14px;
-      line-height:1.5;
+      line-height:1.45;
       opacity:.95;
       max-width:760px;
     }
@@ -170,7 +168,7 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-height:50px;
+      min-height:48px;
       padding:0 18px;
       border-radius:14px;
       background:rgba(255,255,255,.95);
@@ -191,14 +189,14 @@
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      margin-bottom:18px;
+      margin-bottom:14px;
     }
 
     .league-tab{
       border:1px solid rgba(75,135,165,.22);
       background:#051a25;
       color:#d3e7f0;
-      padding:11px 14px;
+      padding:10px 14px;
       border-radius:12px;
       cursor:pointer;
       font-weight:800;
@@ -219,7 +217,7 @@
     .main{
       display:grid;
       grid-template-columns:minmax(0,1.7fr) minmax(320px,.8fr);
-      gap:18px;
+      gap:14px;
       align-items:start;
     }
 
@@ -239,8 +237,8 @@
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:14px;
-      padding:18px 18px 12px;
+      gap:12px;
+      padding:16px 16px 10px;
       flex-wrap:wrap;
     }
 
@@ -258,18 +256,18 @@
 
     .table-wrap{
       overflow-x:auto;
-      padding:0 0 6px;
+      padding:0 0 4px;
     }
 
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:760px;
+      min-width:900px;
     }
 
     thead th{
       text-align:left;
-      padding:14px 16px;
+      padding:13px 14px;
       color:#c8dce6;
       font-size:12px;
       font-weight:800;
@@ -284,7 +282,7 @@
     tbody tr:nth-child(even) td{background:var(--row-b)}
 
     tbody td{
-      padding:14px 16px;
+      padding:12px 14px;
       border-bottom:1px solid rgba(120,170,195,.08);
       font-size:15px;
       color:#f1f8fb;
@@ -315,7 +313,13 @@
 
     .player-cell{
       font-weight:800;
-      min-width:220px;
+      min-width:200px;
+    }
+
+    .discord-cell{
+      color:#9fd8ff;
+      min-width:180px;
+      font-weight:700;
     }
 
     .points-cell{
@@ -326,13 +330,13 @@
     .sidebar{
       display:flex;
       flex-direction:column;
-      gap:14px;
+      gap:12px;
     }
 
     .matchday-list{
       display:flex;
       flex-direction:column;
-      gap:12px;
+      gap:10px;
     }
 
     .matchday{
@@ -344,7 +348,7 @@
       border:none;
       background:transparent;
       color:var(--text);
-      padding:16px 16px;
+      padding:14px 15px;
       display:flex;
       justify-content:space-between;
       align-items:center;
@@ -358,25 +362,41 @@
       font-weight:900;
     }
 
-    .badge{
-      border:1px solid rgba(255,209,102,.35);
-      color:var(--gold);
+    .status-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
       padding:6px 10px;
       border-radius:999px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
       font-size:12px;
       font-weight:800;
+      color:#dcecf5;
       white-space:nowrap;
-      text-transform:lowercase;
     }
 
-    .badge.done{
-      border-color:rgba(61,220,151,.28);
-      color:var(--green);
+    .status-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      display:inline-block;
+      flex:0 0 10px;
+    }
+
+    .status-dot.open{
+      background:var(--red);
+      box-shadow:0 0 10px rgba(231,76,60,.65);
+    }
+
+    .status-dot.done{
+      background:var(--green);
+      box-shadow:0 0 10px rgba(61,220,151,.65);
     }
 
     .matchday-body{
       display:none;
-      padding:0 14px 14px;
+      padding:0 12px 12px;
     }
 
     .matchday.open .matchday-body{
@@ -393,7 +413,7 @@
 
     .match-table th,
     .match-table td{
-      padding:10px 10px;
+      padding:9px 10px;
       font-size:13px;
       border-bottom:1px solid rgba(120,170,195,.08);
       white-space:normal;
@@ -421,7 +441,7 @@
     }
 
     .footer{
-      margin-top:20px;
+      margin-top:16px;
       color:#7c95a3;
       font-size:12px;
       text-align:center;
@@ -433,11 +453,11 @@
     }
 
     @media (max-width:760px){
-      .wrap{width:min(100% - 16px, 1400px)}
-      .hero{gap:12px}
+      .wrap{width:min(100% - 14px, 1400px)}
+      .hero{gap:10px}
       .title-block h1{font-size:36px}
       .top-controls{width:100%}
-      .button,.mode-btn{width:100%}
+      .mode-btn{width:100%}
       .discord-btn{width:100%}
     }
   </style>
@@ -446,20 +466,19 @@
   <div class="wrap">
     <section class="hero">
       <div class="title-block">
-        <h1>Divisions</h1>
+        <h1>Community Dart Liga</h1>
         <p>Dunkler Liga-Look mit großem Tabellenfokus und sauberer Spieltagsanzeige. Oben wählst du zwischen Autodarts und DartCounter, darunter die passende Liga.</p>
       </div>
       <div class="top-controls">
         <button id="modeAutodarts" class="mode-btn active">Autodarts</button>
         <button id="modeDartCounter" class="mode-btn">DartCounter</button>
-        <button id="reloadBtn" class="button">Neu laden</button>
       </div>
     </section>
 
     <div class="discord-banner">
       <div class="discord-content">
         <div class="discord-text">
-          <h2>Community Discord</h2>
+          <h2>Community Dart Liga</h2>
           <p>Tritt unserer Dart Liga Community bei, tausche dich mit Spielern aus und bleib immer auf dem neuesten Stand.</p>
         </div>
         <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="discord-btn">
@@ -508,7 +527,6 @@
     const leagueTabsEl = document.getElementById("leagueTabs");
     const tableAreaEl = document.getElementById("tableArea");
     const matchdayAreaEl = document.getElementById("matchdayArea");
-    const reloadBtn = document.getElementById("reloadBtn");
     const modeAutodartsBtn = document.getElementById("modeAutodarts");
     const modeDartCounterBtn = document.getElementById("modeDartCounter");
 
@@ -591,6 +609,15 @@
       return row && row.some(cell => normalize(cell) !== "");
     }
 
+    function findColumnIndex(headerRow, variants) {
+      const normalizedHeaders = headerRow.map(h => normalize(h));
+      for (const variant of variants) {
+        const idx = normalizedHeaders.findIndex(h => h === normalize(variant));
+        if (idx !== -1) return idx;
+      }
+      return -1;
+    }
+
     function parseStandingsFromLeagueSheet(rows) {
       if (!rows || !rows.length) return { headers: [], rows: [] };
 
@@ -605,27 +632,39 @@
 
       if (tabelleMarker === -1) return { headers: [], rows: [] };
 
-      const start = tabelleMarker + 1;
-      const end = spieltageMarker > start ? spieltageMarker : rows.length;
+      const headerRowIndex = tabelleMarker + 1;
+      const dataStart = tabelleMarker + 2;
+      const end = spieltageMarker > dataStart ? spieltageMarker : rows.length;
 
-      const headers = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      const sourceHeader = rows[headerRowIndex] || [];
+
+      const idxPlatz = findColumnIndex(sourceHeader, ["Platz", "Rank"]);
+      const idxSpieler = findColumnIndex(sourceHeader, ["Spieler", "Name", "Spielername"]);
+      const idxDiscord = findColumnIndex(sourceHeader, ["Spieler_Discord", "Discord", "Discordname", "Discord Name"]);
+      const idxSiege = findColumnIndex(sourceHeader, ["Siege", "Wins"]);
+      const idxNiederlagen = findColumnIndex(sourceHeader, ["Niederlagen", "Losses"]);
+      const idxLegDiff = findColumnIndex(sourceHeader, ["Leg-Diff", "Leg Diff", "Legdifferenz"]);
+      const idxPunkte = findColumnIndex(sourceHeader, ["Punkte", "Points"]);
+
+      const headers = ["Platz", "Spieler", "Discord", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
       const body = [];
 
-      for (let i = start; i < end; i++) {
+      for (let i = dataStart; i < end; i++) {
         const row = rows[i];
         if (!rowHasAnyContent(row)) continue;
 
-        const platz = safeCell(row, 0);
-        const spieler = safeCell(row, 1);
-        const siege = safeCell(row, 2);
-        const niederlagen = safeCell(row, 3);
-        const legDiff = safeCell(row, 4);
-        const punkte = safeCell(row, 5);
+        const platz = idxPlatz > -1 ? safeCell(row, idxPlatz) : safeCell(row, 0);
+        const spieler = idxSpieler > -1 ? safeCell(row, idxSpieler) : safeCell(row, 1);
+        const discord = idxDiscord > -1 ? safeCell(row, idxDiscord) : "";
+        const siege = idxSiege > -1 ? safeCell(row, idxSiege) : safeCell(row, 2);
+        const niederlagen = idxNiederlagen > -1 ? safeCell(row, idxNiederlagen) : safeCell(row, 3);
+        const legDiff = idxLegDiff > -1 ? safeCell(row, idxLegDiff) : safeCell(row, 4);
+        const punkte = idxPunkte > -1 ? safeCell(row, idxPunkte) : safeCell(row, 5);
 
         if (!platz || isNaN(parseInt(platz, 10))) continue;
         if (!spieler) continue;
 
-        body.push([platz, spieler, siege, niederlagen, legDiff, punkte]);
+        body.push([platz, spieler, discord, siege, niederlagen, legDiff, punkte]);
       }
 
       return { headers, rows: body };
@@ -656,7 +695,6 @@
 
         if (!grouped.has(title)) grouped.set(title, []);
         grouped.get(title).push([
-          title,
           spieler1,
           discord1,
           spieler2,
@@ -669,7 +707,7 @@
 
       return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
         const statuses = rowsForDay
-          .map(r => String(r[7] || "").trim())
+          .map(r => String(r[6] || "").trim())
           .filter(Boolean);
 
         let dayStatus = "offen";
@@ -681,7 +719,7 @@
         return {
           title,
           status: dayStatus,
-          headers: ["Spieltag", "Spieler 1", "Discord 1", "Spieler 2", "Discord 2", "Legs 1", "Legs 2", "Status"],
+          headers: ["Spieler 1", "Discord 1", "Spieler 2", "Discord 2", "Legs 1", "Legs 2", "Status"],
           rows: rowsForDay
         };
       });
@@ -749,7 +787,8 @@
           let cls = "";
           if (i === 0) cls = `rank-col ${rankClass(row[i], rows.length)}`.trim();
           else if (i === 1) cls = "player-cell";
-          else if (i === 5) cls = "points-cell";
+          else if (i === 2) cls = "discord-cell";
+          else if (i === 6) cls = "points-cell";
           return `<td class="${cls}">${cell}</td>`;
         }).join("")}</tr>`;
       }).join("");
@@ -777,11 +816,11 @@
         return `<div class="empty">Keine Spiele gefunden.</div>`;
       }
 
-      const visibleHeaders = [headers[0], headers[1], headers[3], headers[5], headers[6], headers[7]];
+      const visibleHeaders = [headers[0], headers[2], headers[4], headers[5], headers[6]];
       const thead = `<tr>${visibleHeaders.map(h => `<th>${htmlEscape(h || "-")}</th>`).join("")}</tr>`;
 
       const tbody = rows.map(row => {
-        const visibleRow = [row[0], row[1], row[3], row[5], row[6], row[7]];
+        const visibleRow = [row[0], row[2], row[4], row[5], row[6]];
         return `<tr>${visibleRow.map(cell => `<td>${htmlEscape(cell || "-")}</td>`).join("")}</tr>`;
       }).join("");
 
@@ -799,7 +838,10 @@
           <div class="matchday ${idx === 0 ? "open" : ""}">
             <button class="matchday-head" type="button">
               <span class="matchday-title">${htmlEscape(day.title)}</span>
-              <span class="badge ${done ? "done" : ""}">${htmlEscape(day.status)}</span>
+              <span class="status-badge">
+                <span class="status-dot ${done ? "done" : "open"}"></span>
+                ${done ? "Fertig" : "Offen"}
+              </span>
             </button>
             <div class="matchday-body">
               ${renderMatchTable(day.headers, day.rows)}
@@ -900,7 +942,6 @@
 
     modeAutodartsBtn.addEventListener("click", () => setMode("Autodarts"));
     modeDartCounterBtn.addEventListener("click", () => setMode("DartCounter"));
-    reloadBtn.addEventListener("click", loadAll);
 
     loadAll();
   </script>
