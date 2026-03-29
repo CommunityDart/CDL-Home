@@ -342,6 +342,14 @@
       min-width:140px;
     }
 
+    .discord-name{
+      font-size:12px;
+      color:#7fa6b8;
+      margin-top:3px;
+      font-weight:600;
+      line-height:1.25;
+    }
+
     thead th:first-child,
     tbody td:first-child{
       padding-right:8px;
@@ -450,27 +458,26 @@
     }
 
     .match-status{
-      display:inline-flex;
+      display:flex;
+      justify-content:center;
       align-items:center;
-      gap:8px;
-      font-weight:700;
     }
 
     .match-status .dot{
-      width:10px;
-      height:10px;
+      width:12px;
+      height:12px;
       border-radius:999px;
       display:inline-block;
     }
 
     .match-status .dot.done{
       background:var(--green);
-      box-shadow:0 0 0 4px rgba(61,220,151,.10);
+      box-shadow:0 0 0 5px rgba(61,220,151,.15);
     }
 
     .match-status .dot.open{
       background:var(--red);
-      box-shadow:0 0 0 4px rgba(231,76,60,.10);
+      box-shadow:0 0 0 5px rgba(231,76,60,.15);
     }
 
     .empty{
@@ -678,15 +685,16 @@
 
         const platz = safeCell(row, 0);
         const spieler = safeCell(row, 1);
-        const siege = safeCell(row, 2);
-        const niederlagen = safeCell(row, 3);
-        const legDiff = safeCell(row, 4);
-        const punkte = safeCell(row, 5);
+        const discord = safeCell(row, 2);
+        const siege = safeCell(row, 3);
+        const niederlagen = safeCell(row, 4);
+        const legDiff = safeCell(row, 5);
+        const punkte = safeCell(row, 6);
 
         if (!platz || isNaN(parseInt(platz, 10))) continue;
         if (!spieler) continue;
 
-        body.push([platz, spieler, siege, niederlagen, legDiff, punkte]);
+        body.push([platz, spieler, discord, siege, niederlagen, legDiff, punkte]);
       }
 
       return { headers, rows: body };
@@ -743,7 +751,15 @@
           title,
           status: dayStatus,
           headers: ["Spieler 1", "Discord 1", "Spieler 2", "Discord 2", "Legs 1", "Legs 2", "Status"],
-          rows: rowsForDay.map(r => [r[1], r[2], r[3], r[4], r[5], r[6], /fertig|abgeschlossen|done|closed/i.test(String(r[7] || "").trim()) ? "done" : "open"])
+          rows: rowsForDay.map(r => [
+            r[1],
+            r[2],
+            r[3],
+            r[4],
+            r[5],
+            r[6],
+            /fertig|abgeschlossen|done|closed/i.test(String(r[7] || "").trim()) ? "done" : "open"
+          ])
         };
       });
     }
@@ -799,19 +815,32 @@
         `;
       }
 
-      const thead = `<tr>${headers.map((h, i) => {
+      const visibleHeaders = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      const thead = `<tr>${visibleHeaders.map((h, i) => {
         const cls = i === 0 ? ' class="rank-col"' : "";
         return `<th${cls}>${htmlEscape(h || "-")}</th>`;
       }).join("")}</tr>`;
 
       const tbody = rows.map(row => {
-        return `<tr>${headers.map((_, i) => {
-          const cell = htmlEscape(row[i] || "-");
-          let cls = "";
-          if (i === 0) cls = `rank-col ${rankClass(row[i], rows.length)}`.trim();
-          else if (i === 1) cls = "player-cell";
-          else if (i === 5) cls = "points-cell";
-          return `<td class="${cls}">${cell}</td>`;
+        return `<tr>${visibleHeaders.map((_, i) => {
+          if (i === 0) {
+            return `<td class="rank-col ${rankClass(row[0], rows.length)}">${htmlEscape(row[0] || "-")}</td>`;
+          }
+
+          if (i === 1) {
+            const discord = row[2] || "";
+            return `<td class="player-cell">
+              ${htmlEscape(row[1] || "-")}
+              ${discord ? `<div class="discord-name">${htmlEscape(discord)}</div>` : ""}
+            </td>`;
+          }
+
+          if (i === 2) return `<td>${htmlEscape(row[3] || "-")}</td>`;
+          if (i === 3) return `<td>${htmlEscape(row[4] || "-")}</td>`;
+          if (i === 4) return `<td>${htmlEscape(row[5] || "-")}</td>`;
+          if (i === 5) return `<td class="points-cell">${htmlEscape(row[6] || "-")}</td>`;
+
+          return `<td>-</td>`;
         }).join("")}</tr>`;
       }).join("");
 
@@ -860,10 +889,10 @@
       const tbody = rows.map(row => {
         const statusType = row[6] === "done" ? "done" : "open";
         const visibleRow = [
-          row[0],
-          row[2],
-          row[4],
-          row[5],
+          htmlEscape(row[0] || "-"),
+          htmlEscape(row[2] || "-"),
+          htmlEscape(row[4] || "-"),
+          htmlEscape(row[5] || "-"),
           `<span class="match-status">${renderStatusDot(statusType, true)}</span>`
         ];
 
