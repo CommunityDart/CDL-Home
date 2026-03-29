@@ -11,16 +11,13 @@
       --line:rgba(120,170,195,.12);
       --text:#f5fbff;
       --muted:#90a9b7;
-      --gold:#ffd166;
       --green:#3ddc97;
       --red:#e74c3c;
       --row-a:#052130;
       --row-b:#041924;
       --shadow:0 18px 50px rgba(0,0,0,.35);
-      --radius:18px;
 
       --accent:#20b7ff;
-      --accent-soft:rgba(32,183,255,.18);
       --accent-border:rgba(32,183,255,.42);
 
       --banner-a:#111827;
@@ -30,7 +27,6 @@
 
     body[data-mode="DartCounter"]{
       --accent:#f59e0b;
-      --accent-soft:rgba(245,158,11,.18);
       --accent-border:rgba(245,158,11,.42);
 
       --banner-a:#1a1205;
@@ -262,7 +258,7 @@
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:900px;
+      min-width:920px;
     }
 
     thead th{
@@ -610,7 +606,7 @@
     }
 
     function findColumnIndex(headerRow, variants) {
-      const normalizedHeaders = headerRow.map(h => normalize(h));
+      const normalizedHeaders = (headerRow || []).map(h => normalize(h));
       for (const variant of variants) {
         const idx = normalizedHeaders.findIndex(h => h === normalize(variant));
         if (idx !== -1) return idx;
@@ -632,9 +628,25 @@
 
       if (tabelleMarker === -1) return { headers: [], rows: [] };
 
-      const headerRowIndex = tabelleMarker + 1;
-      const dataStart = tabelleMarker + 2;
-      const end = spieltageMarker > dataStart ? spieltageMarker : rows.length;
+      const end = spieltageMarker > -1 ? spieltageMarker : rows.length;
+
+      let headerRowIndex = -1;
+
+      for (let i = tabelleMarker + 1; i < end; i++) {
+        const row = rows[i] || [];
+        const rowText = row.map(c => normalize(c));
+        if (
+          rowText.includes("platz") &&
+          (rowText.includes("spieler") || rowText.includes("name"))
+        ) {
+          headerRowIndex = i;
+          break;
+        }
+      }
+
+      if (headerRowIndex === -1) {
+        return { headers: [], rows: [] };
+      }
 
       const sourceHeader = rows[headerRowIndex] || [];
 
@@ -649,22 +661,22 @@
       const headers = ["Platz", "Spieler", "Discord", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
       const body = [];
 
-      for (let i = dataStart; i < end; i++) {
+      for (let i = headerRowIndex + 1; i < end; i++) {
         const row = rows[i];
         if (!rowHasAnyContent(row)) continue;
 
-        const platz = idxPlatz > -1 ? safeCell(row, idxPlatz) : safeCell(row, 0);
-        const spieler = idxSpieler > -1 ? safeCell(row, idxSpieler) : safeCell(row, 1);
+        const platz = idxPlatz > -1 ? safeCell(row, idxPlatz) : "";
+        const spieler = idxSpieler > -1 ? safeCell(row, idxSpieler) : "";
         const discord = idxDiscord > -1 ? safeCell(row, idxDiscord) : "";
-        const siege = idxSiege > -1 ? safeCell(row, idxSiege) : safeCell(row, 2);
-        const niederlagen = idxNiederlagen > -1 ? safeCell(row, idxNiederlagen) : safeCell(row, 3);
-        const legDiff = idxLegDiff > -1 ? safeCell(row, idxLegDiff) : safeCell(row, 4);
-        const punkte = idxPunkte > -1 ? safeCell(row, idxPunkte) : safeCell(row, 5);
+        const siege = idxSiege > -1 ? safeCell(row, idxSiege) : "";
+        const niederlagen = idxNiederlagen > -1 ? safeCell(row, idxNiederlagen) : "";
+        const legDiff = idxLegDiff > -1 ? safeCell(row, idxLegDiff) : "";
+        const punkte = idxPunkte > -1 ? safeCell(row, idxPunkte) : "";
 
         if (!platz || isNaN(parseInt(platz, 10))) continue;
         if (!spieler) continue;
 
-        body.push([platz, spieler, discord, siege, niederlagen, legDiff, punkte]);
+        body.push([platz, spieler, discord || "-", siege, niederlagen, legDiff, punkte]);
       }
 
       return { headers, rows: body };
