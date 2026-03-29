@@ -22,10 +22,10 @@
       --accent-soft:rgba(32,183,255,.18);
       --accent-border:rgba(32,183,255,.42);
 
-      --banner-a:#07111a;
-      --banner-b:#0d2334;
-      --banner-c:#124868;
-      --banner-d:#1e9bd7;
+      --banner-a:#050d14;
+      --banner-b:#0d2233;
+      --banner-c:#134a6b;
+      --banner-d:#20b7ff;
 
       --card-a:#091826;
       --card-b:#132b4d;
@@ -37,9 +37,9 @@
       --accent-soft:rgba(245,158,11,.18);
       --accent-border:rgba(245,158,11,.42);
 
-      --banner-a:#160d05;
+      --banner-a:#150d05;
       --banner-b:#3e1f08;
-      --banner-c:#87410d;
+      --banner-c:#8a430e;
       --banner-d:#f59e0b;
 
       --card-a:#1a1205;
@@ -113,15 +113,16 @@
     .hero-banner{
       position:relative;
       margin:0 0 20px;
-      padding:34px 30px;
-      border-radius:28px;
+      padding:38px 34px;
+      border-radius:30px;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.10);
       background:
         linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 28%, var(--banner-c) 62%, var(--banner-d) 100%);
       box-shadow:
-        0 24px 60px rgba(0,0,0,.38),
-        inset 0 1px 0 rgba(255,255,255,.08);
+        0 28px 70px rgba(0,0,0,.42),
+        inset 0 1px 0 rgba(255,255,255,.08),
+        inset 0 -80px 120px rgba(0,0,0,.18);
     }
 
     .hero-banner::before{
@@ -132,24 +133,24 @@
         linear-gradient(120deg, transparent 0 44%, rgba(255,255,255,.05) 44% 46%, transparent 46% 100%),
         linear-gradient(60deg, transparent 0 48%, rgba(255,255,255,.04) 48% 50%, transparent 50% 100%);
       pointer-events:none;
-      opacity:.5;
+      opacity:.45;
     }
 
     .hero-banner::after{
       content:"";
       position:absolute;
-      right:-110px;
+      right:-90px;
       top:50%;
-      width:390px;
-      height:390px;
+      width:420px;
+      height:420px;
       transform:translateY(-50%);
       border-radius:50%;
       background:
-        radial-gradient(circle, rgba(255,255,255,.18) 0 4%, transparent 4% 12%, rgba(255,255,255,.11) 12% 18%, transparent 18% 28%, rgba(255,255,255,.08) 28% 35%, transparent 35% 44%, rgba(255,255,255,.07) 44% 50%, transparent 50% 100%);
+        radial-gradient(circle, rgba(255,255,255,.24) 0 4%, transparent 4% 11%, rgba(255,255,255,.11) 11% 18%, transparent 18% 28%, rgba(255,255,255,.08) 28% 35%, transparent 35% 44%, rgba(255,255,255,.07) 44% 50%, transparent 50% 100%);
       box-shadow:
         inset 0 0 0 1px rgba(255,255,255,.06),
-        0 0 80px rgba(255,255,255,.08);
-      opacity:.78;
+        0 0 90px rgba(255,255,255,.10);
+      opacity:.86;
       pointer-events:none;
     }
 
@@ -162,6 +163,19 @@
         radial-gradient(circle at 18% 30%, rgba(255,255,255,.65), transparent 14%),
         linear-gradient(180deg, rgba(255,255,255,.04), transparent 30%);
       mix-blend-mode:screen;
+    }
+
+    .hero-stripe{
+      position:absolute;
+      left:-8%;
+      bottom:12%;
+      width:52%;
+      height:16px;
+      transform:rotate(-8deg);
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
+      opacity:.32;
+      filter:blur(1px);
+      pointer-events:none;
     }
 
     .hero-banner-inner{
@@ -186,7 +200,9 @@
       line-height:.92;
       letter-spacing:-.05em;
       text-transform:uppercase;
-      text-shadow:0 10px 30px rgba(0,0,0,.22);
+      text-shadow:
+        0 10px 30px rgba(0,0,0,.22),
+        0 0 18px rgba(255,255,255,.08);
     }
 
     .hero-banner p{
@@ -266,15 +282,26 @@
       overflow:hidden;
     }
 
+    .info-banner::before{
+      content:"? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?";
+      position:absolute;
+      inset:10px 14px;
+      color:rgba(255,255,255,.10);
+      font-weight:900;
+      font-size:18px;
+      line-height:1.9;
+      letter-spacing:8px;
+      word-spacing:10px;
+      white-space:normal;
+      pointer-events:none;
+      user-select:none;
+    }
+
     .info-banner::after{
       content:"";
       position:absolute;
-      right:-50px;
-      bottom:-50px;
-      width:180px;
-      height:180px;
-      border-radius:50%;
-      background:radial-gradient(circle, rgba(255,255,255,.10) 0 12%, transparent 12% 26%, rgba(255,255,255,.06) 26% 38%, transparent 38%);
+      inset:0;
+      background:linear-gradient(135deg, rgba(255,255,255,.02), rgba(255,255,255,0));
       pointer-events:none;
     }
 
@@ -765,6 +792,12 @@
       }
       .discord-btn{width:100%}
       .info-actions{width:100%}
+      .info-banner::before{
+        font-size:15px;
+        letter-spacing:6px;
+        word-spacing:6px;
+        line-height:1.8;
+      }
     }
   </style>
 </head>
@@ -772,6 +805,7 @@
   <div class="wrap">
     <section class="hero-banner">
       <div class="dart-rays"></div>
+      <div class="hero-stripe"></div>
       <div class="hero-banner-inner">
         <div class="hero-banner-copy">
           <div class="hero-tag">Online Liga • Darts</div>
@@ -1148,7 +1182,7 @@
         return blocks || `<p>Keine FAQ gefunden.</p>`;
       }
 
-      const blocks = cleaned.map((row, index) => {
+      const blocks = cleaned.map((row) => {
         const filled = row.filter(cell => cell);
         if (!filled.length) return "";
         if (filled.length === 1) {
