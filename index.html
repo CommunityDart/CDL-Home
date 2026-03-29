@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title> Liga</title>
+  <title>Dart Liga</title>
   <style>
     :root{
       --bg:#03131b;
@@ -554,11 +554,11 @@
     }
 
     function parseMatchdaysFromErgSheet(rows) {
-      if (!rows || rows.length < 4) return [];
+      if (!rows || !rows.length) return [];
 
       const grouped = new Map();
 
-      for (let i = 3; i < rows.length; i++) {
+      for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         if (!rowHasAnyContent(row)) continue;
 
