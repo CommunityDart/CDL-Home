@@ -212,8 +212,8 @@
       position:relative;
     }
 
-    .rank-col.top::before,
-    .rank-col.bottom::before{
+    .rank-col.first::before,
+    .rank-col.last::before{
       content:"";
       position:absolute;
       left:0;
@@ -222,8 +222,8 @@
       width:10px;
     }
 
-    .rank-col.top::before{background:#27b8ff}
-    .rank-col.bottom::before{background:var(--red)}
+    .rank-col.first::before{ background: var(--green); }
+    .rank-col.last::before{ background: var(--red); }
 
     .player-cell{
       font-weight:800;
@@ -520,18 +520,14 @@
       let spieltageMarker = -1;
 
       for (let i = 0; i < rows.length; i++) {
-        const rowText = rows[i].map(c => normalize(c)).join(" | ");
-        if (tabelleMarker === -1 && rowText.includes("tabelle")) {
-          tabelleMarker = i;
-        }
-        if (spieltageMarker === -1 && rowText.includes("spieltage")) {
-          spieltageMarker = i;
-        }
+        const text = rows[i].map(c => normalize(c)).join(" | ");
+        if (tabelleMarker === -1 && text.includes("tabelle")) tabelleMarker = i;
+        if (spieltageMarker === -1 && text.includes("spieltage")) spieltageMarker = i;
       }
 
       if (tabelleMarker === -1) return { headers: [], rows: [] };
 
-      const start = tabelleMarker + 2;
+      const start = tabelleMarker + 1;
       const end = spieltageMarker > start ? spieltageMarker : rows.length;
 
       const headers = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
@@ -539,17 +535,16 @@
 
       for (let i = start; i < end; i++) {
         const row = rows[i];
+        if (!rowHasAnyContent(row)) continue;
+
         const platz = safeCell(row, 0);
-
-        if (!platz) continue;
-        if (isNaN(parseInt(platz, 10))) continue;
-
         const spieler = safeCell(row, 1);
         const siege = safeCell(row, 2);
         const niederlagen = safeCell(row, 3);
         const legDiff = safeCell(row, 4);
         const punkte = safeCell(row, 5);
 
+        if (!platz || isNaN(parseInt(platz, 10))) continue;
         if (!spieler) continue;
 
         body.push([platz, spieler, siege, niederlagen, legDiff, punkte]);
@@ -595,12 +590,14 @@
       }
 
       return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
-        const statuses = rowsForDay.map(r => String(r[7] || "").trim()).filter(Boolean);
+        const statuses = rowsForDay
+          .map(r => String(r[7] || "").trim())
+          .filter(Boolean);
 
         let dayStatus = "offen";
         if (statuses.length) {
           const allDone = statuses.every(v => /fertig|abgeschlossen|done|closed/i.test(v));
-          dayStatus = allDone ? "fertig" : statuses[0];
+          dayStatus = allDone ? "fertig" : "offen";
         }
 
         return {
@@ -637,8 +634,8 @@
     function rankClass(rankValue, totalRows) {
       const rank = parseInt(String(rankValue).replace(/\D/g, ""), 10);
       if (!Number.isFinite(rank)) return "";
-      if (rank <= 3) return "top";
-      if (rank >= Math.max(totalRows - 2, 4)) return "bottom";
+      if (rank === 1) return "first";
+      if (rank === totalRows) return "last";
       return "";
     }
 
