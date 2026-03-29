@@ -1,1096 +1,489 @@
-<!doctype html>
-<html lang="de">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Community Dart Liga</title>
-  <style>
-    :root {
-      --bg: #0b1220;
-      --bg-soft: #111a2b;
-      --panel: #121c2d;
-      --panel-2: #172235;
-      --text: #f3f7fc;
-      --muted: #a4b2c5;
-      --line: #243248;
-      --line-soft: #1d293d;
-      --blue: #2d8cff;
-      --blue-soft: rgba(45,140,255,0.14);
-      --orange: #ff8a2a;
-      --orange-soft: rgba(255,138,42,0.14);
-      --green: #22c55e;
-      --shadow: 0 10px 24px rgba(0,0,0,0.22);
-      --radius-xl: 20px;
-      --radius-lg: 16px;
-      --radius-md: 12px;
-      --radius-sm: 10px;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      font-family: Inter, Arial, Helvetica, sans-serif;
-      color: var(--text);
-      background: linear-gradient(180deg, #0b1220 0%, #0f1726 100%);
-      min-height: 100vh;
-    }
-
-    a { color: inherit; text-decoration: none; }
-
-    .wrap {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 20px 16px 40px;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: 1.8fr 0.9fr;
-      gap: 18px;
-      padding: 24px;
-      margin-bottom: 18px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-xl);
-      background: var(--panel);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-left,
-    .hero-right {
-      min-width: 0;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      margin-bottom: 14px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--bg-soft);
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: clamp(28px, 4vw, 44px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-    }
-
-    .hero p {
-      margin: 0;
-      max-width: 760px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    .hero-stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .stat-pill,
-    .hero-panel {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: var(--panel-2);
-    }
-
-    .stat-pill {
-      min-width: 120px;
-      padding: 12px 14px;
-    }
-
-    .stat-pill strong {
-      display: block;
-      font-size: 20px;
-      margin-bottom: 4px;
-    }
-
-    .stat-pill span,
-    .hero-panel p {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .hero-right {
-      display: grid;
-      gap: 10px;
-      align-content: start;
-    }
-
-    .hero-panel {
-      padding: 14px;
-    }
-
-    .hero-panel h3 {
-      margin: 0 0 6px;
-      font-size: 15px;
-    }
-
-    .top-actions {
-      display: grid;
-      gap: 10px;
-    }
-
-    .btn,
-    .league-btn,
-    .mode-btn,
-    .matchday-chip {
-      border: 1px solid var(--line);
-      cursor: pointer;
-      transition: background .18s ease, border-color .18s ease, transform .18s ease;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 46px;
-      padding: 12px 14px;
-      border-radius: var(--radius-md);
-      background: var(--panel-2);
-      font-weight: 700;
-    }
-
-    .btn:hover,
-    .league-btn:hover,
-    .mode-btn:hover,
-    .matchday-chip:hover {
-      transform: translateY(-1px);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 300px 1fr;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-xl);
-      background: var(--panel);
-      box-shadow: var(--shadow);
-    }
-
-    .sidebar {
-      padding: 18px;
-      position: sticky;
-      top: 14px;
-    }
-
-    .section-title {
-      margin: 0 0 10px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-    }
-
-    .mode-switch {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .mode-btn {
-      min-height: 52px;
-      padding: 12px 10px;
-      border-radius: var(--radius-md);
-      background: var(--bg-soft);
-      color: var(--text);
-      font-weight: 800;
-    }
-
-    .mode-btn.active.blue {
-      background: var(--blue-soft);
-      border-color: var(--blue);
-      color: #ffffff;
-    }
-
-    .mode-btn.active.orange {
-      background: var(--orange-soft);
-      border-color: var(--orange);
-      color: #ffffff;
-    }
-
-    .league-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .league-btn {
-      width: 100%;
-      text-align: left;
-      padding: 14px;
-      border-radius: var(--radius-md);
-      background: var(--bg-soft);
-      color: var(--text);
-      font-weight: 800;
-    }
-
-    .league-btn small {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .league-btn.active.blue {
-      background: var(--blue-soft);
-      border-color: var(--blue);
-    }
-
-    .league-btn.active.orange {
-      background: var(--orange-soft);
-      border-color: var(--orange);
-    }
-
-    .content {
-      padding: 20px;
-    }
-
-    .content-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .content-head h2 {
-      margin: 0 0 6px;
-      font-size: clamp(26px, 3vw, 36px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-    }
-
-    .content-head p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .status {
-      padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: var(--bg-soft);
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .table-wrap {
-      margin-bottom: 18px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      background: var(--panel-2);
-    }
-
-    .table-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      background: #162235;
-    }
-
-    .table-head h3 {
-      margin: 0;
-      font-size: 17px;
-    }
-
-    .table-head span {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .standings {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .standings th,
-    .standings td {
-      padding: 12px 12px;
-      border-bottom: 1px solid var(--line-soft);
-      text-align: left;
-      font-size: 14px;
-    }
-
-    .standings th {
-      background: #141f31;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-    }
-
-    .standings tbody tr:nth-child(even) {
-      background: rgba(255,255,255,0.015);
-    }
-
-    .standings .rank {
-      width: 58px;
-      font-weight: 800;
-    }
-
-    .standings .player {
-      font-weight: 700;
-    }
-
-    .rank-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 30px;
-      height: 30px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--bg-soft);
-      font-weight: 800;
-    }
-
-    .rank-1 { border-color: #d8b13d; }
-    .rank-2 { border-color: #aeb7c4; }
-    .rank-3 { border-color: #b98558; }
-
-    .compact-note,
-    .empty,
-    .error {
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: var(--panel-2);
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .compact-note {
-      margin-bottom: 18px;
-    }
-
-    .error {
-      border-color: rgba(255,110,110,0.35);
-      color: #ffd0d0;
-      background: rgba(120,20,20,0.18);
-    }
-
-    .matchday-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-
-    .matchday-chip {
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: var(--bg-soft);
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    .matchday-chip.active.blue {
-      background: var(--blue-soft);
-      border-color: var(--blue);
-    }
-
-    .matchday-chip.active.orange {
-      background: var(--orange-soft);
-      border-color: var(--orange);
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 14px;
-    }
-
-    .match-card {
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: var(--panel-2);
-    }
-
-    .label {
-      margin-bottom: 12px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-    }
-
-    .players {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .player-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: center;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: #131d2e;
-    }
-
-    .player-name {
-      font-size: 15px;
-      font-weight: 700;
-      line-height: 1.35;
-    }
-
-    .score {
-      min-width: 48px;
-      text-align: right;
-      font-size: 22px;
-      font-weight: 800;
-    }
-
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 10px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: var(--bg-soft);
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .footer {
-      margin-top: 20px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    @media (max-width: 980px) {
-      .hero,
-      .grid {
-        grid-template-columns: 1fr;
+import React, { useEffect, useMemo, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { AlertCircle, CalendarDays, Trophy, Users, RefreshCw } from "lucide-react";
+
+const DEFAULT_SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
+const PLAYER_GID = "413291175";
+
+const LEAGUE_SHEETS = [
+  { name: "Autodarts Liga 1", mode: "autodarts" },
+  { name: "Autodarts Liga 2", mode: "autodarts" },
+  { name: "Autodarts Liga 3", mode: "autodarts" },
+  { name: "Autodarts Liga 4", mode: "autodarts" },
+  { name: "Autodarts Liga 5", mode: "autodarts" },
+  { name: "Autodarts Liga 6", mode: "autodarts" },
+  { name: "DartCounter Liga 1", mode: "dartcounter" },
+  { name: "DartCounter Liga 2", mode: "dartcounter" },
+  { name: "DartCounter Liga 3", mode: "dartcounter" },
+  { name: "DartCounter Liga 4", mode: "dartcounter" },
+  { name: "DartCounter Liga 5", mode: "dartcounter" },
+  { name: "DartCounter Liga 6", mode: "dartcounter" },
+];
+
+function normalize(value) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function csvUrlByGid(sheetId, gid) {
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+}
+
+function csvUrlBySheetName(sheetId, sheetName) {
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    const next = text[i + 1];
+
+    if (inQuotes) {
+      if (char === '"' && next === '"') {
+        cell += '"';
+        i += 1;
+      } else if (char === '"') {
+        inQuotes = false;
+      } else {
+        cell += char;
       }
-
-      .sidebar {
-        position: static;
+    } else {
+      if (char === '"') {
+        inQuotes = true;
+      } else if (char === ',') {
+        row.push(cell);
+        cell = "";
+      } else if (char === '\n') {
+        row.push(cell);
+        rows.push(row);
+        row = [];
+        cell = "";
+      } else if (char !== '\r') {
+        cell += char;
       }
     }
-
-    @media (max-width: 720px) {
-      .wrap {
-        padding: 14px 12px 28px;
-      }
-
-      .hero,
-      .content,
-      .sidebar {
-        padding: 16px;
-      }
-
-      .hero h1 {
-        font-size: 30px;
-      }
-
-      .content-head h2 {
-        font-size: 28px;
-      }
-
-      .cards {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <section class="hero">
-      <div class="hero-left">
-        <div class="badge">🎯 Community Dart Liga</div>
-        <h1>Community Dart Liga</h1>
-        <p>Wähle links den Modus und danach die Liga. Es werden nur Ligen angezeigt, in denen Spieler erkannt wurden. Oben steht die Tabelle, darunter die Spieltage.</p>
-        <div class="hero-stats">
-          <div class="stat-pill"><strong>12</strong><span>Ligen gesamt</span></div>
-          <div class="stat-pill"><strong>2</strong><span>Modi</span></div>
-          <div class="stat-pill"><strong>Live</strong><span>Google Sheets Feed</span></div>
-        </div>
-      </div>
-      <div class="hero-right">
-        <div class="hero-panel"><h3>Autodarts</h3><p>Klare blaue Markierung für aktive Auswahl.</p></div>
-        <div class="hero-panel"><h3>DartCounter</h3><p>Klare orange Markierung und direkte Anzeige aus dem Blatt.</p></div>
-        <div class="top-actions">
-          <a class="btn" id="sheetLink" href="#" target="_blank" rel="noopener">📄 Google Sheet öffnen</a>
-        </div>
-      </div>
-    </section>
-
-    <div class="grid">
-      <aside class="panel sidebar">
-        <p class="section-title">Modus wählen</p>
-        <div class="mode-switch">
-          <button class="mode-btn active blue" data-mode="autodarts">Autodarts</button>
-          <button class="mode-btn" data-mode="dartcounter">DartCounter</button>
-        </div>
-
-        <p class="section-title">Liga wählen</p>
-        <div class="league-list" id="leagueList"></div>
-      </aside>
-
-      <main class="panel content">
-        <div class="content-head">
-          <div>
-            <h2 id="title">Autodarts Liga 1</h2>
-            <p id="subtitle">Tabelle und Spieltage werden geladen …</p>
-          </div>
-          <div class="status" id="statusBox">Warte auf Daten …</div>
-        </div>
-
-        <div id="tableArea"></div>
-        <div class="matchday-bar" id="matchdayBar"></div>
-        <div id="contentArea"></div>
-      </main>
-    </div>
-
-    <div class="footer">CDL Website • Datenquelle: Google Sheets</div>
-  </div>
-
-  <script>
-    const SHEET_ID = "1kan56xgDkKnLSr4vCQ7BDiaiXM2_4chhE7jOmTCU024";
-
-    const CONFIG = {
-      autodarts: {
-        label: "Autodarts",
-        colorClass: "blue",
-        sheets: [
-          "Autodarts Liga 1",
-          "Autodarts Liga 2",
-          "Autodarts Liga 3",
-          "Autodarts Liga 4",
-          "Autodarts Liga 5",
-          "Autodarts Liga 6"
-        ]
-      },
-      dartcounter: {
-        label: "DartCounter",
-        colorClass: "orange",
-        sheets: [
-          "DartCounter Liga 1",
-          "DartCounter Liga 2",
-          "DartCounter Liga 3",
-          "DartCounter Liga 4",
-          "DartCounter Liga 5",
-          "DartCounter Liga 6"
-        ]
-      }
-    };
-
-    const state = {
-      mode: "autodarts",
-      leagueIndex: 0,
-      matchdays: [],
-      activeMatchday: 0,
-      standings: [],
-      leagueMeta: {
-        autodarts: [],
-        dartcounter: []
-      }
-    };
-
-    const leagueList = document.getElementById("leagueList");
-    const title = document.getElementById("title");
-    const subtitle = document.getElementById("subtitle");
-    const statusBox = document.getElementById("statusBox");
-    const tableArea = document.getElementById("tableArea");
-    const matchdayBar = document.getElementById("matchdayBar");
-    const contentArea = document.getElementById("contentArea");
-    const sheetLink = document.getElementById("sheetLink");
-
-    sheetLink.href = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
-
-    function currentSheetName() {
-      return CONFIG[state.mode].sheets[state.leagueIndex];
-    }
-
-    function googleSheetCsvUrl(sheetName) {
-      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-    }
-
-    function parseCSV(text) {
-      const rows = [];
-      let row = [];
-      let value = "";
-      let inQuotes = false;
-
-      for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const next = text[i + 1];
-
-        if (char === '"') {
-          if (inQuotes && next === '"') {
-            value += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (char === ',' && !inQuotes) {
-          row.push(value.trim());
-          value = "";
-        } else if ((char === '\n' || char === '\r') && !inQuotes) {
-          if (char === '\r' && next === '\n') i++;
-          row.push(value.trim());
-          if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
-          row = [];
-          value = "";
-        } else {
-          value += char;
-        }
-      }
-
-      if (value.length || row.length) {
-        row.push(value.trim());
-        if (row.some(cell => String(cell).trim() !== "")) rows.push(row);
-      }
-
-      return rows;
-    }
-
-    function normalize(str) {
-      return String(str || "")
-        .toLowerCase()
-        .replace(/ä/g, "ae")
-        .replace(/ö/g, "oe")
-        .replace(/ü/g, "ue")
-        .replace(/ß/g, "ss")
-        .trim();
-    }
-
-    function looksLikeMatchday(text) {
-      return /^spieltag\s*\d+$/i.test(String(text || "").trim());
-    }
-
-    function looksLikeStatus(text) {
-      const t = normalize(text);
-      return t === "fertig" || t === "offen" || t === "abgeschlossen" || t === "running" || t === "laufend";
-    }
-
-    function looksLikeHeaderRow(row) {
-      const joined = normalize(row.join(" "));
-      return joined.includes("spieler 1") || joined.includes("spieler1") || joined.includes("spieler 2") || joined.includes("spieler2") || joined.includes("heim") || joined.includes("auswaerts") || joined.includes("auswärts");
-    }
-
-    function isNumericLike(value) {
-      return /^-?\d+(?:[.,]\d+)?$$/.test(String(value || "").trim());
-    }
-
-    function findFirstMatchdayIndex(rows) {
-      return rows.findIndex(row => looksLikeMatchday(row[0] || ""));
-    }
-
-    function extractStandings(rows) {
-      const firstMatchdayIndex = findFirstMatchdayIndex(rows);
-      const searchRows = firstMatchdayIndex >= 0 ? rows.slice(0, firstMatchdayIndex) : rows;
-
-      let headerIndex = -1;
-      for (let i = 0; i < searchRows.length; i++) {
-        const joined = normalize(searchRows[i].join(" "));
-        const hasPlatz = joined.includes("platz");
-        const hasSpieler = joined.includes("spieler");
-        const hasPoints = joined.includes("pkt") || joined.includes("punkte");
-
-        if (hasPlatz && hasSpieler && hasPoints) {
-          headerIndex = i;
-          break;
-        }
-      }
-
-      if (headerIndex === -1) return [];
-
-      const standings = [];
-      for (const row of searchRows.slice(headerIndex + 1)) {
-        const rank = String(row[0] || "").trim();
-        const player = String(row[1] || "").trim();
-        const played = String(row[2] || "").trim();
-        const wins = String(row[3] || "").trim();
-        const draws = String(row[4] || "").trim();
-        const losses = String(row[5] || "").trim();
-        const legs = String(row[6] || "").trim();
-        const diff = String(row[7] || "").trim();
-        const points = String(row[8] || "").trim();
-
-        if (!rank || !player) continue;
-        if (!/^\\d+$/.test(rank)) continue;
-        if (!points || !isNumericLike(points)) continue;
-
-        standings.push({
-          rank,
-          player,
-          played: played || "-",
-          wins: wins || "-",
-          draws: draws || "-",
-          losses: losses || "-",
-          legs: legs || "-",
-          diff: diff || "-",
-          points
-        });
-      }
-
-      return standings;
-    }
-
-    function hasPlayersInSheet(rows) {
-      const standings = extractStandings(rows);
-      if (standings.length) return true;
-
-      for (const row of rows) {
-        const cells = row.map(cell => String(cell || "").trim()).filter(Boolean);
-        if (cells.length >= 3 && /^\\d+$/.test(cells[0]) && cells[1] && cells[2]) {
-          return true;
-        }
-      }
-
-      const firstMatchdayIndex = findFirstMatchdayIndex(rows);
-      const searchRows = firstMatchdayIndex >= 0 ? rows.slice(firstMatchdayIndex + 1) : rows;
-      for (const row of searchRows) {
-        const p1 = String(row[0] || "").trim();
-        const p2 = String(row[1] || "").trim();
-        if (p1 && p2 && !looksLikeHeaderRow(row) && !looksLikeMatchday(p1)) return true;
-      }
-      return false;
-    }
-
-    function groupMatchdays(rows) {
-      const groups = [];
-      let current = null;
-
-      for (const row of rows) {
-        const first = row[0] || "";
-
-        if (looksLikeMatchday(first)) {
-          if (current) groups.push(current);
-          current = { title: first, status: looksLikeStatus(row[1]) ? row[1] : "", rows: [] };
-          continue;
-        }
-
-        if (!current) continue;
-        if (looksLikeHeaderRow(row)) continue;
-
-        const hasRealData = row.some(cell => String(cell || "").trim() !== "");
-        if (hasRealData) current.rows.push(row);
-      }
-
-      if (current) groups.push(current);
-      return groups;
-    }
-
-    function mapMatchRows(rows) {
-      return rows.map((row, index) => {
-        const cells = row.map(cell => String(cell || "").trim());
-        const nonEmpty = cells.filter(Boolean);
-        if (nonEmpty.length < 2) return null;
-
-        let matchNumber = `Match ${index + 1}`;
-        let p1 = "-";
-        let p2 = "-";
-        let s1 = "";
-        let s2 = "";
-        let note = "";
-
-        if (/^\d+$/.test(cells[0]) && cells[1] && cells[2]) {
-          matchNumber = `Match ${cells[0]}`;
-          p1 = cells[1];
-          p2 = cells[2];
-          s1 = cells[3] || "";
-          s2 = cells[4] || "";
-          note = cells[5] || cells[3] || "";
-        } else {
-          p1 = cells[0] || "-";
-          p2 = cells[1] || "-";
-          s1 = cells[2] || "";
-          s2 = cells[3] || "";
-          note = cells[4] || "";
-        }
-
-        if (!p1 || !p2) return null;
-
-        return {
-          label: matchNumber,
-          p1,
-          p2,
-          s1,
-          s2,
-          note
-        };
-      }).filter(Boolean);
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    function renderModeButtons() {
-      document.querySelectorAll(".mode-btn").forEach(btn => {
-        const isActive = btn.dataset.mode === state.mode;
-        const color = btn.dataset.mode === "autodarts" ? "blue" : "orange";
-        btn.className = `mode-btn ${isActive ? `active ${color}` : ""}`;
-      });
-    }
-
-    function renderLeagueButtons() {
-      const cfg = CONFIG[state.mode];
-      const meta = state.leagueMeta[state.mode] || [];
-      leagueList.innerHTML = "";
-
-      const visible = cfg.sheets
-        .map((sheet, index) => ({ sheet, index, meta: meta[index] }))
-        .filter(item => !item.meta || item.meta.hasPlayers !== false);
-
-      if (!visible.length) {
-        leagueList.innerHTML = `<div class="empty">Keine Ligen mit Spielern gefunden.</div>`;
-        return;
-      }
-
-      if (!visible.some(item => item.index === state.leagueIndex)) {
-        state.leagueIndex = visible[0].index;
-      }
-
-      visible.forEach(({ sheet, index, meta }) => {
-        const button = document.createElement("button");
-        button.className = `league-btn ${index === state.leagueIndex ? `active ${cfg.colorClass}` : ""}`;
-        const count = meta && meta.playerCount ? `${meta.playerCount} Spieler` : "Liga aktiv";
-        button.innerHTML = `${sheet}<small>${count} • Tabelle + Spieltage</small>`;
-        button.addEventListener("click", () => {
-          state.leagueIndex = index;
-          state.activeMatchday = 0;
-          renderModeButtons();
-          renderLeagueButtons();
-          loadLeague();
-        });
-        leagueList.appendChild(button);
-      });
-    }
-
-    function renderStandings() {
-      if (!state.standings.length) {
-        tableArea.innerHTML = `<div class="compact-note">Für diese Liga wurde keine saubere Tabelle erkannt. Die Spieltage werden trotzdem angezeigt.</div>`;
-        return;
-      }
-
-      tableArea.innerHTML = `
-        <section class="table-wrap">
-          <div class="table-head">
-            <h3>Aktuelle Tabelle</h3>
-            <span>${state.standings.length} Spieler</span>
-          </div>
-          <div style="overflow:auto;">
-            <table class="standings">
-              <thead>
-                <tr>
-                  <th>Platz</th>
-                  <th>Spieler</th>
-                  <th>Sp.</th>
-                  <th>S</th>
-                  <th>U</th>
-                  <th>N</th>
-                  <th>Legs</th>
-                  <th>Diff.</th>
-                  <th>Pkt.</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${state.standings.map((row, i) => `
-                  <tr>
-                    <td class="rank"><span class="rank-badge ${i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : ''}">${escapeHtml(row.rank)}</span></td>
-                    <td class="player">${escapeHtml(row.player)}</td>
-                    <td>${escapeHtml(row.played)}</td>
-                    <td>${escapeHtml(row.wins)}</td>
-                    <td>${escapeHtml(row.draws)}</td>
-                    <td>${escapeHtml(row.losses)}</td>
-                    <td>${escapeHtml(row.legs)}</td>
-                    <td>${escapeHtml(row.diff)}</td>
-                    <td><strong>${escapeHtml(row.points)}</strong></td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderMatchdayButtons() {
-      const colorClass = CONFIG[state.mode].colorClass;
-      matchdayBar.innerHTML = "";
-      state.matchdays.forEach((day, index) => {
-        const btn = document.createElement("button");
-        btn.className = `matchday-chip ${index === state.activeMatchday ? `active ${colorClass}` : ""}`;
-        btn.textContent = day.title || `Spieltag ${index + 1}`;
-        btn.addEventListener("click", () => {
-          state.activeMatchday = index;
-          renderMatchdayButtons();
-          renderMatches();
-        });
-        matchdayBar.appendChild(btn);
-      });
-    }
-
-    function renderMatches() {
-      const group = state.matchdays[state.activeMatchday];
-      const colorLabel = CONFIG[state.mode].label;
-
-      if (!group) {
-        contentArea.innerHTML = `<div class="empty">Keine Spieltage gefunden. Prüfe bitte, ob im Blatt in Spalte A Einträge wie <strong>Spieltag 1</strong>, <strong>Spieltag 2</strong> usw. stehen.</div>`;
-        return;
-      }
-
-      const matches = mapMatchRows(group.rows);
-      subtitle.textContent = `${colorLabel} • ${currentSheetName()} • Tabelle + ${group.title}${group.status ? ` • Status: ${group.status}` : ""}`;
-
-      if (!matches.length) {
-        contentArea.innerHTML = `<div class="empty">Dieser Spieltag wurde gefunden, aber darunter konnten keine Paarungen gelesen werden. Erwartet werden pro Zeile mindestens Spieler 1 und Spieler 2.</div>`;
-        return;
-      }
-
-      contentArea.innerHTML = `
-        <div class="cards">
-          ${matches.map(match => `
-            <article class="match-card">
-              <div class="label">${match.label}</div>
-              <div class="players">
-                <div class="player-row">
-                  <div class="player-name">${escapeHtml(match.p1)}</div>
-                  <div class="score">${escapeHtml(match.s1 || "-")}</div>
-                </div>
-                <div class="player-row">
-                  <div class="player-name">${escapeHtml(match.p2)}</div>
-                  <div class="score">${escapeHtml(match.s2 || "-")}</div>
-                </div>
-              </div>
-              <div class="meta">
-                ${match.note ? `<span class="tag">Status: ${escapeHtml(match.note)}</span>` : ""}
-              </div>
-            </article>
-          `).join("")}
-        </div>
-      `;
-    }
-
-    async function loadLeague() {
-      const sheetName = currentSheetName();
-      const url = googleSheetCsvUrl(sheetName);
-      title.textContent = sheetName;
-      subtitle.textContent = "Lade Tabelle und Spieltage aus Google Sheets …";
-      statusBox.textContent = "Lädt …";
-      tableArea.innerHTML = `<div class="empty">Tabelle wird geladen …</div>`;
-      matchdayBar.innerHTML = "";
-      contentArea.innerHTML = `<div class="empty">Spieltage werden geladen …</div>`;
-
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const csv = await response.text();
-        const rows = parseCSV(csv);
-
-        state.standings = extractStandings(rows);
-        state.matchdays = groupMatchdays(rows);
-        state.activeMatchday = 0;
-
-        statusBox.textContent = state.matchdays.length ? `${state.matchdays.length} Spieltage gefunden` : "Keine Spieltage gefunden";
-        renderStandings();
-        renderMatchdayButtons();
-        renderMatches();
-      } catch (error) {
-        console.error(error);
-        statusBox.textContent = "Fehler beim Laden";
-        tableArea.innerHTML = "";
-        contentArea.innerHTML = `
-          <div class="error">
-            Das Blatt <strong>${escapeHtml(sheetName)}</strong> konnte nicht geladen werden.<br><br>
-            Prüfe bitte diese Punkte:<br>
-            1. Die <strong>SHEET_ID</strong> ist korrekt.<br>
-            2. Das Google Sheet ist öffentlich freigegeben.<br>
-            3. Das Blatt heißt exakt <strong>${escapeHtml(sheetName)}</strong>.<br>
-            4. Im Blatt stehen oben die Tabellenzeilen und darunter in Spalte A Einträge wie <strong>Spieltag 1</strong>, <strong>Spieltag 2</strong> usw.
-          </div>
-        `;
-      }
-    }
-
-    async function buildLeagueMeta() {
-      for (const mode of Object.keys(CONFIG)) {
-        const results = await Promise.all(CONFIG[mode].sheets.map(async (sheet) => {
-          try {
-            const response = await fetch(googleSheetCsvUrl(sheet));
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const csv = await response.text();
-            const rows = parseCSV(csv);
-            const standings = extractStandings(rows);
-            return { hasPlayers: hasPlayersInSheet(rows), playerCount: standings.length || 0 };
-          } catch (e) {
-            return { hasPlayers: false, playerCount: 0 };
-          }
-        }));
-        state.leagueMeta[mode] = results;
-      }
-    }
-
-    document.querySelectorAll(".mode-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        state.mode = btn.dataset.mode;
-        state.activeMatchday = 0;
-        renderModeButtons();
-        renderLeagueButtons();
-        await loadLeague();
-      });
+  }
+
+  row.push(cell);
+  rows.push(row);
+  return rows;
+}
+
+async function loadCsv(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Fehler beim Laden: ${response.status}`);
+  }
+  return parseCsv(await response.text());
+}
+
+function isTruthyYes(value) {
+  const v = normalize(value);
+  return ["ja", "yes", "y", "true", "1", "aktiv", "active"].includes(v);
+}
+
+function findHeaderIndex(rows) {
+  return rows.findIndex((row) => {
+    const joined = row.map(normalize);
+    return joined.some((v) => v.includes("spieler") || v.includes("discord"))
+      && joined.some((v) => v.includes("liga") || v === "aktiv" || v.includes("status"));
+  });
+}
+
+function getPlayerSheetInfo(rows) {
+  const headerIndex = findHeaderIndex(rows);
+  const headerRow = headerIndex >= 0 ? rows[headerIndex] : [];
+  const dataRows = rows.slice(headerIndex >= 0 ? headerIndex + 1 : 4);
+
+  const normalizedHeaders = headerRow.map(normalize);
+  const autodartsIndex = normalizedHeaders.findIndex((h) => h.includes("autodarts") && h.includes("liga"));
+  const dartcounterIndex = normalizedHeaders.findIndex((h) => h.includes("dartcounter") && h.includes("liga"));
+  const activeIndex = normalizedHeaders.findIndex((h) => h === "aktiv" || h.includes("aktiv") || h.includes("active"));
+  const playerIndex = normalizedHeaders.findIndex((h) => h.includes("spieler") || h.includes("discord") || h.includes("name"));
+
+  const fallback = {
+    playerIndex: playerIndex >= 0 ? playerIndex : 0,
+    autodartsIndex: autodartsIndex >= 0 ? autodartsIndex : 2,
+    dartcounterIndex: dartcounterIndex >= 0 ? dartcounterIndex : 3,
+    activeIndex: activeIndex >= 0 ? activeIndex : 5,
+  };
+
+  const counts = new Map();
+
+  dataRows.forEach((row) => {
+    const playerName = normalize(row[fallback.playerIndex]);
+    const isActive = isTruthyYes(row[fallback.activeIndex] ?? "ja");
+    if (!playerName || !isActive) return;
+
+    const leagues = [row[fallback.autodartsIndex], row[fallback.dartcounterIndex]]
+      .map((value) => String(value ?? "").trim())
+      .filter(Boolean);
+
+    leagues.forEach((league) => {
+      counts.set(league, (counts.get(league) || 0) + 1);
     });
+  });
 
-    (async () => {
-      renderModeButtons();
-      await buildLeagueMeta();
-      renderLeagueButtons();
-      await loadLeague();
-    })();
-  </script>
-</body>
-</html>
+  return counts;
+}
+
+function rowHasContent(row) {
+  return row.some((cell) => normalize(cell) !== "");
+}
+
+function detectStandingHeaderRow(rows) {
+  return rows.findIndex((row) => {
+    const values = row.map(normalize);
+    const joined = values.join(" | ");
+    const headerSignals = ["platz", "spieler", "team", "spiele", "siege", "punkte", "legs", "sets"];
+    return headerSignals.filter((signal) => joined.includes(signal)).length >= 2;
+  });
+}
+
+function cleanTable(rows) {
+  const maxCols = Math.max(...rows.map((r) => r.length), 0);
+  const trimmed = rows.map((row) => {
+    const copy = [...row];
+    while (copy.length < maxCols) copy.push("");
+    return copy;
+  });
+
+  const nonEmptyCols = [];
+  for (let c = 0; c < maxCols; c += 1) {
+    const hasData = trimmed.some((row) => normalize(row[c]) !== "");
+    if (hasData) nonEmptyCols.push(c);
+  }
+
+  return trimmed.map((row) => nonEmptyCols.map((c) => row[c] ?? ""));
+}
+
+function parseLeagueSheet(rows) {
+  const compactRows = rows.filter((row) => rowHasContent(row));
+  const spieltagIndices = compactRows
+    .map((row, index) => ({ row, index }))
+    .filter(({ row }) => row.some((cell) => /spieltag\s*\d+/i.test(String(cell))));
+
+  const standingHeaderIndex = detectStandingHeaderRow(compactRows);
+  let standings = { headers: [], rows: [] };
+
+  if (standingHeaderIndex >= 0) {
+    const nextStop = compactRows.findIndex(
+      (row, index) => index > standingHeaderIndex && row.some((cell) => /spieltag\s*\d+/i.test(String(cell)))
+    );
+
+    const bodySlice = compactRows.slice(
+      standingHeaderIndex,
+      nextStop >= 0 ? nextStop : compactRows.length
+    );
+
+    const table = cleanTable(bodySlice).filter((row) => rowHasContent(row));
+    if (table.length > 1) {
+      standings = {
+        headers: table[0],
+        rows: table.slice(1).filter((row) => row.some((cell) => normalize(cell) !== "")),
+      };
+    }
+  }
+
+  const matchdays = spieltagIndices.map(({ row, index }, idx) => {
+    const title = row.find((cell) => /spieltag\s*\d+/i.test(String(cell))) || `Spieltag ${idx + 1}`;
+    const nextIndex = spieltagIndices[idx + 1]?.index ?? compactRows.length;
+    const rawSection = compactRows.slice(index + 1, nextIndex);
+
+    const cleaned = rawSection.filter((r) => rowHasContent(r));
+    const headerCandidates = cleaned.filter((r) => r.filter((cell) => normalize(cell)).length >= 2);
+
+    let headers = [];
+    let entries = [];
+
+    if (headerCandidates.length > 0) {
+      headers = headerCandidates[0];
+      entries = headerCandidates.slice(1);
+    }
+
+    return {
+      title,
+      headers,
+      rows: entries,
+      raw: cleaned,
+    };
+  });
+
+  return { standings, matchdays };
+}
+
+function TableView({ headers, rows }) {
+  if (!headers?.length || !rows?.length) {
+    return <p className="text-sm text-slate-500">Keine Tabellendaten gefunden.</p>;
+  }
+
+  return (
+    <div className="overflow-x-auto rounded-2xl border">
+      <table className="min-w-full text-sm">
+        <thead className="bg-slate-50">
+          <tr>
+            {headers.map((header, index) => (
+              <th key={`${header}-${index}`} className="px-4 py-3 text-left font-semibold text-slate-700">
+                {header || "–"}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr key={rowIndex} className="border-t">
+              {headers.map((_, colIndex) => (
+                <td key={colIndex} className="px-4 py-3 text-slate-600">
+                  {row[colIndex] || "–"}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function MatchdayCard({ day }) {
+  const hasStructuredRows = day.headers?.length && day.rows?.length;
+
+  return (
+    <AccordionItem value={day.title} className="rounded-2xl border px-4">
+      <AccordionTrigger className="text-left hover:no-underline">
+        <div className="flex items-center gap-3">
+          <CalendarDays className="h-4 w-4" />
+          <span className="font-medium">{day.title}</span>
+          <Badge variant="secondary">{day.rows?.length || day.raw?.length || 0} Einträge</Badge>
+        </div>
+      </AccordionTrigger>
+      <AccordionContent>
+        {hasStructuredRows ? (
+          <TableView headers={day.headers} rows={day.rows} />
+        ) : (
+          <div className="space-y-2">
+            {day.raw?.map((row, index) => (
+              <div key={index} className="rounded-xl border px-3 py-2 text-sm text-slate-600">
+                {row.filter(Boolean).join(" • ")}
+              </div>
+            ))}
+          </div>
+        )}
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
+
+export default function DartLigaWebsite() {
+  const [sheetId, setSheetId] = useState(DEFAULT_SHEET_ID);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [activeLeagues, setActiveLeagues] = useState([]);
+  const [leagueData, setLeagueData] = useState({});
+
+  const loadAll = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const playerRows = await loadCsv(csvUrlByGid(sheetId, PLAYER_GID));
+      const counts = getPlayerSheetInfo(playerRows);
+
+      const leaguesWithPlayers = LEAGUE_SHEETS.filter((league) => (counts.get(league.name) || 0) > 0).map((league) => ({
+        ...league,
+        playerCount: counts.get(league.name) || 0,
+      }));
+
+      const dataEntries = await Promise.all(
+        leaguesWithPlayers.map(async (league) => {
+          const rows = await loadCsv(csvUrlBySheetName(sheetId, league.name));
+          return [league.name, parseLeagueSheet(rows)];
+        })
+      );
+
+      setActiveLeagues(leaguesWithPlayers);
+      setLeagueData(Object.fromEntries(dataEntries));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unbekannter Fehler beim Laden der Tabelle.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAll();
+  }, []);
+
+  const filteredLeagues = useMemo(() => {
+    const term = normalize(search);
+    if (!term) return activeLeagues;
+    return activeLeagues.filter((league) => normalize(league.name).includes(term));
+  }, [activeLeagues, search]);
+
+  const defaultTab = filteredLeagues[0]?.name;
+
+  return (
+    <div className="min-h-screen bg-slate-100 p-4 md:p-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <div className="grid gap-4 md:grid-cols-[1.4fr_0.6fr]">
+          <Card className="rounded-3xl border-0 shadow-sm">
+            <CardHeader>
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <CardTitle className="text-3xl">Dart Online Liga</CardTitle>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Es werden nur Ligen angezeigt, in denen laut <strong>Spieler_Discord</strong> aktive Spieler eingetragen sind.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="rounded-full px-3 py-1 text-sm">
+                    <Users className="mr-2 h-4 w-4" /> {activeLeagues.length} aktive Ligen
+                  </Badge>
+                  <Badge variant="secondary" className="rounded-full px-3 py-1 text-sm">
+                    <Trophy className="mr-2 h-4 w-4" /> Spieltage sichtbar
+                  </Badge>
+                </div>
+              </div>
+            </CardHeader>
+          </Card>
+
+          <Card className="rounded-3xl border-0 shadow-sm">
+            <CardContent className="space-y-3 p-6">
+              <label className="text-sm font-medium text-slate-700">Google-Sheet-ID</label>
+              <Input value={sheetId} onChange={(e) => setSheetId(e.target.value)} />
+              <div className="flex gap-2">
+                <Button onClick={loadAll} className="flex-1 rounded-2xl">
+                  <RefreshCw className="mr-2 h-4 w-4" /> Neu laden
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Liga suchen…"
+                className="max-w-md rounded-2xl"
+              />
+              <p className="text-sm text-slate-500">
+                Datenquelle: öffentliches Google Sheet
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {loading ? (
+          <Card className="rounded-3xl border-0 shadow-sm">
+            <CardContent className="p-8 text-sm text-slate-600">Lade Ligen und Spieltage…</CardContent>
+          </Card>
+        ) : error ? (
+          <Card className="rounded-3xl border-0 shadow-sm">
+            <CardContent className="flex items-start gap-3 p-6 text-sm text-red-700">
+              <AlertCircle className="mt-0.5 h-4 w-4" />
+              <div>
+                <p className="font-medium">Die Daten konnten nicht geladen werden.</p>
+                <p className="mt-1 text-red-600">{error}</p>
+                <p className="mt-2 text-slate-600">
+                  Falls das Sheet nicht öffentlich freigegeben ist, funktioniert der CSV-Export im Frontend nicht.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : filteredLeagues.length === 0 ? (
+          <Card className="rounded-3xl border-0 shadow-sm">
+            <CardContent className="p-8 text-sm text-slate-600">
+              Keine aktiven Ligen gefunden.
+            </CardContent>
+          </Card>
+        ) : (
+          <Tabs defaultValue={defaultTab} className="space-y-4">
+            <div className="overflow-x-auto">
+              <TabsList className="h-auto min-w-full justify-start gap-2 rounded-3xl bg-transparent p-0">
+                {filteredLeagues.map((league) => (
+                  <TabsTrigger
+                    key={league.name}
+                    value={league.name}
+                    className="rounded-2xl border bg-white px-4 py-2 data-[state=active]:shadow-sm"
+                  >
+                    {league.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+
+            {filteredLeagues.map((league) => {
+              const data = leagueData[league.name] || { standings: { headers: [], rows: [] }, matchdays: [] };
+              return (
+                <TabsContent key={league.name} value={league.name} className="space-y-6">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <Card className="rounded-3xl border-0 shadow-sm md:col-span-2">
+                      <CardHeader>
+                        <CardTitle className="text-xl">Tabelle · {league.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <TableView headers={data.standings.headers} rows={data.standings.rows} />
+                      </CardContent>
+                    </Card>
+
+                    <Card className="rounded-3xl border-0 shadow-sm">
+                      <CardHeader>
+                        <CardTitle className="text-xl">Übersicht</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3 text-sm text-slate-600">
+                        <div className="flex items-center justify-between rounded-2xl border px-4 py-3">
+                          <span>Spieler in Liga</span>
+                          <strong>{league.playerCount}</strong>
+                        </div>
+                        <div className="flex items-center justify-between rounded-2xl border px-4 py-3">
+                          <span>Gefundene Spieltage</span>
+                          <strong>{data.matchdays.length}</strong>
+                        </div>
+                        <div className="rounded-2xl border px-4 py-3">
+                          Angezeigt werden nur Ligen mit mindestens einem aktiven Spieler.
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card className="rounded-3xl border-0 shadow-sm">
+                    <CardHeader>
+                      <CardTitle className="text-xl">Spieltage</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {data.matchdays.length ? (
+                        <Accordion type="single" collapsible className="space-y-3">
+                          {data.matchdays.map((day) => (
+                            <MatchdayCard key={day.title} day={day} />
+                          ))}
+                        </Accordion>
+                      ) : (
+                        <p className="text-sm text-slate-500">Keine Spieltage erkannt.</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              );
+            })}
+          </Tabs>
+        )}
+      </div>
+    </div>
+  );
+}
