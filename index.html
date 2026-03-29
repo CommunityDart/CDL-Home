@@ -19,10 +19,13 @@
       --row-b:#041924;
       --shadow:0 18px 50px rgba(0,0,0,.35);
       --radius:18px;
+      --discord1:#5865F2;
+      --discord2:#3f4acb;
     }
 
     *{box-sizing:border-box}
     html,body{margin:0;padding:0}
+
     body{
       font-family:Arial,Helvetica,sans-serif;
       background:
@@ -98,6 +101,57 @@
       box-shadow:inset 3px 0 0 var(--accent);
     }
 
+    .discord-banner{
+      margin:0 0 20px;
+      padding:22px 24px;
+      border-radius:18px;
+      background:linear-gradient(90deg, var(--discord1), var(--discord2));
+      box-shadow:0 16px 40px rgba(0,0,0,.35);
+    }
+
+    .discord-content{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .discord-text h2{
+      margin:0;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:.01em;
+    }
+
+    .discord-text p{
+      margin:6px 0 0;
+      font-size:14px;
+      line-height:1.45;
+      opacity:.95;
+      max-width:760px;
+    }
+
+    .discord-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:48px;
+      padding:0 18px;
+      border-radius:12px;
+      background:#fff;
+      color:#5865F2;
+      font-weight:900;
+      text-decoration:none;
+      transition:.18s ease;
+      border:1px solid rgba(255,255,255,.2);
+    }
+
+    .discord-btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 8px 18px rgba(0,0,0,.18);
+    }
+
     .league-tabs{
       display:flex;
       gap:10px;
@@ -135,7 +189,6 @@
     }
 
     .table-shell,
-    .panel,
     .matchday{
       border:1px solid var(--line);
       background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
@@ -239,25 +292,6 @@
       display:flex;
       flex-direction:column;
       gap:14px;
-    }
-
-    .panel{
-      padding:18px;
-    }
-
-    .panel h3{
-      margin:0 0 4px;
-      font-size:15px;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.04em;
-    }
-
-    .panel p{
-      margin:0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.45;
     }
 
     .matchday-list{
@@ -369,6 +403,7 @@
       .title-block h1{font-size:36px}
       .top-controls{width:100%}
       .button,.mode-btn{width:100%}
+      .discord-btn{width:100%}
     }
   </style>
 </head>
@@ -386,15 +421,23 @@
       </div>
     </section>
 
+    <div class="discord-banner">
+      <div class="discord-content">
+        <div class="discord-text">
+          <h2>Community Discord</h2>
+          <p>Tritt unserer Dart Liga Community bei, tausche dich mit Spielern aus und bleib immer auf dem neuesten Stand.</p>
+        </div>
+        <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="discord-btn">
+          Discord beitreten
+        </a>
+      </div>
+    </div>
+
     <div id="leagueTabs" class="league-tabs"></div>
 
     <section class="main">
       <div id="tableArea"></div>
       <aside class="sidebar">
-        <div class="panel">
-          <h3>Spieltage</h3>
-          <p>Die Spieltag-Titel und Matches werden direkt aus dem Blatt gelesen und nach Spieltag gruppiert angezeigt.</p>
-        </div>
         <div id="matchdayArea" class="matchday-list"></div>
       </aside>
     </section>
