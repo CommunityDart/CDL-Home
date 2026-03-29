@@ -2,13 +2,12 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Dart Liga</title>
   <style>
     :root{
       --bg:#03131b;
       --panel:#041924;
-      --panel-2:#082433;
       --line:rgba(120,170,195,.12);
       --text:#f5fbff;
       --muted:#90a9b7;
@@ -42,7 +41,7 @@
     .hero{
       display:flex;
       justify-content:space-between;
-      align-items:flex-end;
+      align-items:end;
       gap:18px;
       margin-bottom:18px;
       flex-wrap:wrap;
@@ -99,40 +98,6 @@
       box-shadow:inset 3px 0 0 var(--accent);
     }
 
-    .statusbar{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:18px;
-    }
-
-    .stat,
-    .panel,
-    .matchday,
-    .table-shell{
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
-      box-shadow:var(--shadow);
-    }
-
-    .stat{
-      padding:14px 16px;
-      min-width:160px;
-      border-radius:14px;
-    }
-
-    .stat-label{
-      color:var(--muted);
-      font-size:12px;
-      margin-bottom:4px;
-    }
-
-    .stat-value{
-      font-size:28px;
-      font-weight:900;
-      line-height:1;
-    }
-
     .league-tabs{
       display:flex;
       gap:10px;
@@ -169,8 +134,16 @@
       align-items:start;
     }
 
-    .table-shell{
+    .table-shell,
+    .panel,
+    .matchday{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
+      box-shadow:var(--shadow);
       border-radius:18px;
+    }
+
+    .table-shell{
       overflow:hidden;
     }
 
@@ -269,7 +242,6 @@
     }
 
     .panel{
-      border-radius:18px;
       padding:18px;
     }
 
@@ -295,7 +267,6 @@
     }
 
     .matchday{
-      border-radius:18px;
       overflow:hidden;
     }
 
@@ -415,13 +386,6 @@
       </div>
     </section>
 
-    <section class="statusbar">
-      <div class="stat"><div class="stat-label">Ligen</div><div id="statLeagues" class="stat-value">0</div></div>
-      <div class="stat"><div class="stat-label">Tabellen gefunden</div><div id="statTables" class="stat-value">0</div></div>
-      <div class="stat"><div class="stat-label">Spieltage</div><div id="statDays" class="stat-value">0</div></div>
-      <div class="stat"><div class="stat-label">Status</div><div id="statusText" class="stat-value" style="font-size:18px">Lade…</div></div>
-    </section>
-
     <div id="leagueTabs" class="league-tabs"></div>
 
     <section class="main">
@@ -429,7 +393,7 @@
       <aside class="sidebar">
         <div class="panel">
           <h3>Spieltage</h3>
-          <p>Spieltage werden aus den jeweiligen Erg-Blättern gelesen und nach Spieltag gruppiert dargestellt.</p>
+          <p>Die Spieltag-Titel und Matches werden direkt aus dem Blatt gelesen und nach Spieltag gruppiert angezeigt.</p>
         </div>
         <div id="matchdayArea" class="matchday-list"></div>
       </aside>
@@ -469,7 +433,6 @@
     const reloadBtn = document.getElementById("reloadBtn");
     const modeAutodartsBtn = document.getElementById("modeAutodarts");
     const modeDartCounterBtn = document.getElementById("modeDartCounter");
-    const statusText = document.getElementById("statusText");
 
     function normalize(value) {
       return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -543,29 +506,51 @@
     }
 
     function safeCell(row, index) {
-      return (row && row[index] !== undefined) ? String(row[index]).trim() : "";
+      return row && row[index] !== undefined ? String(row[index]).trim() : "";
+    }
+
+    function rowHasAnyContent(row) {
+      return row && row.some(cell => normalize(cell) !== "");
     }
 
     function parseStandingsFromLeagueSheet(rows) {
-      if (!rows || rows.length < 6) return { headers: [], rows: [] };
+      if (!rows || !rows.length) return { headers: [], rows: [] };
+
+      let tabelleMarker = -1;
+      let spieltageMarker = -1;
+
+      for (let i = 0; i < rows.length; i++) {
+        const rowText = rows[i].map(c => normalize(c)).join(" | ");
+        if (tabelleMarker === -1 && rowText.includes("tabelle")) {
+          tabelleMarker = i;
+        }
+        if (spieltageMarker === -1 && rowText.includes("spieltage")) {
+          spieltageMarker = i;
+        }
+      }
+
+      if (tabelleMarker === -1) return { headers: [], rows: [] };
+
+      const start = tabelleMarker + 2;
+      const end = spieltageMarker > start ? spieltageMarker : rows.length;
 
       const headers = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
       const body = [];
 
-      for (let i = 4; i < rows.length; i++) {
+      for (let i = start; i < end; i++) {
         const row = rows[i];
         const platz = safeCell(row, 0);
 
-        if (!platz || isNaN(parseInt(platz, 10))) {
-          if (i > 10) break;
-          continue;
-        }
+        if (!platz) continue;
+        if (isNaN(parseInt(platz, 10))) continue;
 
         const spieler = safeCell(row, 1);
         const siege = safeCell(row, 2);
         const niederlagen = safeCell(row, 3);
         const legDiff = safeCell(row, 4);
         const punkte = safeCell(row, 5);
+
+        if (!spieler) continue;
 
         body.push([platz, spieler, siege, niederlagen, legDiff, punkte]);
       }
@@ -574,60 +559,54 @@
     }
 
     function parseMatchdaysFromErgSheet(rows) {
-      if (!rows || rows.length < 5) return [];
-
-      const headerRow = rows[2] || [];
-      const headers = [
-        safeCell(headerRow, 0) || "Spieltag",
-        safeCell(headerRow, 1) || "Spieler 1",
-        safeCell(headerRow, 2) || "Discord 1",
-        safeCell(headerRow, 3) || "Spieler 2",
-        safeCell(headerRow, 4) || "Discord 2",
-        safeCell(headerRow, 5) || "Legs 1",
-        safeCell(headerRow, 6) || "Legs 2",
-        safeCell(headerRow, 7) || "Status"
-      ];
+      if (!rows || rows.length < 4) return [];
 
       const grouped = new Map();
 
       for (let i = 3; i < rows.length; i++) {
         const row = rows[i];
-        const spieltag = safeCell(row, 0);
-        const spieler1 = safeCell(row, 1);
-        const spieler2 = safeCell(row, 3);
+        if (!rowHasAnyContent(row)) continue;
 
-        if (!spieltag || isNaN(parseInt(spieltag, 10))) continue;
+        const spieltagNummer = safeCell(row, 0);
+        const spieler1 = safeCell(row, 1);
+        const discord1 = safeCell(row, 2);
+        const spieler2 = safeCell(row, 3);
+        const discord2 = safeCell(row, 4);
+        const legs1 = safeCell(row, 5);
+        const legs2 = safeCell(row, 6);
+        const status = safeCell(row, 7);
+
+        if (!spieltagNummer || isNaN(parseInt(spieltagNummer, 10))) continue;
         if (!spieler1 || !spieler2) continue;
 
-        const title = `Spieltag ${spieltag}`;
-        const entry = [
-          title,
-          spieler1,
-          safeCell(row, 2),
-          spieler2,
-          safeCell(row, 4),
-          safeCell(row, 5),
-          safeCell(row, 6),
-          safeCell(row, 7)
-        ];
+        const title = `Spieltag ${spieltagNummer}`;
 
         if (!grouped.has(title)) grouped.set(title, []);
-        grouped.get(title).push(entry);
+        grouped.get(title).push([
+          title,
+          spieler1,
+          discord1,
+          spieler2,
+          discord2,
+          legs1,
+          legs2,
+          status
+        ]);
       }
 
       return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
-        const statusValues = rowsForDay.map(r => String(r[7] || "").trim()).filter(Boolean);
-        let status = "offen";
+        const statuses = rowsForDay.map(r => String(r[7] || "").trim()).filter(Boolean);
 
-        if (statusValues.length) {
-          const allDone = statusValues.every(v => /fertig|abgeschlossen|done|closed/i.test(v));
-          status = allDone ? "fertig" : statusValues[0];
+        let dayStatus = "offen";
+        if (statuses.length) {
+          const allDone = statuses.every(v => /fertig|abgeschlossen|done|closed/i.test(v));
+          dayStatus = allDone ? "fertig" : statuses[0];
         }
 
         return {
           title,
-          status,
-          headers,
+          status: dayStatus,
+          headers: ["Spieltag", "Spieler 1", "Discord 1", "Spieler 2", "Discord 2", "Legs 1", "Legs 2", "Status"],
           rows: rowsForDay
         };
       });
@@ -649,13 +628,9 @@
         console.warn("Erg-Blatt nicht ladbar:", leagueName, e);
       }
 
-      const standings = parseStandingsFromLeagueSheet(leagueRows);
-      const matchdays = parseMatchdaysFromErgSheet(ergRows);
-
       return {
-        standings,
-        matchdays,
-        source: `${leagueName} + ${ergName(leagueName)}`
+        standings: parseStandingsFromLeagueSheet(leagueRows),
+        matchdays: parseMatchdaysFromErgSheet(ergRows)
       };
     }
 
@@ -813,18 +788,7 @@
       renderLeague();
     }
 
-    function updateStats() {
-      const days = Object.values(state.leagueData).reduce((sum, item) => sum + (item.matchdays || []).length, 0);
-      const foundTables = Object.values(state.leagueData).filter(item => item.standings.rows.length > 0).length;
-
-      document.getElementById("statLeagues").textContent = String(state.leagues.length);
-      document.getElementById("statTables").textContent = String(foundTables);
-      document.getElementById("statDays").textContent = String(days);
-      statusText.textContent = "Fertig";
-    }
-
     async function loadAll() {
-      statusText.textContent = "Lade…";
       leagueTabsEl.innerHTML = "";
       tableAreaEl.innerHTML = `<div class="empty">Lade Daten…</div>`;
       matchdayAreaEl.innerHTML = "";
@@ -839,12 +803,10 @@
         state.leagueData = Object.fromEntries(entries);
         state.activeLeague = getModeLeagues()[0]?.name || state.leagues[0]?.name || null;
 
-        updateStats();
         renderLeagueTabs();
         renderLeague();
       } catch (error) {
         console.error(error);
-        statusText.textContent = "Fehler";
         tableAreaEl.innerHTML = `<div class="empty">Fehler beim Laden: ${htmlEscape(error && error.message ? error.message : "Unbekannter Fehler")}</div>`;
         matchdayAreaEl.innerHTML = "";
       }
