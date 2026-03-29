@@ -11,22 +11,20 @@
       --line:rgba(120,170,195,.12);
       --text:#f5fbff;
       --muted:#90a9b7;
-      --gold:#ffd166;
       --green:#3ddc97;
       --red:#e74c3c;
       --row-a:#052130;
       --row-b:#041924;
       --shadow:0 18px 50px rgba(0,0,0,.35);
-      --radius:18px;
 
       --accent:#20b7ff;
       --accent-soft:rgba(32,183,255,.18);
       --accent-border:rgba(32,183,255,.42);
 
-      --banner-a:#0c1220;
-      --banner-b:#1d4ed8;
-      --banner-c:#7c3aed;
-      --banner-d:#0ea5e9;
+      --banner-a:#07111a;
+      --banner-b:#12314d;
+      --banner-c:#3158d3;
+      --banner-d:#7c3aed;
     }
 
     body[data-mode="DartCounter"]{
@@ -35,9 +33,9 @@
       --accent-border:rgba(245,158,11,.42);
 
       --banner-a:#1a1205;
-      --banner-b:#c2410c;
-      --banner-c:#f59e0b;
-      --banner-d:#fb923c;
+      --banner-b:#5b2d09;
+      --banner-c:#c2410c;
+      --banner-d:#f59e0b;
     }
 
     *{box-sizing:border-box}
@@ -59,29 +57,29 @@
       padding:18px 0 42px;
     }
 
-    .hero{
+    .topbar{
       display:flex;
       justify-content:space-between;
-      align-items:end;
+      align-items:flex-start;
       gap:18px;
       margin-bottom:18px;
       flex-wrap:wrap;
     }
 
-    .title-block h1{
+    .topbar-left h1{
       margin:0;
-      font-size:clamp(34px,5vw,60px);
+      font-size:clamp(32px,4.8vw,56px);
       line-height:.95;
       letter-spacing:-.03em;
       font-weight:900;
       text-transform:uppercase;
     }
 
-    .title-block p{
+    .topbar-left p{
       margin:10px 0 0;
       color:var(--muted);
       font-size:14px;
-      max-width:760px;
+      max-width:780px;
       line-height:1.5;
     }
 
@@ -119,46 +117,46 @@
       box-shadow:inset 3px 0 0 var(--accent);
     }
 
-    .dart-banner{
+    .hero-banner{
       position:relative;
-      margin:0 0 22px;
-      padding:28px 28px;
-      border-radius:24px;
       overflow:hidden;
+      border-radius:24px;
+      margin:0 0 22px;
+      padding:30px 28px;
       border:1px solid rgba(255,255,255,.12);
       background:
-        radial-gradient(circle at 18% 50%, rgba(255,255,255,.13), transparent 16%),
-        radial-gradient(circle at 18% 50%, rgba(255,255,255,.06), transparent 24%),
-        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 42%, var(--banner-c) 76%, var(--banner-d) 100%);
+        radial-gradient(circle at 18% 50%, rgba(255,255,255,.14), transparent 10%),
+        radial-gradient(circle at 18% 50%, rgba(255,255,255,.06), transparent 18%),
+        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 35%, var(--banner-c) 68%, var(--banner-d) 100%);
       box-shadow:
-        0 20px 46px rgba(0,0,0,.35),
+        0 18px 44px rgba(0,0,0,.35),
         inset 0 1px 0 rgba(255,255,255,.08);
     }
 
-    .dart-banner::before{
+    .hero-banner::before{
       content:"";
       position:absolute;
-      right:-80px;
+      right:-90px;
       top:50%;
-      width:300px;
-      height:300px;
+      width:320px;
+      height:320px;
       transform:translateY(-50%);
       border-radius:50%;
       background:
-        radial-gradient(circle, rgba(255,255,255,.16) 0 8%, transparent 8% 16%, rgba(255,255,255,.08) 16% 24%, transparent 24% 32%, rgba(255,255,255,.06) 32% 40%, transparent 40% 48%, rgba(255,255,255,.05) 48% 56%, transparent 56%);
+        radial-gradient(circle, rgba(255,255,255,.18) 0 8%, transparent 8% 16%, rgba(255,255,255,.08) 16% 24%, transparent 24% 32%, rgba(255,255,255,.06) 32% 40%, transparent 40% 48%, rgba(255,255,255,.05) 48% 56%, transparent 56%);
       opacity:.55;
       pointer-events:none;
     }
 
-    .dart-banner::after{
+    .hero-banner::after{
       content:"";
       position:absolute;
       inset:0;
-      background:linear-gradient(110deg, transparent 0%, rgba(255,255,255,.08) 38%, transparent 56%);
+      background:linear-gradient(110deg, transparent 0%, rgba(255,255,255,.08) 36%, transparent 56%);
       pointer-events:none;
     }
 
-    .dart-banner-content{
+    .hero-banner-content{
       position:relative;
       z-index:1;
       display:flex;
@@ -168,16 +166,16 @@
       flex-wrap:wrap;
     }
 
-    .dart-banner-text h2{
+    .hero-banner-text h2{
       margin:0;
-      font-size:38px;
+      font-size:clamp(28px,4vw,44px);
       font-weight:900;
       letter-spacing:-.03em;
       text-transform:uppercase;
       line-height:1;
     }
 
-    .dart-banner-text p{
+    .hero-banner-text p{
       margin:10px 0 0;
       font-size:14px;
       line-height:1.55;
@@ -394,8 +392,8 @@
     }
 
     .status-pill{
-      width:78px;
-      min-width:78px;
+      width:76px;
+      min-width:76px;
       display:flex;
       justify-content:center;
       align-items:center;
@@ -493,19 +491,18 @@
 
     @media (max-width:760px){
       .wrap{width:min(100% - 16px, 1400px)}
-      .hero{gap:12px}
-      .title-block h1{font-size:36px}
+      .topbar{gap:12px}
+      .topbar-left h1{font-size:36px}
       .top-controls{width:100%}
       .button,.mode-btn{width:100%}
       .discord-btn{width:100%}
-      .dart-banner-text h2{font-size:30px}
     }
   </style>
 </head>
 <body data-mode="Autodarts">
   <div class="wrap">
-    <section class="hero">
-      <div class="title-block">
+    <section class="topbar">
+      <div class="topbar-left">
         <h1>Divisions</h1>
         <p>Dunkler Liga-Look mit großem Tabellenfokus und sauberer Spieltagsanzeige. Oben wählst du zwischen Autodarts und DartCounter, darunter die passende Liga.</p>
       </div>
@@ -516,9 +513,9 @@
       </div>
     </section>
 
-    <div class="dart-banner">
-      <div class="dart-banner-content">
-        <div class="dart-banner-text">
+    <section class="hero-banner">
+      <div class="hero-banner-content">
+        <div class="hero-banner-text">
           <h2>Community Dart Liga</h2>
           <p>Tritt unserer Liga-Community bei, tausche dich mit anderen Spielern aus, verpasse keine Spieltage und bleib immer auf dem neuesten Stand rund um Tabellen, Ergebnisse und Ankündigungen.</p>
         </div>
@@ -526,7 +523,7 @@
           Discord beitreten
         </a>
       </div>
-    </div>
+    </section>
 
     <div id="leagueTabs" class="league-tabs"></div>
 
@@ -651,13 +648,24 @@
       return row && row.some(cell => normalize(cell) !== "");
     }
 
-    function findDiscordIndexBetween(start, end, rows) {
+    function findColumnIndex(headerRow, names) {
+      const normalized = (headerRow || []).map(cell => normalize(cell));
+      for (const name of names) {
+        const idx = normalized.findIndex(cell => cell === normalize(name));
+        if (idx !== -1) return idx;
+      }
+      return -1;
+    }
+
+    function detectStandingsHeaderRow(rows, start, end) {
       for (let i = start; i < end; i++) {
         const row = rows[i] || [];
-        for (let j = 0; j < row.length; j++) {
-          if (normalize(row[j]) === "spieler_discord") {
-            return j;
-          }
+        const normalizedRow = row.map(cell => normalize(cell));
+        if (
+          normalizedRow.includes("platz") &&
+          normalizedRow.includes("spieler")
+        ) {
+          return i;
         }
       }
       return -1;
@@ -679,22 +687,35 @@
 
       const start = tabelleMarker + 1;
       const end = spieltageMarker > start ? spieltageMarker : rows.length;
-      const discordIndex = findDiscordIndexBetween(tabelleMarker, end, rows);
+      const headerRowIndex = detectStandingsHeaderRow(rows, start, end);
+
+      if (headerRowIndex === -1) {
+        return { headers: [], rows: [] };
+      }
+
+      const headerRow = rows[headerRowIndex];
+      const idxPlatz = findColumnIndex(headerRow, ["Platz"]);
+      const idxSpieler = findColumnIndex(headerRow, ["Spieler", "Name"]);
+      const idxDiscord = findColumnIndex(headerRow, ["Spieler_Discord", "Discord", "Discordname"]);
+      const idxSiege = findColumnIndex(headerRow, ["Siege"]);
+      const idxNiederlagen = findColumnIndex(headerRow, ["Niederlagen"]);
+      const idxLegDiff = findColumnIndex(headerRow, ["Leg-Diff", "Leg Diff", "Legdifferenz"]);
+      const idxPunkte = findColumnIndex(headerRow, ["Punkte"]);
 
       const headers = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
       const body = [];
 
-      for (let i = start; i < end; i++) {
+      for (let i = headerRowIndex + 1; i < end; i++) {
         const row = rows[i];
         if (!rowHasAnyContent(row)) continue;
 
-        const platz = safeCell(row, 0);
-        const spieler = safeCell(row, 1);
-        const discord = discordIndex > -1 ? safeCell(row, discordIndex) : "";
-        const siege = safeCell(row, 2);
-        const niederlagen = safeCell(row, 3);
-        const legDiff = safeCell(row, 4);
-        const punkte = safeCell(row, 5);
+        const platz = safeCell(row, idxPlatz);
+        const spieler = safeCell(row, idxSpieler);
+        const discord = idxDiscord > -1 ? safeCell(row, idxDiscord) : "";
+        const siege = safeCell(row, idxSiege);
+        const niederlagen = safeCell(row, idxNiederlagen);
+        const legDiff = safeCell(row, idxLegDiff);
+        const punkte = safeCell(row, idxPunkte);
 
         if (!platz || isNaN(parseInt(platz, 10))) continue;
         if (!spieler) continue;
