@@ -422,7 +422,7 @@
 
     <section class="statusbar">
       <div class="stat"><div class="stat-label">Ligen</div><div id="statLeagues" class="stat-value">0</div></div>
-      <div class="stat"><div class="stat-label">Direkte Liga-Blätter</div><div id="statPublic" class="stat-value">0</div></div>
+      <div class="stat"><div class="stat-label">Tabellen gefunden</div><div id="statPublic" class="stat-value">0</div></div>
       <div class="stat"><div class="stat-label">Spieltage</div><div id="statDays" class="stat-value">0</div></div>
       <div class="stat"><div class="stat-label">Status</div><div id="statusText" class="stat-value" style="font-size:18px">Lade…</div></div>
     </section>
@@ -434,7 +434,7 @@
       <aside class="sidebar">
         <div class="panel">
           <h3>Spieltage</h3>
-          <p>Alle Begegnungen werden nach Spieltag gruppiert und sauber dargestellt. Die Daten kommen primär aus den jeweiligen Erg-Blättern.</p>
+          <p>Alle Begegnungen werden nach Spieltag gruppiert und sauber dargestellt. Spieltage werden bevorzugt aus den jeweiligen Erg-Blättern gelesen.</p>
         </div>
         <div id="matchdayArea" class="matchday-list"></div>
       </aside>
@@ -545,14 +545,14 @@
     async function loadCsv(sheetName) {
       const response = await fetch(csvUrl(sheetName));
       if (!response.ok) throw new Error(`${sheetName}: HTTP ${response.status}`);
-      const text = await response.text();
-      return parseCsv(text);
+      return parseCsv(await response.text());
     }
 
     function compactTable(rows) {
       if (!rows.length) return [];
-      const maxCols = Math.max(0, ...rows.map(r => r.length));
-      const filled = rows.map(row => {
+      const maxCols = Math.max(...rows.map(r => r.length), 0);
+
+      const normalized = rows.map(row => {
         const copy = row.slice();
         while (copy.length < maxCols) copy.push("");
         return copy;
@@ -560,152 +560,169 @@
 
       const keepCols = [];
       for (let c = 0; c < maxCols; c++) {
-        if (filled.some(row => normalize(row[c]) !== "")) keepCols.push(c);
+        if (normalized.some(row => normalize(row[c]) !== "")) keepCols.push(c);
       }
 
-      return filled.map(row => keepCols.map(c => row[c] || ""));
+      return normalized.map(row => keepCols.map(c => row[c] || ""));
     }
 
-    function findStandingsHeaderIndex(rows) {
-      return rows.findIndex(row => {
-        const cells = row.map(normalize);
-        const hasPlatz = cells.some(v => v === "platz" || v.includes("platz"));
-        const hasSpieler = cells.some(v => v === "spieler" || v.includes("spieler") || v === "player" || v.includes("player"));
-        const hasPunkte = cells.some(v => v === "punkte" || v.includes("punkte") || v === "points" || v.includes("points"));
-        return hasPlatz && hasSpieler && hasPunkte;
-      });
+    function rowText(row) {
+      return row.map(normalize).join(" | ");
     }
 
-    function findMatchesHeaderIndex(rows) {
-      return rows.findIndex(row => {
-        const cells = row.map(normalize);
-        const hasSpieltag = cells.some(v => v === "spieltag" || v.includes("spieltag"));
-        const hasSpieler1 = cells.some(v => v === "spieler 1" || v === "spieler1" || v.includes("spieler 1"));
-        const hasSpieler2 = cells.some(v => v === "spieler 2" || v === "spieler2" || v.includes("spieler 2"));
-        const hasStatus = cells.some(v => v === "status" || v.includes("status"));
-        return hasSpieltag && hasSpieler1 && hasSpieler2 && hasStatus;
-      });
+    function looksLikeStandingsHeader(row) {
+      const txt = rowText(row);
+      const hasRank = /platz|rank|pos/.test(txt);
+      const hasPlayer = /spieler|player|name/.test(txt);
+      const hasPoints = /punkte|points/.test(txt);
+      return hasRank && hasPlayer && hasPoints;
+    }
+
+    function looksLikeMatchHeader(row) {
+      const txt = rowText(row);
+      const hasDay = /spieltag|matchday/.test(txt);
+      const hasP1 = /spieler ?1|player ?1/.test(txt);
+      const hasP2 = /spieler ?2|player ?2/.test(txt);
+      return hasDay && hasP1 && hasP2;
     }
 
     function isMatchdayValue(value) {
       return /spieltag\s*\d+/i.test(String(value || "").trim());
     }
 
-    function findStatusColumn(headers) {
-      return headers.findIndex(h => normalize(h).includes("status"));
+    function findHeaderIndex(rows, matcher) {
+      for (let i = 0; i < rows.length; i++) {
+        if (matcher(rows[i])) return i;
+      }
+      return -1;
     }
 
-    function findColumnIndex(headers, names) {
-      return headers.findIndex(h => {
-        const n = normalize(h);
-        return names.some(name => n === name || n.includes(name));
+    function parseStandingsFromLeagueSheet(rows) {
+      const compactRows = rows.filter(rowHasContent);
+      const headerIndex = findHeaderIndex(compactRows, looksLikeStandingsHeader);
+      if (headerIndex < 0) return { headers: [], rows: [] };
+
+      const afterHeader = compactRows.slice(headerIndex);
+      const nextSectionIndex = afterHeader.findIndex((row, idx) => {
+        if (idx === 0) return false;
+        const txt = rowText(row);
+        return /spieltag|spieler ?1|player ?1|status/.test(txt);
+      });
+
+      const rawTable = afterHeader.slice(0, nextSectionIndex >= 0 ? nextSectionIndex : afterHeader.length);
+      const table = compactTable(rawTable).filter(rowHasContent);
+
+      if (table.length < 2) return { headers: [], rows: [] };
+
+      const headers = table[0];
+      const body = table.slice(1).filter(row => {
+        const txt = rowText(row);
+        if (/anleitung|tabelle oben|spieltage|ergebnisse nur|internen blatt pflegen/i.test(txt)) return false;
+        return normalize(row[0]) !== "";
+      });
+
+      return { headers, rows: body };
+    }
+
+    function parseMatchdaysFromRows(rows) {
+      const compactRows = rows.filter(rowHasContent);
+      const headerIndex = findHeaderIndex(compactRows, looksLikeMatchHeader);
+
+      if (headerIndex < 0) {
+        const groupedSimple = new Map();
+
+        compactRows.forEach(row => {
+          const found = row.find(cell => isMatchdayValue(cell));
+          if (!found) return;
+          const key = String(found).trim();
+          if (!groupedSimple.has(key)) groupedSimple.set(key, []);
+        });
+
+        return Array.from(groupedSimple.keys()).map(title => ({
+          title,
+          status: "offen",
+          headers: [],
+          rows: []
+        }));
+      }
+
+      const headers = compactTable([compactRows[headerIndex]])[0] || compactRows[headerIndex];
+      const dataRows = compactRows.slice(headerIndex + 1).filter(rowHasContent);
+
+      const normalizedHeaders = headers.map(normalize);
+      const spieltagCol = normalizedHeaders.findIndex(h => h.includes("spieltag") || h.includes("matchday"));
+      const statusCol = normalizedHeaders.findIndex(h => h.includes("status"));
+
+      const grouped = new Map();
+
+      dataRows.forEach(row => {
+        const padded = row.slice();
+        while (padded.length < headers.length) padded.push("");
+
+        const dayCell = padded[spieltagCol >= 0 ? spieltagCol : 0];
+        if (!isMatchdayValue(dayCell)) return;
+
+        const key = String(dayCell).trim();
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(padded);
+      });
+
+      return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
+        let status = "offen";
+
+        if (statusCol >= 0) {
+          const statuses = rowsForDay.map(r => String(r[statusCol] || "").trim()).filter(Boolean);
+          if (statuses.length) {
+            const allDone = statuses.every(v => /fertig|abgeschlossen|done|closed/i.test(v));
+            status = allDone ? "fertig" : statuses[0];
+          }
+        }
+
+        return {
+          title,
+          status,
+          headers,
+          rows: rowsForDay
+        };
       });
     }
 
-    function parseLeagueRows(rows) {
-      const compactRows = rows.filter(rowHasContent);
-      const standingsHeaderIndex = findStandingsHeaderIndex(compactRows);
-      const matchesHeaderIndex = findMatchesHeaderIndex(compactRows);
-
-      let standings = { headers: [], rows: [] };
-      let matchdays = [];
-
-      if (standingsHeaderIndex >= 0) {
-        const standingsEnd = matchesHeaderIndex > standingsHeaderIndex ? matchesHeaderIndex : compactRows.length;
-        const standingsRaw = compactRows.slice(standingsHeaderIndex, standingsEnd);
-        const standingsTable = compactTable(standingsRaw).filter(rowHasContent);
-
-        if (standingsTable.length > 1) {
-          const headers = standingsTable[0];
-          const body = standingsTable.slice(1).filter(row => {
-            const rowText = row.map(normalize).join(" | ");
-            if (rowText.includes("spieler 1") && rowText.includes("spieler 2")) return false;
-            if (rowText.includes("spieltag") && rowText.includes("status")) return false;
-            return normalize(row[0]) !== "";
-          });
-          standings = { headers, rows: body };
-        }
-      }
-
-      if (matchesHeaderIndex >= 0) {
-        const matchHeaderRow = compactRows[matchesHeaderIndex];
-        const matchHeaders = compactTable([matchHeaderRow])[0] || matchHeaderRow;
-        const dataRows = compactRows.slice(matchesHeaderIndex + 1).filter(rowHasContent);
-
-        const statusCol = findStatusColumn(matchHeaders);
-        const spieltagCol = findColumnIndex(matchHeaders, ["spieltag"]);
-        const grouped = new Map();
-
-        dataRows.forEach(row => {
-          const padded = row.slice();
-          while (padded.length < matchHeaders.length) padded.push("");
-          const spieltagCell = padded[spieltagCol >= 0 ? spieltagCol : 0];
-          if (!isMatchdayValue(spieltagCell)) return;
-          const key = String(spieltagCell).trim();
-          if (!grouped.has(key)) grouped.set(key, []);
-          grouped.get(key).push(padded);
-        });
-
-        matchdays = Array.from(grouped.entries()).map(([title, rowsForDay]) => {
-          let status = "offen";
-          if (statusCol >= 0) {
-            const statusValues = rowsForDay
-              .map(r => String(r[statusCol] || "").trim())
-              .filter(Boolean);
-
-            if (statusValues.length) {
-              const allFinished = statusValues.every(v => /fertig|abgeschlossen|closed|done/i.test(v));
-              status = allFinished ? "fertig" : statusValues[0];
-            }
-          }
-
-          return { title, status, headers: matchHeaders, rows: rowsForDay };
-        });
-      }
-
-      return { standings, matchdays, hasContent: compactRows.length > 0 };
-    }
-
     function looksUseful(data) {
-      return (
-        (data.standings.headers && data.standings.headers.length > 0) ||
-        (data.matchdays && data.matchdays.length > 0)
-      );
+      return (data.standings.headers.length > 0 && data.standings.rows.length > 0) || data.matchdays.length > 0;
     }
 
     async function loadLeague(leagueName) {
-      let ergParsed = null;
-      let publicParsed = null;
+      let leagueRows = [];
+      let ergRows = [];
 
       try {
-        const ergRows = await loadCsv(ergName(leagueName));
-        ergParsed = parseLeagueRows(ergRows);
-      } catch (e) {
-        console.warn("Erg-Blatt nicht ladbar:", leagueName, e);
-      }
-
-      try {
-        const publicRows = await loadCsv(leagueName);
-        publicParsed = parseLeagueRows(publicRows);
+        leagueRows = await loadCsv(leagueName);
       } catch (e) {
         console.warn("Liga-Blatt nicht ladbar:", leagueName, e);
       }
 
-      if (ergParsed && looksUseful(ergParsed)) {
-        return {
-          ...ergParsed,
-          source: ergName(leagueName),
-          fallbackUsed: false
-        };
+      try {
+        ergRows = await loadCsv(ergName(leagueName));
+      } catch (e) {
+        console.warn("Erg-Blatt nicht ladbar:", leagueName, e);
       }
 
-      if (publicParsed && looksUseful(publicParsed)) {
-        return {
-          ...publicParsed,
-          source: leagueName,
-          fallbackUsed: true
-        };
+      const standings = parseStandingsFromLeagueSheet(leagueRows);
+      let matchdays = parseMatchdaysFromRows(ergRows);
+
+      if (!matchdays.length) {
+        matchdays = parseMatchdaysFromRows(leagueRows);
       }
+
+      const result = {
+        standings,
+        matchdays,
+        hasContent: standings.rows.length > 0 || matchdays.length > 0,
+        source: `${leagueName} + ${ergName(leagueName)}`,
+        fallbackUsed: false
+      };
+
+      if (looksUseful(result)) return result;
 
       return {
         standings: { headers: [], rows: [] },
@@ -742,12 +759,11 @@
       }
 
       const headersNormalized = headers.map(normalize);
-      const playerIndex = headersNormalized.findIndex(h => h === "spieler" || h.includes("spieler") || h === "player" || h.includes("player"));
-      const pointsIndex = headersNormalized.findIndex(h => h === "punkte" || h.includes("punkte") || h === "points" || h.includes("points"));
+      const playerIndex = headersNormalized.findIndex(h => /spieler|player|name/.test(h));
+      const pointsIndex = headersNormalized.findIndex(h => /punkte|points/.test(h));
 
       const thead = `<tr>${headers.map((h, i) => {
-        let cls = "";
-        if (i === 0) cls = ' class="rank-col"';
+        const cls = i === 0 ? ' class="rank-col"' : "";
         return `<th${cls}>${htmlEscape(h || "-")}</th>`;
       }).join("")}</tr>`;
 
@@ -787,7 +803,6 @@
 
       const thead = `<tr>${headers.map(h => `<th>${htmlEscape(h || "-")}</th>`).join("")}</tr>`;
       const tbody = rows.map(row => `<tr>${headers.map((_, i) => `<td>${htmlEscape(row[i] || "-")}</td>`).join("")}</tr>`).join("");
-
       return `<table class="match-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
     }
 
@@ -872,9 +887,10 @@
 
     function updateStats() {
       const days = Object.values(state.leagueData).reduce((sum, item) => sum + (item.matchdays || []).length, 0);
-      const publicCount = Object.values(state.leagueData).filter(item => !item.fallbackUsed).length;
+      const foundTables = Object.values(state.leagueData).filter(item => item.standings.rows.length > 0).length;
+
       document.getElementById("statLeagues").textContent = String(state.leagues.length);
-      document.getElementById("statPublic").textContent = String(publicCount);
+      document.getElementById("statPublic").textContent = String(foundTables);
       document.getElementById("statDays").textContent = String(days);
       statusText.textContent = "Fertig";
     }
@@ -887,7 +903,6 @@
 
       try {
         state.leagues = LEAGUES.map(name => ({ name }));
-
         const entries = await Promise.all(
           state.leagues.map(async league => [league.name, await loadLeague(league.name)])
         );
