@@ -512,17 +512,13 @@
       white-space:normal;
     }
 
-    .match-table th{
-      background:#051d2a;
-      color:#c8dce6;
-      text-transform:uppercase;
-      font-size:11px;
-      letter-spacing:.04em;
-    }
-
     .match-table td{
       background:rgba(255,255,255,.02);
       color:#edf7fb;
+    }
+
+    .match-table tbody tr:first-child td{
+      border-top:none;
     }
 
     .match-player{
@@ -1063,16 +1059,6 @@
         return `<div class="empty">Keine Spiele gefunden.</div>`;
       }
 
-      const thead = `
-        <tr>
-          <th class="col-player">Spieler 1</th>
-          <th class="col-player">Spieler 2</th>
-          <th class="col-legs">Legs 1</th>
-          <th class="col-legs">Legs 2</th>
-          <th class="col-status status-col">Status</th>
-        </tr>
-      `;
-
       const tbody = rows.map(row => {
         const spieler1 = row[1] || "-";
         const spieler2 = row[3] || "-";
@@ -1088,7 +1074,7 @@
         `;
       }).join("");
 
-      return `<table class="match-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+      return `<table class="match-table"><tbody>${tbody}</tbody></table>`;
     }
 
     function getDefaultOpenMatchdayIndex(matchdays) {
