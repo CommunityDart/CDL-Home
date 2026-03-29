@@ -17,15 +17,14 @@
       --row-a:#052130;
       --row-b:#041924;
       --shadow:0 18px 50px rgba(0,0,0,.35);
-      --radius:18px;
 
       --accent:#20b7ff;
       --accent-soft:rgba(32,183,255,.18);
       --accent-border:rgba(32,183,255,.42);
 
       --banner-a:#07111a;
-      --banner-b:#102b44;
-      --banner-c:#17557c;
+      --banner-b:#0d2334;
+      --banner-c:#124868;
       --banner-d:#1e9bd7;
 
       --card-a:#091826;
@@ -39,7 +38,7 @@
       --accent-border:rgba(245,158,11,.42);
 
       --banner-a:#160d05;
-      --banner-b:#4a2508;
+      --banner-b:#3e1f08;
       --banner-c:#87410d;
       --banner-d:#f59e0b;
 
@@ -105,20 +104,21 @@
       border-color:var(--accent-border);
       box-shadow:
         inset 3px 0 0 var(--accent),
-        0 0 0 1px rgba(255,255,255,.04);
+        0 0 0 1px rgba(255,255,255,.04),
+        0 0 22px color-mix(in srgb, var(--accent) 20%, transparent);
     }
+
+    /* ===== HERO DART BANNER ===== */
 
     .hero-banner{
       position:relative;
       margin:0 0 20px;
-      padding:32px 30px;
+      padding:34px 30px;
       border-radius:28px;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.10);
       background:
-        radial-gradient(circle at 14% 28%, rgba(255,255,255,.18), transparent 11%),
-        radial-gradient(circle at 88% 28%, rgba(255,255,255,.09), transparent 18%),
-        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 32%, var(--banner-c) 70%, var(--banner-d) 100%);
+        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 28%, var(--banner-c) 62%, var(--banner-d) 100%);
       box-shadow:
         0 24px 60px rgba(0,0,0,.38),
         inset 0 1px 0 rgba(255,255,255,.08);
@@ -127,31 +127,46 @@
     .hero-banner::before{
       content:"";
       position:absolute;
-      right:-110px;
-      top:50%;
-      width:360px;
-      height:360px;
-      transform:translateY(-50%);
-      border-radius:50%;
+      inset:0;
       background:
-        radial-gradient(circle, rgba(255,255,255,.22) 0 5%, transparent 5% 16%, rgba(255,255,255,.11) 16% 23%, transparent 23% 34%, rgba(255,255,255,.08) 34% 41%, transparent 41% 52%, rgba(255,255,255,.06) 52% 59%, transparent 59%);
-      opacity:.72;
+        linear-gradient(120deg, transparent 0 44%, rgba(255,255,255,.05) 44% 46%, transparent 46% 100%),
+        linear-gradient(60deg, transparent 0 48%, rgba(255,255,255,.04) 48% 50%, transparent 50% 100%);
       pointer-events:none;
+      opacity:.5;
     }
 
     .hero-banner::after{
       content:"";
       position:absolute;
-      inset:0;
+      right:-110px;
+      top:50%;
+      width:390px;
+      height:390px;
+      transform:translateY(-50%);
+      border-radius:50%;
       background:
-        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.06) 34%, transparent 54%),
-        linear-gradient(180deg, rgba(255,255,255,.03), transparent 28%);
+        radial-gradient(circle, rgba(255,255,255,.18) 0 4%, transparent 4% 12%, rgba(255,255,255,.11) 12% 18%, transparent 18% 28%, rgba(255,255,255,.08) 28% 35%, transparent 35% 44%, rgba(255,255,255,.07) 44% 50%, transparent 50% 100%);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.06),
+        0 0 80px rgba(255,255,255,.08);
+      opacity:.78;
       pointer-events:none;
+    }
+
+    .dart-rays{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity:.18;
+      background:
+        radial-gradient(circle at 18% 30%, rgba(255,255,255,.65), transparent 14%),
+        linear-gradient(180deg, rgba(255,255,255,.04), transparent 30%);
+      mix-blend-mode:screen;
     }
 
     .hero-banner-inner{
       position:relative;
-      z-index:1;
+      z-index:2;
       display:flex;
       justify-content:space-between;
       align-items:flex-end;
@@ -166,12 +181,12 @@
 
     .hero-banner h1{
       margin:0;
-      font-size:clamp(34px,4.8vw,70px);
+      font-size:clamp(34px,4.8vw,72px);
       font-weight:900;
       line-height:.92;
       letter-spacing:-.05em;
       text-transform:uppercase;
-      text-shadow:0 10px 30px rgba(0,0,0,.20);
+      text-shadow:0 10px 30px rgba(0,0,0,.22);
     }
 
     .hero-banner p{
@@ -222,9 +237,11 @@
         0 10px 24px rgba(0,0,0,.18);
     }
 
+    /* ===== SMALL BANNERS ===== */
+
     .banner-row{
       display:grid;
-      grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);
+      grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
       gap:16px;
       margin-bottom:18px;
     }
@@ -326,11 +343,7 @@
       box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
     }
 
-    .info-btn[aria-disabled="true"]{
-      opacity:.5;
-      pointer-events:none;
-      cursor:default;
-    }
+    /* ===== CONTENT ===== */
 
     .league-tabs{
       display:flex;
@@ -590,15 +603,11 @@
       table-layout:fixed;
     }
 
-    .match-table th,
     .match-table td{
       padding:10px 10px;
       font-size:13px;
       border-bottom:1px solid rgba(120,170,195,.08);
       white-space:normal;
-    }
-
-    .match-table td{
       background:rgba(255,255,255,.02);
       color:#edf7fb;
     }
@@ -619,14 +628,10 @@
     .col-legs{ width:12%; text-align:center; }
     .col-status{ width:130px; text-align:center; }
 
-    .status-col,
     .status-cell{
       text-align:center !important;
       width:130px;
       min-width:130px;
-    }
-
-    .status-cell{
       vertical-align:middle;
       white-space:nowrap !important;
       overflow:visible;
@@ -656,6 +661,8 @@
       margin-top:4px;
     }
 
+    /* ===== MODALS ===== */
+
     .modal-backdrop{
       position:fixed;
       inset:0;
@@ -672,12 +679,15 @@
     }
 
     .modal{
-      width:min(680px, 100%);
+      width:min(840px, 100%);
+      max-height:min(88vh, 920px);
       background:linear-gradient(180deg, rgba(6,27,37,.98), rgba(4,20,28,.99));
       border:1px solid var(--line);
       border-radius:20px;
       box-shadow:0 24px 60px rgba(0,0,0,.45);
       overflow:hidden;
+      display:flex;
+      flex-direction:column;
     }
 
     .modal-head{
@@ -708,10 +718,29 @@
       color:#d7e8ef;
       line-height:1.6;
       font-size:14px;
+      overflow:auto;
     }
 
     .modal-body p{
       margin:0 0 12px;
+    }
+
+    .content-block{
+      margin-bottom:18px;
+      padding:14px 14px;
+      border:1px solid rgba(120,170,195,.10);
+      border-radius:14px;
+      background:rgba(255,255,255,.02);
+    }
+
+    .content-block h4{
+      margin:0 0 8px;
+      font-size:15px;
+      color:#fff;
+    }
+
+    .content-block:last-child{
+      margin-bottom:0;
     }
 
     @media (max-width:1100px){
@@ -724,7 +753,7 @@
       .wrap{width:min(100% - 16px, 1400px)}
       .button,.mode-btn,.footer-btn,.footer-link,.info-btn{width:100%}
       .status-badge{min-width:36px;padding:6px}
-      .status-col,.status-cell,.col-status{width:110px;min-width:110px}
+      .status-cell{width:110px;min-width:110px}
       .hero-banner{padding:24px 20px}
       .hero-banner h1{font-size:38px}
       .hero-banner-modes{
@@ -742,6 +771,7 @@
 <body data-mode="Autodarts">
   <div class="wrap">
     <section class="hero-banner">
+      <div class="dart-rays"></div>
       <div class="hero-banner-inner">
         <div class="hero-banner-copy">
           <div class="hero-tag">Online Liga • Darts</div>
@@ -773,11 +803,11 @@
         <div class="info-content">
           <div class="info-text">
             <h2>Wichtige Infos</h2>
-            <p>Hier findest du das Regelwerk und die FAQ direkt aus dem Sheet verlinkt.</p>
+            <p>Regelwerk und FAQ werden direkt aus dem Google Sheet geladen.</p>
           </div>
           <div class="info-actions">
-            <a id="regelwerkBtn" class="info-btn" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">Regeln</a>
-            <a id="faqBtn" class="info-btn" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">FAQ</a>
+            <button id="regelwerkBtn" class="info-btn" type="button">Regeln</button>
+            <button id="faqBtn" class="info-btn" type="button">FAQ</button>
           </div>
         </div>
       </div>
@@ -818,6 +848,30 @@
     </div>
   </div>
 
+  <div id="regelwerkModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="regelwerkTitle">
+      <div class="modal-head">
+        <h3 id="regelwerkTitle" class="modal-title">Regelwerk</h3>
+        <button class="button modal-close" type="button" data-close-modal="regelwerkModal">✕</button>
+      </div>
+      <div id="regelwerkContent" class="modal-body">
+        <p>Lade Regelwerk…</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="faqModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="faqTitle">
+      <div class="modal-head">
+        <h3 id="faqTitle" class="modal-title">FAQ</h3>
+        <button class="button modal-close" type="button" data-close-modal="faqModal">✕</button>
+      </div>
+      <div id="faqContent" class="modal-body">
+        <p>Lade FAQ…</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
     const PLAYER_SHEET = "Spieler_Discord";
@@ -846,10 +900,8 @@
       activeMode: "Autodarts",
       playerDiscordMap: {},
       matchdayOpenState: {},
-      links: {
-        regelwerk: "",
-        faq: ""
-      }
+      regelwerkRows: [],
+      faqRows: []
     };
 
     const leagueTabsEl = document.getElementById("leagueTabs");
@@ -862,6 +914,10 @@
     const impressumModal = document.getElementById("impressumModal");
     const regelwerkBtn = document.getElementById("regelwerkBtn");
     const faqBtn = document.getElementById("faqBtn");
+    const regelwerkModal = document.getElementById("regelwerkModal");
+    const faqModal = document.getElementById("faqModal");
+    const regelwerkContent = document.getElementById("regelwerkContent");
+    const faqContent = document.getElementById("faqContent");
 
     function normalize(value) {
       return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -944,7 +1000,6 @@
 
     function parsePlayerDiscordSheet(rows) {
       if (!rows || !rows.length) return {};
-
       const map = {};
 
       for (let i = 0; i < rows.length; i++) {
@@ -963,27 +1018,6 @@
       }
 
       return map;
-    }
-
-    function findFirstLink(rows) {
-      if (!rows || !rows.length) return "";
-      for (const row of rows) {
-        for (const cell of row) {
-          const value = String(cell || "").trim();
-          if (/^https?:\/\//i.test(value)) return value;
-        }
-      }
-      return "";
-    }
-
-    function applyLinkButton(button, url) {
-      if (url) {
-        button.href = url;
-        button.setAttribute("aria-disabled", "false");
-      } else {
-        button.href = "#";
-        button.setAttribute("aria-disabled", "true");
-      }
     }
 
     function parseStandingsFromLeagueSheet(rows) {
@@ -1082,8 +1116,57 @@
       });
     }
 
-    function leagueHasPlayers(data) {
-      return data && data.standings && data.standings.rows && data.standings.rows.length > 0;
+    function renderSheetAsBlocks(rows, mode) {
+      const validRows = (rows || []).filter(row => rowHasAnyContent(row));
+      if (!validRows.length) {
+        return `<p>Keine Inhalte gefunden.</p>`;
+      }
+
+      const cleaned = validRows.map(row => row.map(cell => String(cell || "").trim()));
+
+      if (mode === "faq" && cleaned.length > 0) {
+        const bodyRows = cleaned.filter((row, index) => {
+          const joined = row.join(" ").toLowerCase();
+          if (index === 0 && (joined.includes("frage") || joined.includes("antwort") || joined.includes("faq"))) {
+            return false;
+          }
+          return true;
+        });
+
+        const blocks = bodyRows.map(row => {
+          const first = row.find(cell => cell);
+          const rest = row.slice(1).filter(cell => cell);
+          if (!first) return "";
+          return `
+            <div class="content-block">
+              <h4>${htmlEscape(first)}</h4>
+              ${rest.length ? rest.map(text => `<p>${htmlEscape(text)}</p>`).join("") : `<p>-</p>`}
+            </div>
+          `;
+        }).join("");
+
+        return blocks || `<p>Keine FAQ gefunden.</p>`;
+      }
+
+      const blocks = cleaned.map((row, index) => {
+        const filled = row.filter(cell => cell);
+        if (!filled.length) return "";
+        if (filled.length === 1) {
+          return `<div class="content-block"><p>${htmlEscape(filled[0])}</p></div>`;
+        }
+
+        const title = filled[0];
+        const body = filled.slice(1).map(text => `<p>${htmlEscape(text)}</p>`).join("");
+
+        return `
+          <div class="content-block">
+            <h4>${htmlEscape(title)}</h4>
+            ${body}
+          </div>
+        `;
+      }).join("");
+
+      return blocks || `<p>Keine Inhalte gefunden.</p>`;
     }
 
     async function loadLeague(leagueName) {
@@ -1106,6 +1189,10 @@
         standings: parseStandingsFromLeagueSheet(leagueRows),
         matchdays: parseMatchdaysFromErgSheet(ergRows)
       };
+    }
+
+    function leagueHasPlayers(data) {
+      return data && data.standings && data.standings.rows && data.standings.rows.length > 0;
     }
 
     function rankClass(rankValue, totalRows) {
@@ -1201,7 +1288,7 @@
             <td class="col-player"><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
             <td class="col-legs">${htmlEscape(row[5] || "-")}</td>
             <td class="col-legs">${htmlEscape(row[6] || "-")}</td>
-            <td class="col-status status-cell">${renderMatchStatusDot(row[7])}</td>
+            <td class="status-cell">${renderMatchStatusDot(row[7])}</td>
           </tr>
         `;
       }).join("");
@@ -1315,23 +1402,33 @@
       renderLeague();
     }
 
-    async function loadStaticLinks() {
+    function openModal(modal) {
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal(modal) {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    async function loadStaticSheetContent() {
       try {
         const [regelwerkRows, faqRows] = await Promise.all([
           loadCsv(RULES_SHEET).catch(() => []),
           loadCsv(FAQ_SHEET).catch(() => [])
         ]);
 
-        state.links.regelwerk = findFirstLink(regelwerkRows);
-        state.links.faq = findFirstLink(faqRows);
+        state.regelwerkRows = regelwerkRows;
+        state.faqRows = faqRows;
+
+        regelwerkContent.innerHTML = renderSheetAsBlocks(regelwerkRows, "rules");
+        faqContent.innerHTML = renderSheetAsBlocks(faqRows, "faq");
       } catch (e) {
         console.warn("Regelwerk / FAQ nicht ladbar", e);
-        state.links.regelwerk = "";
-        state.links.faq = "";
+        regelwerkContent.innerHTML = `<p>Regelwerk konnte nicht geladen werden.</p>`;
+        faqContent.innerHTML = `<p>FAQ konnte nicht geladen werden.</p>`;
       }
-
-      applyLinkButton(regelwerkBtn, state.links.regelwerk);
-      applyLinkButton(faqBtn, state.links.faq);
     }
 
     async function loadAll() {
@@ -1350,7 +1447,7 @@
           state.playerDiscordMap = {};
         }
 
-        await loadStaticLinks();
+        await loadStaticSheetContent();
 
         const entries = await Promise.all(
           state.leagues.map(async league => [league.name, await loadLeague(league.name)])
@@ -1370,26 +1467,33 @@
       }
     }
 
-    function openImpressum() {
-      impressumModal.classList.add("open");
-      impressumModal.setAttribute("aria-hidden", "false");
-    }
-
-    function closeImpressum() {
-      impressumModal.classList.remove("open");
-      impressumModal.setAttribute("aria-hidden", "true");
-    }
-
     modeAutodartsBtn.addEventListener("click", () => setMode("Autodarts"));
     modeDartCounterBtn.addEventListener("click", () => setMode("DartCounter"));
 
-    openImpressumBtn.addEventListener("click", openImpressum);
-    closeImpressumBtn.addEventListener("click", closeImpressum);
-    impressumModal.addEventListener("click", (e) => {
-      if (e.target === impressumModal) closeImpressum();
+    openImpressumBtn.addEventListener("click", () => openModal(impressumModal));
+    closeImpressumBtn.addEventListener("click", () => closeModal(impressumModal));
+
+    regelwerkBtn.addEventListener("click", () => openModal(regelwerkModal));
+    faqBtn.addEventListener("click", () => openModal(faqModal));
+
+    document.querySelectorAll("[data-close-modal]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const modalId = btn.getAttribute("data-close-modal");
+        const modal = document.getElementById(modalId);
+        if (modal) closeModal(modal);
+      });
     });
+
+    [impressumModal, regelwerkModal, faqModal].forEach(modal => {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal(modal);
+      });
+    });
+
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeImpressum();
+      if (e.key === "Escape") {
+        [impressumModal, regelwerkModal, faqModal].forEach(closeModal);
+      }
     });
 
     loadAll();
