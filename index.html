@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Community Dart Liga</title>
+  <title>Dart Liga</title>
   <style>
     :root{
       --bg:#03131b;
@@ -620,11 +620,20 @@
     }
 
     function safeCell(row, index) {
-      return row && row[index] !== undefined ? String(row[index]).trim() : "";
+      return row && index > -1 && row[index] !== undefined ? String(row[index]).trim() : "";
     }
 
     function rowHasAnyContent(row) {
       return row && row.some(cell => normalize(cell) !== "");
+    }
+
+    function findColumnIndex(headerRow, candidates) {
+      const normalized = (headerRow || []).map(cell => normalize(cell));
+      for (const candidate of candidates) {
+        const idx = normalized.findIndex(cell => cell === normalize(candidate));
+        if (idx !== -1) return idx;
+      }
+      return -1;
     }
 
     function parsePlayerDiscordSheet(rows) {
@@ -663,6 +672,21 @@
       return map;
     }
 
+    function detectStandingsHeaderRow(rows, start, end) {
+      for (let i = start; i < end; i++) {
+        const row = rows[i] || [];
+        const normalizedRow = row.map(cell => normalize(cell));
+        if (
+          normalizedRow.includes("platz") &&
+          (normalizedRow.includes("spieler") || normalizedRow.includes("name")) &&
+          (normalizedRow.includes("punkte") || normalizedRow.includes("points"))
+        ) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
     function parseStandingsFromLeagueSheet(rows) {
       if (!rows || !rows.length) return { headers: [], rows: [] };
 
@@ -679,10 +703,41 @@
 
       const start = tabelleMarker + 1;
       const end = spieltageMarker > start ? spieltageMarker : rows.length;
+      const headerRowIndex = detectStandingsHeaderRow(rows, start, end);
 
       const headers = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
       const body = [];
 
+      if (headerRowIndex !== -1) {
+        const headerRow = rows[headerRowIndex] || [];
+        const idxPlatz = findColumnIndex(headerRow, ["Platz", "Rank"]);
+        const idxSpieler = findColumnIndex(headerRow, ["Spieler", "Name", "Spielername"]);
+        const idxSiege = findColumnIndex(headerRow, ["Siege", "Wins"]);
+        const idxNiederlagen = findColumnIndex(headerRow, ["Niederlagen", "Losses"]);
+        const idxLegDiff = findColumnIndex(headerRow, ["Leg-Diff", "Leg Diff", "Legdifferenz"]);
+        const idxPunkte = findColumnIndex(headerRow, ["Punkte", "Points"]);
+
+        for (let i = headerRowIndex + 1; i < end; i++) {
+          const row = rows[i];
+          if (!rowHasAnyContent(row)) continue;
+
+          const platz = safeCell(row, idxPlatz);
+          const spieler = safeCell(row, idxSpieler);
+          const siege = safeCell(row, idxSiege);
+          const niederlagen = safeCell(row, idxNiederlagen);
+          const legDiff = safeCell(row, idxLegDiff);
+          const punkte = safeCell(row, idxPunkte);
+
+          if (!platz || isNaN(parseInt(platz, 10))) continue;
+          if (!spieler) continue;
+
+          body.push([platz, spieler, siege, niederlagen, legDiff, punkte]);
+        }
+
+        return { headers, rows: body };
+      }
+
+      // Fallback auf alte Struktur
       for (let i = start; i < end; i++) {
         const row = rows[i];
         if (!rowHasAnyContent(row)) continue;
@@ -703,23 +758,62 @@
       return { headers, rows: body };
     }
 
+    function detectErgHeaderRow(rows) {
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i] || [];
+        const normalizedRow = row.map(cell => normalize(cell));
+        const hasSpieltag = normalizedRow.includes("spieltag");
+        const hasSpieler1 = normalizedRow.includes("spieler 1") || normalizedRow.includes("spieler1");
+        const hasSpieler2 = normalizedRow.includes("spieler 2") || normalizedRow.includes("spieler2");
+        const hasStatus = normalizedRow.includes("status");
+        if (hasSpieltag && hasSpieler1 && hasSpieler2 && hasStatus) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
     function parseMatchdaysFromErgSheet(rows) {
       if (!rows || !rows.length) return [];
 
       const grouped = new Map();
+      const headerRowIndex = detectErgHeaderRow(rows);
 
-      for (let i = 0; i < rows.length; i++) {
+      let idxSpieltag = 0;
+      let idxSpieler1 = 1;
+      let idxDiscord1 = 2;
+      let idxSpieler2 = 3;
+      let idxDiscord2 = 4;
+      let idxLegs1 = 5;
+      let idxLegs2 = 6;
+      let idxStatus = 7;
+      let startIndex = 0;
+
+      if (headerRowIndex !== -1) {
+        const headerRow = rows[headerRowIndex] || [];
+        idxSpieltag = findColumnIndex(headerRow, ["Spieltag"]);
+        idxSpieler1 = findColumnIndex(headerRow, ["Spieler 1", "Spieler1"]);
+        idxDiscord1 = findColumnIndex(headerRow, ["Discord 1", "Discord1"]);
+        idxSpieler2 = findColumnIndex(headerRow, ["Spieler 2", "Spieler2"]);
+        idxDiscord2 = findColumnIndex(headerRow, ["Discord 2", "Discord2"]);
+        idxLegs1 = findColumnIndex(headerRow, ["Legs 1", "Legs1"]);
+        idxLegs2 = findColumnIndex(headerRow, ["Legs 2", "Legs2"]);
+        idxStatus = findColumnIndex(headerRow, ["Status"]);
+        startIndex = headerRowIndex + 1;
+      }
+
+      for (let i = startIndex; i < rows.length; i++) {
         const row = rows[i];
         if (!rowHasAnyContent(row)) continue;
 
-        const spieltagNummer = safeCell(row, 0);
-        const spieler1 = safeCell(row, 1);
-        const discord1 = safeCell(row, 2);
-        const spieler2 = safeCell(row, 3);
-        const discord2 = safeCell(row, 4);
-        const legs1 = safeCell(row, 5);
-        const legs2 = safeCell(row, 6);
-        const status = safeCell(row, 7);
+        const spieltagNummer = safeCell(row, idxSpieltag);
+        const spieler1 = safeCell(row, idxSpieler1);
+        const discord1 = safeCell(row, idxDiscord1);
+        const spieler2 = safeCell(row, idxSpieler2);
+        const discord2 = safeCell(row, idxDiscord2);
+        const legs1 = safeCell(row, idxLegs1);
+        const legs2 = safeCell(row, idxLegs2);
+        const status = safeCell(row, idxStatus);
 
         if (!spieltagNummer || isNaN(parseInt(spieltagNummer, 10))) continue;
         if (!spieler1 || !spieler2) continue;
