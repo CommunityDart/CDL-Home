@@ -322,6 +322,10 @@
       display:block;
       font-weight:800;
       color:#fff;
+      max-width:180px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
 
     .player-discord{
@@ -331,6 +335,10 @@
       line-height:1.25;
       color:#8ec9ee;
       font-weight:700;
+      max-width:180px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
 
     .points-cell{
@@ -373,18 +381,12 @@
       font-weight:900;
     }
 
-    .badge-dot-wrap{
-      width:58px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-
     .status-dot{
       width:11px;
       height:11px;
       border-radius:50%;
       display:inline-block;
+      flex:0 0 11px;
     }
 
     .status-dot.done{
@@ -395,6 +397,30 @@
     .status-dot.open{
       background:var(--red);
       box-shadow:0 0 10px rgba(231,76,60,.65);
+    }
+
+    .status-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-width:84px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+    }
+
+    .status-badge.done{
+      color:var(--green);
+      border-color:rgba(61,220,151,.28);
+    }
+
+    .status-badge.open{
+      color:var(--red);
+      border-color:rgba(231,76,60,.28);
     }
 
     .matchday-body{
@@ -435,10 +461,18 @@
       color:#edf7fb;
     }
 
+    .match-player{
+      display:block;
+      max-width:130px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
     .status-col,
     .status-cell{
       text-align:center !important;
-      width:70px;
+      width:110px;
     }
 
     .status-cell{
@@ -812,8 +846,8 @@
           <tr>
             <td class="${`rank-col ${rankClass(row[0], rows.length)}`.trim()}">${htmlEscape(row[0] || "-")}</td>
             <td class="player-cell">
-              <span class="player-name">${htmlEscape(spielerName)}</span>
-              ${discordName ? `<span class="player-discord">${htmlEscape(discordName)}</span>` : ``}
+              <span class="player-name" title="${htmlEscape(spielerName)}">${htmlEscape(spielerName)}</span>
+              ${discordName ? `<span class="player-discord" title="${htmlEscape(discordName)}">${htmlEscape(discordName)}</span>` : ``}
             </td>
             <td>${htmlEscape(row[2] || "-")}</td>
             <td>${htmlEscape(row[3] || "-")}</td>
@@ -843,7 +877,12 @@
 
     function renderMatchStatusDot(statusValue) {
       const done = /fertig|abgeschlossen|closed|done/i.test(String(statusValue || ""));
-      return `<span class="status-dot ${done ? "done" : "open"}"></span>`;
+      return `
+        <span class="status-badge ${done ? "done" : "open"}">
+          <span class="status-dot ${done ? "done" : "open"}"></span>
+          ${done ? "Fertig" : "Offen"}
+        </span>
+      `;
     }
 
     function renderMatchTable(headers, rows) {
@@ -857,11 +896,14 @@
       }</tr>`;
 
       const tbody = rows.map(row => {
+        const spieler1 = row[1] || "-";
+        const spieler2 = row[3] || "-";
+
         return `
           <tr>
-            <td>${htmlEscape(row[0] || "-")}</td>
-            <td>${htmlEscape(row[1] || "-")}</td>
-            <td>${htmlEscape(row[3] || "-")}</td>
+            <td title="${htmlEscape(row[0] || "-")}">${htmlEscape(row[0] || "-")}</td>
+            <td><span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span></td>
+            <td><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
             <td>${htmlEscape(row[5] || "-")}</td>
             <td>${htmlEscape(row[6] || "-")}</td>
             <td class="status-cell">${renderMatchStatusDot(row[7])}</td>
@@ -883,9 +925,7 @@
           <div class="matchday ${idx === 0 ? "open" : ""}">
             <button class="matchday-head" type="button">
               <span class="matchday-title">${htmlEscape(day.title)}</span>
-              <span class="badge-dot-wrap">
-                <span class="status-dot ${done ? "done" : "open"}"></span>
-              </span>
+              ${renderMatchStatusDot(done ? "fertig" : "offen")}
             </button>
             <div class="matchday-body">
               ${renderMatchTable(day.headers, day.rows)}
