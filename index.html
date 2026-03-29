@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dart Liga</title>
+  <title>Community Dart Liga</title>
   <style>
     :root{
       --bg:#03131b;
@@ -23,9 +23,10 @@
       --accent-soft:rgba(32,183,255,.18);
       --accent-border:rgba(32,183,255,.42);
 
-      --banner-a:#111827;
-      --banner-b:#5865F2;
-      --banner-c:#7c3aed;
+      --banner-a:#0a1420;
+      --banner-b:#102b44;
+      --banner-c:#1f5f8b;
+      --banner-d:#1e9bd7;
     }
 
     body[data-mode="DartCounter"]{
@@ -34,8 +35,9 @@
       --accent-border:rgba(245,158,11,.42);
 
       --banner-a:#1a1205;
-      --banner-b:#c2410c;
-      --banner-c:#f59e0b;
+      --banner-b:#4a2508;
+      --banner-c:#a54a0d;
+      --banner-d:#f59e0b;
     }
 
     *{box-sizing:border-box}
@@ -68,8 +70,8 @@
 
     .title-block h1{
       margin:0;
-      font-size:clamp(34px,5vw,60px);
-      line-height:.95;
+      font-size:clamp(28px,4vw,44px);
+      line-height:1;
       letter-spacing:-.03em;
       font-weight:900;
       text-transform:uppercase;
@@ -91,22 +93,30 @@
     }
 
     .button,
-    .mode-btn{
+    .mode-btn,
+    .footer-btn,
+    .footer-link{
       border:1px solid rgba(75,135,165,.28);
       background:rgba(4,25,36,.96);
       color:var(--text);
       border-radius:12px;
-      min-height:48px;
+      min-height:46px;
       padding:0 16px;
-      font-size:15px;
+      font-size:14px;
       outline:none;
       cursor:pointer;
       font-weight:800;
       transition:.16s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
     }
 
     .button:hover,
-    .mode-btn:hover{
+    .mode-btn:hover,
+    .footer-btn:hover,
+    .footer-link:hover{
       border-color:var(--accent-border);
       background:#082738;
     }
@@ -117,74 +127,84 @@
       box-shadow:inset 3px 0 0 var(--accent);
     }
 
-    .discord-banner{
+    .hero-banner{
       position:relative;
-      margin:0 0 22px;
-      padding:24px 26px;
-      border-radius:22px;
+      margin:0 0 20px;
+      padding:28px 28px;
+      border-radius:24px;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.12);
       background:
-        radial-gradient(circle at 85% 20%, rgba(255,255,255,.18), transparent 20%),
-        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 55%, var(--banner-c) 100%);
+        radial-gradient(circle at 16% 50%, rgba(255,255,255,.16), transparent 9%),
+        radial-gradient(circle at 16% 50%, rgba(255,255,255,.08), transparent 17%),
+        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 34%, var(--banner-c) 70%, var(--banner-d) 100%);
       box-shadow:
         0 16px 40px rgba(0,0,0,.35),
-        inset 0 1px 0 rgba(255,255,255,.1);
+        inset 0 1px 0 rgba(255,255,255,.08);
     }
 
-    .discord-banner::before{
+    .hero-banner::before{
       content:"";
       position:absolute;
-      inset:0;
+      right:-120px;
+      top:50%;
+      width:360px;
+      height:360px;
+      transform:translateY(-50%);
+      border-radius:50%;
       background:
-        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.08) 35%, transparent 55%);
+        radial-gradient(circle, rgba(255,255,255,.18) 0 8%, transparent 8% 16%, rgba(255,255,255,.10) 16% 24%, transparent 24% 32%, rgba(255,255,255,.07) 32% 40%, transparent 40% 48%, rgba(255,255,255,.06) 48% 56%, transparent 56%);
+      opacity:.6;
       pointer-events:none;
     }
 
-    .discord-content{
+    .hero-banner::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(110deg, transparent 0%, rgba(255,255,255,.07) 36%, transparent 56%);
+      pointer-events:none;
+    }
+
+    .hero-banner-inner{
       position:relative;
       z-index:1;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:20px;
+      gap:18px;
       flex-wrap:wrap;
     }
 
-    .discord-text h2{
+    .hero-banner h2{
       margin:0;
-      font-size:26px;
+      font-size:clamp(30px,4vw,54px);
       font-weight:900;
-      letter-spacing:.01em;
+      line-height:.95;
+      letter-spacing:-.04em;
+      text-transform:uppercase;
     }
 
-    .discord-text p{
-      margin:8px 0 0;
+    .hero-banner p{
+      margin:10px 0 0;
       font-size:14px;
       line-height:1.5;
-      opacity:.95;
       max-width:760px;
+      opacity:.96;
     }
 
-    .discord-btn{
+    .hero-tag{
       display:inline-flex;
       align-items:center;
-      justify-content:center;
-      min-height:50px;
-      padding:0 18px;
-      border-radius:14px;
-      background:rgba(255,255,255,.95);
-      color:#111827;
-      font-weight:900;
-      text-decoration:none;
-      transition:.18s ease;
-      border:1px solid rgba(255,255,255,.3);
-      box-shadow:0 10px 22px rgba(0,0,0,.16);
-    }
-
-    .discord-btn:hover{
-      transform:translateY(-1px);
-      background:#fff;
+      gap:8px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.18);
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.08em;
     }
 
     .league-tabs{
@@ -315,17 +335,18 @@
 
     .player-cell{
       font-weight:800;
-      min-width:220px;
+      min-width:260px;
     }
 
     .player-name{
       display:block;
       font-weight:800;
       color:#fff;
-      max-width:180px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
+      white-space:normal;
+      overflow:visible;
+      text-overflow:clip;
+      max-width:none;
+      line-height:1.25;
     }
 
     .player-discord{
@@ -335,10 +356,10 @@
       line-height:1.25;
       color:#8ec9ee;
       font-weight:700;
-      max-width:180px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
+      white-space:normal;
+      overflow:visible;
+      text-overflow:clip;
+      max-width:none;
     }
 
     .points-cell{
@@ -500,9 +521,76 @@
 
     .footer{
       margin-top:20px;
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .footer-note{
+      width:100%;
+      text-align:center;
       color:#7c95a3;
       font-size:12px;
-      text-align:center;
+      margin-top:4px;
+    }
+
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.62);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:1000;
+    }
+
+    .modal-backdrop.open{
+      display:flex;
+    }
+
+    .modal{
+      width:min(680px, 100%);
+      background:linear-gradient(180deg, rgba(6,27,37,.98), rgba(4,20,28,.99));
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:0 24px 60px rgba(0,0,0,.45);
+      overflow:hidden;
+    }
+
+    .modal-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:18px 18px 14px;
+      border-bottom:1px solid rgba(120,170,195,.10);
+    }
+
+    .modal-title{
+      margin:0;
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .modal-close{
+      width:40px;
+      height:40px;
+      min-height:40px;
+      padding:0;
+      border-radius:12px;
+    }
+
+    .modal-body{
+      padding:18px;
+      color:#d7e8ef;
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .modal-body p{
+      margin:0 0 12px;
     }
 
     @media (max-width:1100px){
@@ -513,18 +601,28 @@
     @media (max-width:760px){
       .wrap{width:min(100% - 16px, 1400px)}
       .hero{gap:12px}
-      .title-block h1{font-size:36px}
+      .title-block h1{font-size:34px}
       .top-controls{width:100%}
-      .button,.mode-btn{width:100%}
-      .discord-btn{width:100%}
-      .player-name,.player-discord{max-width:140px}
+      .button,.mode-btn,.footer-btn,.footer-link{width:100%}
       .status-badge{min-width:36px;padding:6px}
       .status-col,.status-cell,.col-status{width:110px;min-width:110px}
+      .hero-banner{padding:22px 20px}
+      .hero-banner h2{font-size:34px}
     }
   </style>
 </head>
 <body data-mode="Autodarts">
   <div class="wrap">
+    <section class="hero-banner">
+      <div class="hero-banner-inner">
+        <div>
+          <div class="hero-tag">Online Liga • Darts</div>
+          <h2>Community Dart Liga</h2>
+          <p>Tabellen, Spieltage und Ergebnisse im CDL-Look. Wähle oben zwischen Autodarts und DartCounter und spring direkt in deine Liga.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="hero">
       <div class="title-block">
         <h1>Divisions</h1>
@@ -558,7 +656,30 @@
       </aside>
     </section>
 
-    <div class="footer">Community Dart Liga • GitHub Pages Version</div>
+    <div class="footer">
+      <button id="openImpressumBtn" class="footer-btn" type="button">Impressum</button>
+      <a class="footer-link" href="https://paypal.me/DEINLINK" target="_blank" rel="noopener noreferrer">Spenden</a>
+      <div class="footer-note">Community Dart Liga • GitHub Pages Version</div>
+    </div>
+  </div>
+
+  <div id="impressumModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="impressumTitle">
+      <div class="modal-head">
+        <h3 id="impressumTitle" class="modal-title">Impressum</h3>
+        <button id="closeImpressumBtn" class="button modal-close" type="button">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Community Dart Liga</strong></p>
+        <p>Hier kannst du dein vollständiges Impressum eintragen.</p>
+        <p>Name / Firma<br>
+        Straße und Hausnummer<br>
+        PLZ Ort<br>
+        E-Mail: deine@email.de</p>
+        <p>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:<br>
+        Max Mustermann</p>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -585,7 +706,8 @@
       leagueData: {},
       activeLeague: null,
       activeMode: "Autodarts",
-      playerDiscordMap: {}
+      playerDiscordMap: {},
+      matchdayOpenState: {}
     };
 
     const leagueTabsEl = document.getElementById("leagueTabs");
@@ -594,6 +716,9 @@
     const reloadBtn = document.getElementById("reloadBtn");
     const modeAutodartsBtn = document.getElementById("modeAutodarts");
     const modeDartCounterBtn = document.getElementById("modeDartCounter");
+    const openImpressumBtn = document.getElementById("openImpressumBtn");
+    const closeImpressumBtn = document.getElementById("closeImpressumBtn");
+    const impressumModal = document.getElementById("impressumModal");
 
     function normalize(value) {
       return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -930,18 +1055,31 @@
       return `<table class="match-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
     }
 
+    function getDefaultOpenMatchdayIndex(matchdays) {
+      const firstOpenIndex = matchdays.findIndex(day => !/fertig|abgeschlossen|closed|done/i.test(day.status));
+      return firstOpenIndex !== -1 ? firstOpenIndex : 0;
+    }
+
+    function getMatchdayStateKey(leagueName, title) {
+      return `${leagueName}__${title}`;
+    }
+
     function renderMatchdays(matchdays) {
       if (!matchdays.length) {
         return `<div class="empty">Keine Spieltage erkannt.</div>`;
       }
 
+      const defaultOpenIndex = getDefaultOpenMatchdayIndex(matchdays);
+
       return matchdays.map((day, idx) => {
-        const done = /fertig|abgeschlossen|closed|done/i.test(day.status);
+        const key = getMatchdayStateKey(state.activeLeague, day.title);
+        const isOpen = key in state.matchdayOpenState ? state.matchdayOpenState[key] : idx === defaultOpenIndex;
+
         return `
-          <div class="matchday ${idx === 0 ? "open" : ""}">
+          <div class="matchday ${isOpen ? "open" : ""}" data-key="${htmlEscape(key)}">
             <button class="matchday-head" type="button">
               <span class="matchday-title">${htmlEscape(day.title)}</span>
-              ${renderMatchStatusDot(done ? "fertig" : "offen")}
+              ${renderMatchStatusDot(day.status)}
             </button>
             <div class="matchday-body">
               ${renderMatchTable(day.headers, day.rows)}
@@ -988,6 +1126,18 @@
       });
     }
 
+    function attachMatchdayEvents() {
+      matchdayAreaEl.querySelectorAll(".matchday").forEach(card => {
+        const key = card.dataset.key;
+        const btn = card.querySelector(".matchday-head");
+        btn.addEventListener("click", () => {
+          const newOpen = !card.classList.contains("open");
+          card.classList.toggle("open", newOpen);
+          state.matchdayOpenState[key] = newOpen;
+        });
+      });
+    }
+
     function renderLeague() {
       const league = state.leagues.find(l => l.name === state.activeLeague);
       if (!league) {
@@ -999,10 +1149,7 @@
       const data = state.leagueData[league.name];
       tableAreaEl.innerHTML = renderStandingsTable(data.standings.headers, data.standings.rows);
       matchdayAreaEl.innerHTML = renderMatchdays(data.matchdays);
-
-      matchdayAreaEl.querySelectorAll(".matchday-head").forEach(btn => {
-        btn.addEventListener("click", () => btn.parentElement.classList.toggle("open"));
-      });
+      attachMatchdayEvents();
     }
 
     function setMode(mode) {
@@ -1048,9 +1195,28 @@
       }
     }
 
+    function openImpressum() {
+      impressumModal.classList.add("open");
+      impressumModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeImpressum() {
+      impressumModal.classList.remove("open");
+      impressumModal.setAttribute("aria-hidden", "true");
+    }
+
     modeAutodartsBtn.addEventListener("click", () => setMode("Autodarts"));
     modeDartCounterBtn.addEventListener("click", () => setMode("DartCounter"));
     reloadBtn.addEventListener("click", loadAll);
+
+    openImpressumBtn.addEventListener("click", openImpressum);
+    closeImpressumBtn.addEventListener("click", closeImpressum);
+    impressumModal.addEventListener("click", (e) => {
+      if (e.target === impressumModal) closeImpressum();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeImpressum();
+    });
 
     loadAll();
   </script>
