@@ -1,304 +1,908 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dart Liga</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dart Liga</title>
+  <style>
+    :root{
+      --bg:#03131b;
+      --panel:#041924;
+      --line:rgba(120,170,195,.12);
+      --text:#f5fbff;
+      --muted:#90a9b7;
+      --gold:#ffd166;
+      --green:#3ddc97;
+      --red:#e74c3c;
+      --row-a:#052130;
+      --row-b:#041924;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+      --radius:18px;
 
-<style>
-:root{
-  --bg:#03131b;
-  --text:#f5fbff;
-  --muted:#90a9b7;
+      --accent:#20b7ff;
+      --accent-soft:rgba(32,183,255,.18);
+      --accent-border:rgba(32,183,255,.42);
 
-  --accent:#20b7ff;
-  --green:#3ddc97;
-  --red:#e74c3c;
+      --banner-a:#111827;
+      --banner-b:#5865F2;
+      --banner-c:#7c3aed;
+    }
 
-  --table-head-bg:#041722;
-  --table-head-text:#c8dce6;
-  --table-row-a:#052130;
-  --table-row-b:#041924;
-  --table-row-hover:#0a2b3b;
-  --table-border:rgba(120,170,195,.08);
-}
+    body[data-mode="DartCounter"]{
+      --accent:#f59e0b;
+      --accent-soft:rgba(245,158,11,.18);
+      --accent-border:rgba(245,158,11,.42);
 
-body[data-mode="DartCounter"]{
-  --accent:#f59e0b;
+      --banner-a:#1a1205;
+      --banner-b:#c2410c;
+      --banner-c:#f59e0b;
+    }
 
-  --table-head-bg:#2a1606;
-  --table-head-text:#ffe7bf;
-  --table-row-a:#1f1308;
-  --table-row-b:#160d06;
-  --table-row-hover:#35200d;
-  --table-border:rgba(245,158,11,.12);
-}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
 
-body{
-  margin:0;
-  font-family:Arial;
-  background:var(--bg);
-  color:var(--text);
-}
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      background:
+        radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 14%, transparent), transparent 22%),
+        linear-gradient(180deg, var(--bg) 0%, #021017 100%);
+      color:var(--text);
+      min-height:100vh;
+      transition:background .2s ease;
+    }
 
-.wrap{max-width:1300px;margin:auto;padding:20px}
+    .wrap{
+      width:min(1400px, calc(100% - 28px));
+      margin:0 auto;
+      padding:18px 0 42px;
+    }
 
-h1{margin:0;font-size:50px}
+    .hero{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:18px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
 
-.controls{display:flex;gap:10px;margin:15px 0}
+    .title-block h1{
+      margin:0;
+      font-size:clamp(34px,5vw,60px);
+      line-height:.95;
+      letter-spacing:-.03em;
+      font-weight:900;
+      text-transform:uppercase;
+    }
 
-button{
-  padding:10px 16px;
-  border-radius:10px;
-  border:1px solid #333;
-  background:#0b1f2a;
-  color:#fff;
-  cursor:pointer;
-  font-weight:bold;
-}
+    .title-block p{
+      margin:10px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      max-width:760px;
+      line-height:1.5;
+    }
 
-button.active{
-  border-color:var(--accent);
-  box-shadow:inset 3px 0 0 var(--accent);
-}
+    .top-controls{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
 
-.discord{
-  margin:20px 0;
-  padding:25px;
-  border-radius:18px;
-  background:linear-gradient(135deg,#5865F2,#7c3aed);
-}
+    .button,
+    .mode-btn{
+      border:1px solid rgba(75,135,165,.28);
+      background:rgba(4,25,36,.96);
+      color:var(--text);
+      border-radius:12px;
+      min-height:48px;
+      padding:0 16px;
+      font-size:15px;
+      outline:none;
+      cursor:pointer;
+      font-weight:800;
+      transition:.16s ease;
+    }
 
-.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+    .button:hover,
+    .mode-btn:hover{
+      border-color:var(--accent-border);
+      background:#082738;
+    }
 
-.tab{
-  padding:10px 14px;
-  border-radius:10px;
-  background:#0b1f2a;
-  cursor:pointer;
-}
+    .mode-btn.active{
+      background:#082738;
+      border-color:var(--accent-border);
+      box-shadow:inset 3px 0 0 var(--accent);
+    }
 
-.tab.active{
-  border-left:4px solid var(--accent);
-}
+    .discord-banner{
+      position:relative;
+      margin:0 0 22px;
+      padding:24px 26px;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,.18), transparent 20%),
+        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 55%, var(--banner-c) 100%);
+      box-shadow:
+        0 16px 40px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.1);
+    }
 
-.main{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:20px;
-}
+    .discord-banner::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.08) 35%, transparent 55%);
+      pointer-events:none;
+    }
 
-.table-box{
-  border-radius:15px;
-  overflow:hidden;
-  border:1px solid #222;
-}
+    .discord-content{
+      position:relative;
+      z-index:1;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-}
+    .discord-text h2{
+      margin:0;
+      font-size:26px;
+      font-weight:900;
+      letter-spacing:.01em;
+    }
 
-th{
-  background:var(--table-head-bg);
-  color:var(--table-head-text);
-  padding:12px;
-  text-align:left;
-}
+    .discord-text p{
+      margin:8px 0 0;
+      font-size:14px;
+      line-height:1.5;
+      opacity:.95;
+      max-width:760px;
+    }
 
-td{
-  padding:12px;
-  border-bottom:1px solid var(--table-border);
-}
+    .discord-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:50px;
+      padding:0 18px;
+      border-radius:14px;
+      background:rgba(255,255,255,.95);
+      color:#111827;
+      font-weight:900;
+      text-decoration:none;
+      transition:.18s ease;
+      border:1px solid rgba(255,255,255,.3);
+      box-shadow:0 10px 22px rgba(0,0,0,.16);
+    }
 
-tr:nth-child(odd) td{background:var(--table-row-a)}
-tr:nth-child(even) td{background:var(--table-row-b)}
+    .discord-btn:hover{
+      transform:translateY(-1px);
+      background:#fff;
+    }
 
-tr:hover td{background:var(--table-row-hover)}
+    .league-tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
 
-.rank.first{border-left:6px solid var(--green)}
-.rank.last{border-left:6px solid var(--red)}
+    .league-tab{
+      border:1px solid rgba(75,135,165,.22);
+      background:#051a25;
+      color:#d3e7f0;
+      padding:11px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:800;
+      transition:.16s ease;
+    }
 
-.matchday{
-  border:1px solid #222;
-  border-radius:12px;
-  margin-bottom:10px;
-}
+    .league-tab:hover{
+      border-color:var(--accent-border);
+    }
 
-.match-head{
-  padding:12px;
-  cursor:pointer;
-  display:flex;
-  justify-content:space-between;
-}
+    .league-tab.active{
+      background:#082738;
+      color:#fff;
+      border-color:var(--accent-border);
+      box-shadow:inset 3px 0 0 var(--accent);
+    }
 
-.match-body{display:none;padding:10px}
+    .main{
+      display:grid;
+      grid-template-columns:minmax(0,1.7fr) minmax(320px,.8fr);
+      gap:18px;
+      align-items:start;
+    }
 
-.matchday.open .match-body{display:block}
+    .table-shell,
+    .matchday{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
+      box-shadow:var(--shadow);
+      border-radius:18px;
+    }
 
-.badge{font-size:12px;padding:4px 8px;border-radius:10px}
-.done{color:#3ddc97}
-.open-b{color:#ffd166}
+    .table-shell{
+      overflow:hidden;
+    }
 
-</style>
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      padding:18px 18px 12px;
+      flex-wrap:wrap;
+    }
+
+    .section-title{
+      margin:0;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.01em;
+    }
+
+    .section-sub{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .table-wrap{
+      overflow-x:auto;
+      padding:0 0 6px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+    }
+
+    thead th{
+      text-align:left;
+      padding:14px 16px;
+      color:#c8dce6;
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      border-bottom:1px solid var(--line);
+      background:#041722;
+      white-space:nowrap;
+    }
+
+    tbody tr:nth-child(odd) td{background:var(--row-a)}
+    tbody tr:nth-child(even) td{background:var(--row-b)}
+
+    tbody td{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(120,170,195,.08);
+      font-size:15px;
+      color:#f1f8fb;
+      white-space:nowrap;
+      vertical-align:top;
+    }
+
+    tbody tr:hover td{background:#0a2b3b}
+
+    .rank-col{
+      width:84px;
+      font-weight:900;
+      position:relative;
+    }
+
+    .rank-col.first::before,
+    .rank-col.last::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      bottom:0;
+      width:10px;
+    }
+
+    .rank-col.first::before{ background: var(--green); }
+    .rank-col.last::before{ background: var(--red); }
+
+    .player-cell{
+      font-weight:800;
+      min-width:220px;
+    }
+
+    .points-cell{
+      font-weight:900;
+      color:#fff;
+    }
+
+    .sidebar{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .matchday-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .matchday{
+      overflow:hidden;
+    }
+
+    .matchday-head{
+      width:100%;
+      border:none;
+      background:transparent;
+      color:var(--text);
+      padding:16px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      text-align:left;
+    }
+
+    .matchday-title{
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .badge{
+      border:1px solid rgba(255,209,102,.35);
+      color:var(--gold);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+      text-transform:lowercase;
+    }
+
+    .badge.done{
+      border-color:rgba(61,220,151,.28);
+      color:var(--green);
+    }
+
+    .matchday-body{
+      display:none;
+      padding:0 14px 14px;
+    }
+
+    .matchday.open .matchday-body{
+      display:block;
+    }
+
+    .match-table{
+      width:100%;
+      min-width:100%;
+      border-collapse:collapse;
+      border-radius:12px;
+      overflow:hidden;
+    }
+
+    .match-table th,
+    .match-table td{
+      padding:10px 10px;
+      font-size:13px;
+      border-bottom:1px solid rgba(120,170,195,.08);
+      white-space:normal;
+    }
+
+    .match-table th{
+      background:#051d2a;
+      color:#c8dce6;
+      text-transform:uppercase;
+      font-size:11px;
+      letter-spacing:.04em;
+    }
+
+    .match-table td{
+      background:rgba(255,255,255,.02);
+      color:#edf7fb;
+    }
+
+    .empty{
+      border:1px dashed rgba(120,170,195,.18);
+      border-radius:14px;
+      padding:14px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .footer{
+      margin-top:20px;
+      color:#7c95a3;
+      font-size:12px;
+      text-align:center;
+    }
+
+    @media (max-width:1100px){
+      .main{grid-template-columns:1fr}
+      .sidebar{order:2}
+    }
+
+    @media (max-width:760px){
+      .wrap{width:min(100% - 16px, 1400px)}
+      .hero{gap:12px}
+      .title-block h1{font-size:36px}
+      .top-controls{width:100%}
+      .button,.mode-btn{width:100%}
+      .discord-btn{width:100%}
+    }
+  </style>
 </head>
-
 <body data-mode="Autodarts">
+  <div class="wrap">
+    <section class="hero">
+      <div class="title-block">
+        <h1>Divisions</h1>
+        <p>Dunkler Liga-Look mit großem Tabellenfokus und sauberer Spieltagsanzeige. Oben wählst du zwischen Autodarts und DartCounter, darunter die passende Liga.</p>
+      </div>
+      <div class="top-controls">
+        <button id="modeAutodarts" class="mode-btn active">Autodarts</button>
+        <button id="modeDartCounter" class="mode-btn">DartCounter</button>
+        <button id="reloadBtn" class="button">Neu laden</button>
+      </div>
+    </section>
 
-<div class="wrap">
+    <div class="discord-banner">
+      <div class="discord-content">
+        <div class="discord-text">
+          <h2>Community Discord</h2>
+          <p>Tritt unserer Dart Liga Community bei, tausche dich mit Spielern aus und bleib immer auf dem neuesten Stand.</p>
+        </div>
+        <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="discord-btn">
+          Discord beitreten
+        </a>
+      </div>
+    </div>
 
-<h1>DIVISIONS</h1>
+    <div id="leagueTabs" class="league-tabs"></div>
 
-<div class="controls">
-<button id="auto" class="active">Autodarts</button>
-<button id="dc">DartCounter</button>
-<button onclick="load()">Neu laden</button>
-</div>
+    <section class="main">
+      <div id="tableArea"></div>
+      <aside class="sidebar">
+        <div id="matchdayArea" class="matchday-list"></div>
+      </aside>
+    </section>
 
-<div class="discord">
-<b>Community Discord</b><br>
-Tritt der Liga bei 👉 <a href="#">Discord</a>
-</div>
+    <div class="footer">Community Dart Liga • GitHub Pages Version</div>
+  </div>
 
-<div id="tabs" class="tabs"></div>
+  <script>
+    const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
 
-<div class="main">
-<div id="table"></div>
-<div id="matches"></div>
-</div>
+    const LEAGUES = [
+      "Autodarts Liga 1",
+      "Autodarts Liga 2",
+      "Autodarts Liga 3",
+      "Autodarts Liga 4",
+      "Autodarts Liga 5",
+      "Autodarts Liga 6",
+      "DartCounter Liga 1",
+      "DartCounter Liga 2",
+      "DartCounter Liga 3",
+      "DartCounter Liga 4",
+      "DartCounter Liga 5",
+      "DartCounter Liga 6"
+    ];
 
-</div>
+    const state = {
+      leagues: [],
+      leagueData: {},
+      activeLeague: null,
+      activeMode: "Autodarts"
+    };
 
-<script>
-const SHEET="1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
+    const leagueTabsEl = document.getElementById("leagueTabs");
+    const tableAreaEl = document.getElementById("tableArea");
+    const matchdayAreaEl = document.getElementById("matchdayArea");
+    const reloadBtn = document.getElementById("reloadBtn");
+    const modeAutodartsBtn = document.getElementById("modeAutodarts");
+    const modeDartCounterBtn = document.getElementById("modeDartCounter");
 
-const leagues=[
-"Autodarts Liga 1","Autodarts Liga 2","Autodarts Liga 3",
-"DartCounter Liga 1","DartCounter Liga 2","DartCounter Liga 3"
-];
+    function normalize(value) {
+      return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+    }
 
-let data={},active="",mode="Autodarts";
+    function htmlEscape(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
 
-async function csv(name){
- const r=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET}/gviz/tq?tqx=out:csv&sheet=${name}`);
- return (await r.text()).split("\n").map(r=>r.split(","));
-}
+    function csvUrl(sheetName) {
+      return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+    }
 
-function parseTable(rows){
- let res=[];
- for(let r of rows){
-   if(!r[0]||isNaN(r[0]))continue;
-   res.push(r);
- }
- return res;
-}
+    function ergName(leagueName) {
+      return `Erg ${leagueName}`;
+    }
 
-function parseMatches(rows){
- let map={};
- for(let r of rows){
-   if(!r[0]||isNaN(r[0]))continue;
-   let tag="Spieltag "+r[0];
-   if(!map[tag])map[tag]=[];
-   map[tag].push(r);
- }
- return map;
-}
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
 
-async function load(){
- data={};
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
 
- for(let l of leagues){
-   let t=await csv(l);
-   let e=await csv("Erg "+l);
+        if (inQuotes) {
+          if (char === '"' && next === '"') {
+            cell += '"';
+            i++;
+          } else if (char === '"') {
+            inQuotes = false;
+          } else {
+            cell += char;
+          }
+        } else {
+          if (char === '"') {
+            inQuotes = true;
+          } else if (char === ',') {
+            row.push(cell);
+            cell = "";
+          } else if (char === '\n') {
+            row.push(cell);
+            rows.push(row);
+            row = [];
+            cell = "";
+          } else if (char !== '\r') {
+            cell += char;
+          }
+        }
+      }
 
-   data[l]={
-     table:parseTable(t),
-     matches:parseMatches(e)
-   };
- }
+      row.push(cell);
+      rows.push(row);
+      return rows;
+    }
 
- renderTabs();
- render();
-}
+    async function loadCsv(sheetName) {
+      const response = await fetch(csvUrl(sheetName));
+      if (!response.ok) {
+        throw new Error(`${sheetName}: HTTP ${response.status}`);
+      }
+      const text = await response.text();
+      return parseCsv(text);
+    }
 
-function renderTabs(){
- let el=document.getElementById("tabs");
- el.innerHTML="";
+    function safeCell(row, index) {
+      return row && row[index] !== undefined ? String(row[index]).trim() : "";
+    }
 
- let filtered=leagues.filter(l=>l.startsWith(mode) && data[l].table.length);
+    function rowHasAnyContent(row) {
+      return row && row.some(cell => normalize(cell) !== "");
+    }
 
- if(!active||!filtered.includes(active))active=filtered[0];
+    function parseStandingsFromLeagueSheet(rows) {
+      if (!rows || !rows.length) return { headers: [], rows: [] };
 
- for(let l of filtered){
-   let b=document.createElement("div");
-   b.className="tab"+(l===active?" active":"");
-   b.innerText=l;
-   b.onclick=()=>{active=l;renderTabs();render();}
-   el.appendChild(b);
- }
-}
+      let tabelleMarker = -1;
+      let spieltageMarker = -1;
 
-function render(){
- let t=data[active].table;
- let m=data[active].matches;
+      for (let i = 0; i < rows.length; i++) {
+        const text = rows[i].map(c => normalize(c)).join(" | ");
+        if (tabelleMarker === -1 && text.includes("tabelle")) tabelleMarker = i;
+        if (spieltageMarker === -1 && text.includes("spieltage")) spieltageMarker = i;
+      }
 
- let tableHTML=`<div class="table-box"><table>
-<tr><th>Platz</th><th>Spieler</th><th>Punkte</th></tr>`;
+      if (tabelleMarker === -1) return { headers: [], rows: [] };
 
- t.forEach((r,i)=>{
-   let cls="rank";
-   if(i===0)cls+=" first";
-   if(i===t.length-1)cls+=" last";
+      const start = tabelleMarker + 1;
+      const end = spieltageMarker > start ? spieltageMarker : rows.length;
 
-   tableHTML+=`<tr>
-   <td class="${cls}">${r[0]}</td>
-   <td>${r[1]}</td>
-   <td>${r[5]}</td>
-   </tr>`;
- });
+      const headers = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      const body = [];
 
- tableHTML+="</table></div>";
- document.getElementById("table").innerHTML=tableHTML;
+      for (let i = start; i < end; i++) {
+        const row = rows[i];
+        if (!rowHasAnyContent(row)) continue;
 
- let matchHTML="";
- for(let tag in m){
-   let games=m[tag];
+        const platz = safeCell(row, 0);
+        const spieler = safeCell(row, 1);
+        const siege = safeCell(row, 2);
+        const niederlagen = safeCell(row, 3);
+        const legDiff = safeCell(row, 4);
+        const punkte = safeCell(row, 5);
 
-   let done=games.every(g=>g[7]==="Fertig");
+        if (!platz || isNaN(parseInt(platz, 10))) continue;
+        if (!spieler) continue;
 
-   matchHTML+=`
-   <div class="matchday">
-     <div class="match-head">
-       ${tag}
-       <span class="badge ${done?"done":"open-b"}">${done?"fertig":"offen"}</span>
-     </div>
-     <div class="match-body">
-       ${games.map(g=>`${g[1]} vs ${g[3]} (${g[5]}:${g[6]})`).join("<br>")}
-     </div>
-   </div>`;
- }
+        body.push([platz, spieler, siege, niederlagen, legDiff, punkte]);
+      }
 
- document.getElementById("matches").innerHTML=matchHTML;
+      return { headers, rows: body };
+    }
 
- document.querySelectorAll(".match-head").forEach(e=>{
-   e.onclick=()=>e.parentElement.classList.toggle("open");
- });
-}
+    function parseMatchdaysFromErgSheet(rows) {
+      if (!rows || !rows.length) return [];
 
-document.getElementById("auto").onclick=()=>{
- mode="Autodarts";
- document.body.dataset.mode="Autodarts";
- renderTabs();render();
-}
+      const grouped = new Map();
 
-document.getElementById("dc").onclick=()=>{
- mode="DartCounter";
- document.body.dataset.mode="DartCounter";
- renderTabs();render();
-}
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (!rowHasAnyContent(row)) continue;
 
-load();
-</script>
+        const spieltagNummer = safeCell(row, 0);
+        const spieler1 = safeCell(row, 1);
+        const discord1 = safeCell(row, 2);
+        const spieler2 = safeCell(row, 3);
+        const discord2 = safeCell(row, 4);
+        const legs1 = safeCell(row, 5);
+        const legs2 = safeCell(row, 6);
+        const status = safeCell(row, 7);
 
+        if (!spieltagNummer || isNaN(parseInt(spieltagNummer, 10))) continue;
+        if (!spieler1 || !spieler2) continue;
+
+        const title = `Spieltag ${spieltagNummer}`;
+
+        if (!grouped.has(title)) grouped.set(title, []);
+        grouped.get(title).push([
+          title,
+          spieler1,
+          discord1,
+          spieler2,
+          discord2,
+          legs1,
+          legs2,
+          status
+        ]);
+      }
+
+      return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
+        const statuses = rowsForDay
+          .map(r => String(r[7] || "").trim())
+          .filter(Boolean);
+
+        let dayStatus = "offen";
+        if (statuses.length) {
+          const allDone = statuses.every(v => /fertig|abgeschlossen|done|closed/i.test(v));
+          dayStatus = allDone ? "fertig" : "offen";
+        }
+
+        return {
+          title,
+          status: dayStatus,
+          headers: ["Spieltag", "Spieler 1", "Discord 1", "Spieler 2", "Discord 2", "Legs 1", "Legs 2", "Status"],
+          rows: rowsForDay
+        };
+      });
+    }
+
+    function leagueHasPlayers(data) {
+      return data && data.standings && data.standings.rows && data.standings.rows.length > 0;
+    }
+
+    async function loadLeague(leagueName) {
+      let leagueRows = [];
+      let ergRows = [];
+
+      try {
+        leagueRows = await loadCsv(leagueName);
+      } catch (e) {
+        console.warn("Liga-Blatt nicht ladbar:", leagueName, e);
+      }
+
+      try {
+        ergRows = await loadCsv(ergName(leagueName));
+      } catch (e) {
+        console.warn("Erg-Blatt nicht ladbar:", leagueName, e);
+      }
+
+      return {
+        standings: parseStandingsFromLeagueSheet(leagueRows),
+        matchdays: parseMatchdaysFromErgSheet(ergRows)
+      };
+    }
+
+    function rankClass(rankValue, totalRows) {
+      const rank = parseInt(String(rankValue).replace(/\D/g, ""), 10);
+      if (!Number.isFinite(rank)) return "";
+      if (rank === 1) return "first";
+      if (rank === totalRows) return "last";
+      return "";
+    }
+
+    function renderStandingsTable(headers, rows) {
+      if (!headers.length || !rows.length) {
+        return `
+          <div class="table-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Tabelle</div>
+                <div class="section-sub">Keine Tabellendaten gefunden.</div>
+              </div>
+            </div>
+            <div style="padding:0 18px 18px">
+              <div class="empty">Keine Tabellendaten gefunden.</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const thead = `<tr>${headers.map((h, i) => {
+        const cls = i === 0 ? ' class="rank-col"' : "";
+        return `<th${cls}>${htmlEscape(h || "-")}</th>`;
+      }).join("")}</tr>`;
+
+      const tbody = rows.map(row => {
+        return `<tr>${headers.map((_, i) => {
+          const cell = htmlEscape(row[i] || "-");
+          let cls = "";
+          if (i === 0) cls = `rank-col ${rankClass(row[i], rows.length)}`.trim();
+          else if (i === 1) cls = "player-cell";
+          else if (i === 5) cls = "points-cell";
+          return `<td class="${cls}">${cell}</td>`;
+        }).join("")}</tr>`;
+      }).join("");
+
+      return `
+        <div class="table-shell">
+          <div class="section-head">
+            <div>
+              <div class="section-title">Tabelle</div>
+              <div class="section-sub">Großer Tabellenfokus im Liga-Stil</div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>${thead}</thead>
+              <tbody>${tbody}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMatchTable(headers, rows) {
+      if (!headers.length || !rows.length) {
+        return `<div class="empty">Keine Spiele gefunden.</div>`;
+      }
+
+      const visibleHeaders = [headers[0], headers[1], headers[3], headers[5], headers[6], headers[7]];
+      const thead = `<tr>${visibleHeaders.map(h => `<th>${htmlEscape(h || "-")}</th>`).join("")}</tr>`;
+
+      const tbody = rows.map(row => {
+        const visibleRow = [row[0], row[1], row[3], row[5], row[6], row[7]];
+        return `<tr>${visibleRow.map(cell => `<td>${htmlEscape(cell || "-")}</td>`).join("")}</tr>`;
+      }).join("");
+
+      return `<table class="match-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+    }
+
+    function renderMatchdays(matchdays) {
+      if (!matchdays.length) {
+        return `<div class="empty">Keine Spieltage erkannt.</div>`;
+      }
+
+      return matchdays.map((day, idx) => {
+        const done = /fertig|abgeschlossen|closed|done/i.test(day.status);
+        return `
+          <div class="matchday ${idx === 0 ? "open" : ""}">
+            <button class="matchday-head" type="button">
+              <span class="matchday-title">${htmlEscape(day.title)}</span>
+              <span class="badge ${done ? "done" : ""}">${htmlEscape(day.status)}</span>
+            </button>
+            <div class="matchday-body">
+              ${renderMatchTable(day.headers, day.rows)}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function getModeLeagues() {
+      return state.leagues.filter(l => l.name.startsWith(state.activeMode));
+    }
+
+    function getVisibleModeLeagues() {
+      return getModeLeagues().filter(l => leagueHasPlayers(state.leagueData[l.name]));
+    }
+
+    function renderLeagueTabs() {
+      const filtered = getVisibleModeLeagues();
+
+      if (!filtered.length) {
+        leagueTabsEl.innerHTML = `<div class="empty">Keine Ligen mit Spielern gefunden.</div>`;
+        tableAreaEl.innerHTML = `<div class="empty">Keine Liga gefunden.</div>`;
+        matchdayAreaEl.innerHTML = "";
+        return;
+      }
+
+      if (!filtered.some(l => l.name === state.activeLeague)) {
+        state.activeLeague = filtered[0].name;
+      }
+
+      leagueTabsEl.innerHTML = filtered.map(l => `
+        <button class="league-tab ${l.name === state.activeLeague ? "active" : ""}" data-name="${htmlEscape(l.name)}">
+          ${htmlEscape(l.name)}
+        </button>
+      `).join("");
+
+      leagueTabsEl.querySelectorAll(".league-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.activeLeague = btn.dataset.name;
+          renderLeagueTabs();
+          renderLeague();
+        });
+      });
+    }
+
+    function renderLeague() {
+      const league = state.leagues.find(l => l.name === state.activeLeague);
+      if (!league) {
+        tableAreaEl.innerHTML = `<div class="empty">Keine Liga ausgewählt.</div>`;
+        matchdayAreaEl.innerHTML = "";
+        return;
+      }
+
+      const data = state.leagueData[league.name];
+      tableAreaEl.innerHTML = renderStandingsTable(data.standings.headers, data.standings.rows);
+      matchdayAreaEl.innerHTML = renderMatchdays(data.matchdays);
+
+      matchdayAreaEl.querySelectorAll(".matchday-head").forEach(btn => {
+        btn.addEventListener("click", () => btn.parentElement.classList.toggle("open"));
+      });
+    }
+
+    function setMode(mode) {
+      state.activeMode = mode;
+      document.body.setAttribute("data-mode", mode);
+      modeAutodartsBtn.classList.toggle("active", mode === "Autodarts");
+      modeDartCounterBtn.classList.toggle("active", mode === "DartCounter");
+      renderLeagueTabs();
+      renderLeague();
+    }
+
+    async function loadAll() {
+      leagueTabsEl.innerHTML = "";
+      tableAreaEl.innerHTML = `<div class="empty">Lade Daten…</div>`;
+      matchdayAreaEl.innerHTML = "";
+
+      try {
+        state.leagues = LEAGUES.map(name => ({ name }));
+
+        const entries = await Promise.all(
+          state.leagues.map(async league => [league.name, await loadLeague(league.name)])
+        );
+
+        state.leagueData = Object.fromEntries(entries);
+
+        const visible = getVisibleModeLeagues();
+        state.activeLeague = visible[0]?.name || null;
+
+        renderLeagueTabs();
+        renderLeague();
+      } catch (error) {
+        console.error(error);
+        tableAreaEl.innerHTML = `<div class="empty">Fehler beim Laden: ${htmlEscape(error && error.message ? error.message : "Unbekannter Fehler")}</div>`;
+        matchdayAreaEl.innerHTML = "";
+      }
+    }
+
+    modeAutodartsBtn.addEventListener("click", () => setMode("Autodarts"));
+    modeDartCounterBtn.addEventListener("click", () => setMode("DartCounter"));
+    reloadBtn.addEventListener("click", loadAll);
+
+    loadAll();
+  </script>
 </body>
 </html>
