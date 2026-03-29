@@ -59,22 +59,6 @@
       padding:18px 0 42px;
     }
 
-    .hero{
-      display:flex;
-      justify-content:flex-end;
-      align-items:end;
-      gap:18px;
-      margin-bottom:18px;
-      flex-wrap:wrap;
-    }
-
-    .top-controls{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-
     .button,
     .mode-btn,
     .footer-btn,
@@ -155,8 +139,13 @@
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:18px;
+      gap:24px;
       flex-wrap:wrap;
+    }
+
+    .hero-banner-copy{
+      flex:1 1 620px;
+      min-width:280px;
     }
 
     .hero-banner h1{
@@ -189,6 +178,22 @@
       text-transform:uppercase;
       letter-spacing:.08em;
       margin-bottom:10px;
+    }
+
+    .hero-banner-modes{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+      flex:0 0 auto;
+    }
+
+    .hero-banner-modes .mode-btn{
+      min-width:110px;
+      min-height:46px;
+      border-radius:14px;
+      backdrop-filter:blur(4px);
     }
 
     .discord-banner{
@@ -634,13 +639,18 @@
 
     @media (max-width:760px){
       .wrap{width:min(100% - 16px, 1400px)}
-      .hero{gap:12px;justify-content:stretch}
-      .top-controls{width:100%}
       .button,.mode-btn,.footer-btn,.footer-link{width:100%}
       .status-badge{min-width:36px;padding:6px}
       .status-col,.status-cell,.col-status{width:110px;min-width:110px}
       .hero-banner{padding:22px 20px}
       .hero-banner h1{font-size:34px}
+      .hero-banner-modes{
+        width:100%;
+        justify-content:flex-start;
+      }
+      .hero-banner-modes .mode-btn{
+        flex:1 1 160px;
+      }
       .discord-btn{width:100%}
     }
   </style>
@@ -649,18 +659,16 @@
   <div class="wrap">
     <section class="hero-banner">
       <div class="hero-banner-inner">
-        <div>
+        <div class="hero-banner-copy">
           <div class="hero-tag">Online Liga • Darts</div>
           <h1>Community Dart Liga</h1>
-          <p>Tabellen, Spieltage und Ergebnisse im CDL-Look. Wähle oben zwischen Autodarts und DartCounter und spring direkt in deine Liga.</p>
+          <p>Tabellen, Spieltage und Ergebnisse im CDL-Look. Wähle zwischen Autodarts und DartCounter und spring direkt in deine Liga.</p>
         </div>
-      </div>
-    </section>
 
-    <section class="hero">
-      <div class="top-controls">
-        <button id="modeAutodarts" class="mode-btn active">Autodarts</button>
-        <button id="modeDartCounter" class="mode-btn">DartCounter</button>
+        <div class="hero-banner-modes">
+          <button id="modeAutodarts" class="mode-btn active">Autodarts</button>
+          <button id="modeDartCounter" class="mode-btn">DartCounter</button>
+        </div>
       </div>
     </section>
 
