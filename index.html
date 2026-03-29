@@ -379,6 +379,8 @@
     .matchday-title{
       font-size:16px;
       font-weight:900;
+      flex:1;
+      min-width:0;
     }
 
     .status-dot{
@@ -404,14 +406,15 @@
       align-items:center;
       justify-content:center;
       gap:8px;
-      min-width:84px;
-      padding:6px 10px;
+      min-width:92px;
+      padding:6px 12px;
       border-radius:999px;
       font-size:12px;
       font-weight:800;
       border:1px solid rgba(255,255,255,.08);
       background:rgba(255,255,255,.04);
       white-space:nowrap;
+      flex-shrink:0;
     }
 
     .status-badge.done{
@@ -439,6 +442,7 @@
       border-collapse:collapse;
       border-radius:12px;
       overflow:hidden;
+      table-layout:fixed;
     }
 
     .match-table th,
@@ -464,20 +468,27 @@
 
     .match-player{
       display:block;
-      max-width:130px;
+      max-width:100%;
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
     }
 
+    .col-player{ width:35%; }
+    .col-legs{ width:12%; text-align:center; }
+    .col-status{ width:130px; text-align:center; }
+
     .status-col,
     .status-cell{
       text-align:center !important;
-      width:110px;
+      width:130px;
+      min-width:130px;
     }
 
     .status-cell{
       vertical-align:middle;
+      white-space:nowrap !important;
+      overflow:visible;
     }
 
     .empty{
@@ -508,7 +519,8 @@
       .button,.mode-btn{width:100%}
       .discord-btn{width:100%}
       .player-name,.player-discord{max-width:140px}
-      .match-player{max-width:100px}
+      .status-badge{min-width:82px;padding:6px 10px;font-size:11px}
+      .status-col,.status-cell,.col-status{width:110px;min-width:110px}
     }
   </style>
 </head>
@@ -776,7 +788,7 @@
         return {
           title,
           status: dayStatus,
-          headers: ["Spieltag", "Spieler 1", "Discord 1", "Spieler 2", "Discord 2", "Legs 1", "Legs 2", "Status"],
+          headers: ["Spieler 1", "Spieler 2", "Legs 1", "Legs 2", "Status"],
           rows: rowsForDay
         };
       });
@@ -892,10 +904,15 @@
         return `<div class="empty">Keine Spiele gefunden.</div>`;
       }
 
-      const visibleHeaders = ["Spieler 1", "Spieler 2", "Legs 1", "Legs 2", "Status"];
-      const thead = `<tr>${
-        visibleHeaders.map(h => `<th class="${h === "Status" ? "status-col" : ""}">${htmlEscape(h)}</th>`).join("")
-      }</tr>`;
+      const thead = `
+        <tr>
+          <th class="col-player">Spieler 1</th>
+          <th class="col-player">Spieler 2</th>
+          <th class="col-legs">Legs 1</th>
+          <th class="col-legs">Legs 2</th>
+          <th class="col-status status-col">Status</th>
+        </tr>
+      `;
 
       const tbody = rows.map(row => {
         const spieler1 = row[1] || "-";
@@ -903,11 +920,11 @@
 
         return `
           <tr>
-            <td><span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span></td>
-            <td><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
-            <td>${htmlEscape(row[5] || "-")}</td>
-            <td>${htmlEscape(row[6] || "-")}</td>
-            <td class="status-cell">${renderMatchStatusDot(row[7])}</td>
+            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span></td>
+            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
+            <td class="col-legs">${htmlEscape(row[5] || "-")}</td>
+            <td class="col-legs">${htmlEscape(row[6] || "-")}</td>
+            <td class="col-status status-cell">${renderMatchStatusDot(row[7])}</td>
           </tr>
         `;
       }).join("");
