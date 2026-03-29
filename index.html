@@ -61,28 +61,11 @@
 
     .hero{
       display:flex;
-      justify-content:space-between;
+      justify-content:flex-end;
       align-items:end;
       gap:18px;
       margin-bottom:18px;
       flex-wrap:wrap;
-    }
-
-    .title-block h1{
-      margin:0;
-      font-size:clamp(28px,4vw,44px);
-      line-height:1;
-      letter-spacing:-.03em;
-      font-weight:900;
-      text-transform:uppercase;
-    }
-
-    .title-block p{
-      margin:10px 0 0;
-      color:var(--muted);
-      font-size:14px;
-      max-width:760px;
-      line-height:1.5;
     }
 
     .top-controls{
@@ -176,7 +159,7 @@
       flex-wrap:wrap;
     }
 
-    .hero-banner h2{
+    .hero-banner h1{
       margin:0;
       font-size:clamp(30px,4vw,54px);
       font-weight:900;
@@ -205,6 +188,57 @@
       font-weight:800;
       text-transform:uppercase;
       letter-spacing:.08em;
+      margin-bottom:10px;
+    }
+
+    .discord-banner{
+      margin:0 0 20px;
+      padding:20px 24px;
+      border-radius:18px;
+      background:linear-gradient(135deg,#0f172a,#1e3a8a);
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow:0 12px 28px rgba(0,0,0,.28);
+    }
+
+    .discord-content{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+
+    .discord-text h2{
+      margin:0;
+      font-size:22px;
+      font-weight:900;
+    }
+
+    .discord-text p{
+      margin:6px 0 0;
+      font-size:14px;
+      color:#cbd5f5;
+      line-height:1.5;
+      max-width:760px;
+    }
+
+    .discord-btn{
+      padding:10px 16px;
+      border-radius:10px;
+      background:#5865F2;
+      color:#fff;
+      text-decoration:none;
+      font-weight:800;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 8px 18px rgba(0,0,0,.16);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
+    }
+
+    .discord-btn:hover{
+      background:#6c78ff;
     }
 
     .league-tabs{
@@ -600,14 +634,14 @@
 
     @media (max-width:760px){
       .wrap{width:min(100% - 16px, 1400px)}
-      .hero{gap:12px}
-      .title-block h1{font-size:34px}
+      .hero{gap:12px;justify-content:stretch}
       .top-controls{width:100%}
       .button,.mode-btn,.footer-btn,.footer-link{width:100%}
       .status-badge{min-width:36px;padding:6px}
       .status-col,.status-cell,.col-status{width:110px;min-width:110px}
       .hero-banner{padding:22px 20px}
-      .hero-banner h2{font-size:34px}
+      .hero-banner h1{font-size:34px}
+      .discord-btn{width:100%}
     }
   </style>
 </head>
@@ -617,29 +651,24 @@
       <div class="hero-banner-inner">
         <div>
           <div class="hero-tag">Online Liga • Darts</div>
-          <h2>Community Dart Liga</h2>
+          <h1>Community Dart Liga</h1>
           <p>Tabellen, Spieltage und Ergebnisse im CDL-Look. Wähle oben zwischen Autodarts und DartCounter und spring direkt in deine Liga.</p>
         </div>
       </div>
     </section>
 
     <section class="hero">
-      <div class="title-block">
-        <h1>Divisions</h1>
-        <p>Dunkler Liga-Look mit großem Tabellenfokus und sauberer Spieltagsanzeige. Oben wählst du zwischen Autodarts und DartCounter, darunter die passende Liga.</p>
-      </div>
       <div class="top-controls">
         <button id="modeAutodarts" class="mode-btn active">Autodarts</button>
         <button id="modeDartCounter" class="mode-btn">DartCounter</button>
-        <button id="reloadBtn" class="button">Neu laden</button>
       </div>
     </section>
 
     <div class="discord-banner">
       <div class="discord-content">
         <div class="discord-text">
-          <h2>Community Discord</h2>
-          <p>Tritt unserer Dart Liga Community bei, tausche dich mit Spielern aus und bleib immer auf dem neuesten Stand.</p>
+          <h2>Community Dart Liga</h2>
+          <p>Trete unserer Liga bei, tausche dich mit Spielern aus und verpasse keine Updates.</p>
         </div>
         <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="discord-btn">
           Discord beitreten
@@ -713,7 +742,6 @@
     const leagueTabsEl = document.getElementById("leagueTabs");
     const tableAreaEl = document.getElementById("tableArea");
     const matchdayAreaEl = document.getElementById("matchdayArea");
-    const reloadBtn = document.getElementById("reloadBtn");
     const modeAutodartsBtn = document.getElementById("modeAutodarts");
     const modeDartCounterBtn = document.getElementById("modeDartCounter");
     const openImpressumBtn = document.getElementById("openImpressumBtn");
@@ -1207,7 +1235,6 @@
 
     modeAutodartsBtn.addEventListener("click", () => setMode("Autodarts"));
     modeDartCounterBtn.addEventListener("click", () => setMode("DartCounter"));
-    reloadBtn.addEventListener("click", loadAll);
 
     openImpressumBtn.addEventListener("click", openImpressum);
     closeImpressumBtn.addEventListener("click", closeImpressum);
