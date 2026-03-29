@@ -11,7 +11,6 @@
       --line:rgba(120,170,195,.12);
       --text:#f5fbff;
       --muted:#90a9b7;
-      --accent:#20b7ff;
       --gold:#ffd166;
       --green:#3ddc97;
       --red:#e74c3c;
@@ -19,8 +18,24 @@
       --row-b:#041924;
       --shadow:0 18px 50px rgba(0,0,0,.35);
       --radius:18px;
-      --discord1:#5865F2;
-      --discord2:#3f4acb;
+
+      --accent:#20b7ff;
+      --accent-soft:rgba(32,183,255,.18);
+      --accent-border:rgba(32,183,255,.42);
+
+      --banner-a:#111827;
+      --banner-b:#5865F2;
+      --banner-c:#7c3aed;
+    }
+
+    body[data-mode="DartCounter"]{
+      --accent:#f59e0b;
+      --accent-soft:rgba(245,158,11,.18);
+      --accent-border:rgba(245,158,11,.42);
+
+      --banner-a:#1a1205;
+      --banner-b:#c2410c;
+      --banner-c:#f59e0b;
     }
 
     *{box-sizing:border-box}
@@ -29,10 +44,11 @@
     body{
       font-family:Arial,Helvetica,sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(32,183,255,.08), transparent 22%),
+        radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 14%, transparent), transparent 22%),
         linear-gradient(180deg, var(--bg) 0%, #021017 100%);
       color:var(--text);
       min-height:100vh;
+      transition:background .2s ease;
     }
 
     .wrap{
@@ -91,25 +107,43 @@
 
     .button:hover,
     .mode-btn:hover{
-      border-color:rgba(32,183,255,.38);
+      border-color:var(--accent-border);
       background:#082738;
     }
 
     .mode-btn.active{
       background:#082738;
-      border-color:rgba(32,183,255,.45);
+      border-color:var(--accent-border);
       box-shadow:inset 3px 0 0 var(--accent);
     }
 
     .discord-banner{
-      margin:0 0 20px;
-      padding:22px 24px;
-      border-radius:18px;
-      background:linear-gradient(90deg, var(--discord1), var(--discord2));
-      box-shadow:0 16px 40px rgba(0,0,0,.35);
+      position:relative;
+      margin:0 0 22px;
+      padding:24px 26px;
+      border-radius:22px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,.18), transparent 20%),
+        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 55%, var(--banner-c) 100%);
+      box-shadow:
+        0 16px 40px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.1);
+    }
+
+    .discord-banner::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.08) 35%, transparent 55%);
+      pointer-events:none;
     }
 
     .discord-content{
+      position:relative;
+      z-index:1;
       display:flex;
       justify-content:space-between;
       align-items:center;
@@ -119,15 +153,15 @@
 
     .discord-text h2{
       margin:0;
-      font-size:24px;
+      font-size:26px;
       font-weight:900;
       letter-spacing:.01em;
     }
 
     .discord-text p{
-      margin:6px 0 0;
+      margin:8px 0 0;
       font-size:14px;
-      line-height:1.45;
+      line-height:1.5;
       opacity:.95;
       max-width:760px;
     }
@@ -136,20 +170,21 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-height:48px;
+      min-height:50px;
       padding:0 18px;
-      border-radius:12px;
-      background:#fff;
-      color:#5865F2;
+      border-radius:14px;
+      background:rgba(255,255,255,.95);
+      color:#111827;
       font-weight:900;
       text-decoration:none;
       transition:.18s ease;
-      border:1px solid rgba(255,255,255,.2);
+      border:1px solid rgba(255,255,255,.3);
+      box-shadow:0 10px 22px rgba(0,0,0,.16);
     }
 
     .discord-btn:hover{
       transform:translateY(-1px);
-      box-shadow:0 8px 18px rgba(0,0,0,.18);
+      background:#fff;
     }
 
     .league-tabs{
@@ -171,13 +206,13 @@
     }
 
     .league-tab:hover{
-      border-color:rgba(32,183,255,.38);
+      border-color:var(--accent-border);
     }
 
     .league-tab.active{
       background:#082738;
       color:#fff;
-      border-color:rgba(32,183,255,.45);
+      border-color:var(--accent-border);
       box-shadow:inset 3px 0 0 var(--accent);
     }
 
@@ -407,7 +442,7 @@
     }
   </style>
 </head>
-<body>
+<body data-mode="Autodarts">
   <div class="wrap">
     <section class="hero">
       <div class="title-block">
@@ -652,6 +687,10 @@
       });
     }
 
+    function leagueHasPlayers(data) {
+      return data && data.standings && data.standings.rows && data.standings.rows.length > 0;
+    }
+
     async function loadLeague(leagueName) {
       let leagueRows = [];
       let ergRows = [];
@@ -774,11 +813,15 @@
       return state.leagues.filter(l => l.name.startsWith(state.activeMode));
     }
 
+    function getVisibleModeLeagues() {
+      return getModeLeagues().filter(l => leagueHasPlayers(state.leagueData[l.name]));
+    }
+
     function renderLeagueTabs() {
-      const filtered = getModeLeagues();
+      const filtered = getVisibleModeLeagues();
 
       if (!filtered.length) {
-        leagueTabsEl.innerHTML = `<div class="empty">Keine Ligen gefunden.</div>`;
+        leagueTabsEl.innerHTML = `<div class="empty">Keine Ligen mit Spielern gefunden.</div>`;
         tableAreaEl.innerHTML = `<div class="empty">Keine Liga gefunden.</div>`;
         matchdayAreaEl.innerHTML = "";
         return;
@@ -822,6 +865,7 @@
 
     function setMode(mode) {
       state.activeMode = mode;
+      document.body.setAttribute("data-mode", mode);
       modeAutodartsBtn.classList.toggle("active", mode === "Autodarts");
       modeDartCounterBtn.classList.toggle("active", mode === "DartCounter");
       renderLeagueTabs();
@@ -841,7 +885,9 @@
         );
 
         state.leagueData = Object.fromEntries(entries);
-        state.activeLeague = getModeLeagues()[0]?.name || state.leagues[0]?.name || null;
+
+        const visible = getVisibleModeLeagues();
+        state.activeLeague = visible[0]?.name || null;
 
         renderLeagueTabs();
         renderLeague();
