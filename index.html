@@ -456,8 +456,8 @@
   <div class="wrap">
     <section class="hero">
       <div class="title-block">
-        <h1>Community Dart Liga - Saison #2</h1>
-        <p>von Board zu Board</p>
+        <h1>Divisions</h1>
+        <p>Dunkler Liga-Look mit großem Tabellenfokus und sauberer Spieltagsanzeige. Oben wählst du zwischen Autodarts und DartCounter, darunter die passende Liga.</p>
       </div>
       <div class="top-controls">
         <button id="modeAutodarts" class="mode-btn active">Autodarts</button>
@@ -691,8 +691,8 @@
         return {
           title,
           status: dayStatus,
-          headers: ["Spieltag", "Spieler 1", "Discord 1", "Spieler 2", "Discord 2", "Legs 1", "Legs 2", "Status"],
-          rows: rowsForDay
+          headers: ["Spieler 1", "Discord 1", "Spieler 2", "Discord 2", "Legs 1", "Legs 2", "Status"],
+          rows: rowsForDay.map(r => [r[1], r[2], r[3], r[4], r[5], r[6], r[7]])
         };
       });
     }
@@ -787,15 +787,38 @@
         return `<div class="empty">Keine Spiele gefunden.</div>`;
       }
 
-      const visibleHeaders = [headers[0], headers[1], headers[3], headers[5], headers[6], headers[7]];
-      const thead = `<tr>${visibleHeaders.map(h => `<th>${htmlEscape(h || "-")}</th>`).join("")}</tr>`;
+      const visibleHeaders = [
+        headers[0], // Spieler 1
+        headers[2], // Spieler 2
+        headers[4], // Legs 1
+        headers[5], // Legs 2
+        headers[6]  // Status
+      ];
+
+      const thead = `<tr>${
+        visibleHeaders.map(h => `<th>${htmlEscape(h || "-")}</th>`).join("")
+      }</tr>`;
 
       const tbody = rows.map(row => {
-        const visibleRow = [row[0], row[1], row[3], row[5], row[6], row[7]];
-        return `<tr>${visibleRow.map(cell => `<td>${htmlEscape(cell || "-")}</td>`).join("")}</tr>`;
+        const visibleRow = [
+          row[0], // Spieler 1
+          row[2], // Spieler 2
+          row[4], // Legs 1
+          row[5], // Legs 2
+          row[6]  // Status
+        ];
+
+        return `<tr>${
+          visibleRow.map(cell => `<td>${htmlEscape(cell || "-")}</td>`).join("")
+        }</tr>`;
       }).join("");
 
-      return `<table class="match-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+      return `
+        <table class="match-table">
+          <thead>${thead}</thead>
+          <tbody>${tbody}</tbody>
+        </table>
+      `;
     }
 
     function renderMatchdays(matchdays) {
@@ -915,4 +938,4 @@
     loadAll();
   </script>
 </body>
-</html> 
+</html>
