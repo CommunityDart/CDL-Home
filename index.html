@@ -531,7 +531,6 @@
       "DartCounter Liga 6"
     ];
 
-    // HIER ggf. den echten Blattnamen deiner Spielerübersicht eintragen
     const PLAYER_SHEET = "Spieler_Discord";
 
     const state = {
@@ -628,28 +627,19 @@
       return row && row.some(cell => normalize(cell) !== "");
     }
 
-    function findColumnIndex(headerRow, candidates) {
-      const normalized = (headerRow || []).map(cell => normalize(cell));
-      for (const candidate of candidates) {
-        const idx = normalized.findIndex(cell => cell === normalize(candidate));
-        if (idx !== -1) return idx;
-      }
-      return -1;
-    }
-
     function parsePlayerDiscordSheet(rows) {
       if (!rows || !rows.length) return {};
 
       let headerIndex = -1;
-      let idxPlayer = -1;
-      let idxDiscord = -1;
 
       for (let i = 0; i < rows.length; i++) {
-        const row = rows[i] || [];
-        idxPlayer = findColumnIndex(row, ["Spieler", "Name", "Spielername"]);
-        idxDiscord = findColumnIndex(row, ["Spieler_Discord", "Discord", "Discordname", "Discord Name"]);
+        const colA = normalize(safeCell(rows[i], 0));
+        const colB = normalize(safeCell(rows[i], 1));
 
-        if (idxPlayer !== -1 && idxDiscord !== -1) {
+        if (
+          (colA === "spieler" || colA === "name" || colA === "spielername") &&
+          colB === "discordname"
+        ) {
           headerIndex = i;
           break;
         }
@@ -663,8 +653,8 @@
         const row = rows[i];
         if (!rowHasAnyContent(row)) continue;
 
-        const player = safeCell(row, idxPlayer);
-        const discord = safeCell(row, idxDiscord);
+        const player = safeCell(row, 0);
+        const discord = safeCell(row, 1);
 
         if (!player) continue;
         map[normalize(player)] = discord;
