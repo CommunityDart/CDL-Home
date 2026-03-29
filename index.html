@@ -23,10 +23,14 @@
       --accent-soft:rgba(32,183,255,.18);
       --accent-border:rgba(32,183,255,.42);
 
-      --banner-a:#0a1420;
+      --banner-a:#07111a;
       --banner-b:#102b44;
-      --banner-c:#1f5f8b;
+      --banner-c:#17557c;
       --banner-d:#1e9bd7;
+
+      --card-a:#091826;
+      --card-b:#132b4d;
+      --card-c:#1d3f74;
     }
 
     body[data-mode="DartCounter"]{
@@ -34,10 +38,14 @@
       --accent-soft:rgba(245,158,11,.18);
       --accent-border:rgba(245,158,11,.42);
 
-      --banner-a:#1a1205;
+      --banner-a:#160d05;
       --banner-b:#4a2508;
-      --banner-c:#a54a0d;
+      --banner-c:#87410d;
       --banner-d:#f59e0b;
+
+      --card-a:#1a1205;
+      --card-b:#4a2508;
+      --card-c:#8d480f;
     }
 
     *{box-sizing:border-box}
@@ -62,7 +70,8 @@
     .button,
     .mode-btn,
     .footer-btn,
-    .footer-link{
+    .footer-link,
+    .info-btn{
       border:1px solid rgba(75,135,165,.28);
       background:rgba(4,25,36,.96);
       color:var(--text);
@@ -78,50 +87,55 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
+      gap:8px;
     }
 
     .button:hover,
     .mode-btn:hover,
     .footer-btn:hover,
-    .footer-link:hover{
+    .footer-link:hover,
+    .info-btn:hover{
       border-color:var(--accent-border);
       background:#082738;
+      transform:translateY(-1px);
     }
 
     .mode-btn.active{
       background:#082738;
       border-color:var(--accent-border);
-      box-shadow:inset 3px 0 0 var(--accent);
+      box-shadow:
+        inset 3px 0 0 var(--accent),
+        0 0 0 1px rgba(255,255,255,.04);
     }
 
     .hero-banner{
       position:relative;
       margin:0 0 20px;
-      padding:28px 28px;
-      border-radius:24px;
+      padding:32px 30px;
+      border-radius:28px;
       overflow:hidden;
-      border:1px solid rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.10);
       background:
-        radial-gradient(circle at 16% 50%, rgba(255,255,255,.16), transparent 9%),
-        radial-gradient(circle at 16% 50%, rgba(255,255,255,.08), transparent 17%),
-        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 34%, var(--banner-c) 70%, var(--banner-d) 100%);
+        radial-gradient(circle at 14% 28%, rgba(255,255,255,.18), transparent 11%),
+        radial-gradient(circle at 88% 28%, rgba(255,255,255,.09), transparent 18%),
+        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 32%, var(--banner-c) 70%, var(--banner-d) 100%);
       box-shadow:
-        0 16px 40px rgba(0,0,0,.35),
+        0 24px 60px rgba(0,0,0,.38),
         inset 0 1px 0 rgba(255,255,255,.08);
     }
 
     .hero-banner::before{
       content:"";
       position:absolute;
-      right:-120px;
+      right:-110px;
       top:50%;
       width:360px;
       height:360px;
       transform:translateY(-50%);
       border-radius:50%;
       background:
-        radial-gradient(circle, rgba(255,255,255,.18) 0 8%, transparent 8% 16%, rgba(255,255,255,.10) 16% 24%, transparent 24% 32%, rgba(255,255,255,.07) 32% 40%, transparent 40% 48%, rgba(255,255,255,.06) 48% 56%, transparent 56%);
-      opacity:.6;
+        radial-gradient(circle, rgba(255,255,255,.22) 0 5%, transparent 5% 16%, rgba(255,255,255,.11) 16% 23%, transparent 23% 34%, rgba(255,255,255,.08) 34% 41%, transparent 41% 52%, rgba(255,255,255,.06) 52% 59%, transparent 59%);
+      opacity:.72;
       pointer-events:none;
     }
 
@@ -129,7 +143,9 @@
       content:"";
       position:absolute;
       inset:0;
-      background:linear-gradient(110deg, transparent 0%, rgba(255,255,255,.07) 36%, transparent 56%);
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,.06) 34%, transparent 54%),
+        linear-gradient(180deg, rgba(255,255,255,.03), transparent 28%);
       pointer-events:none;
     }
 
@@ -150,19 +166,21 @@
 
     .hero-banner h1{
       margin:0;
-      font-size:clamp(30px,4vw,54px);
+      font-size:clamp(34px,4.8vw,70px);
       font-weight:900;
-      line-height:.95;
-      letter-spacing:-.04em;
+      line-height:.92;
+      letter-spacing:-.05em;
       text-transform:uppercase;
+      text-shadow:0 10px 30px rgba(0,0,0,.20);
     }
 
     .hero-banner p{
-      margin:10px 0 0;
-      font-size:14px;
-      line-height:1.5;
-      max-width:760px;
-      opacity:.96;
+      margin:14px 0 0;
+      font-size:15px;
+      line-height:1.55;
+      max-width:780px;
+      opacity:.97;
+      color:#e6f5ff;
     }
 
     .hero-tag{
@@ -177,7 +195,8 @@
       font-weight:800;
       text-transform:uppercase;
       letter-spacing:.08em;
-      margin-bottom:10px;
+      margin-bottom:12px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
     }
 
     .hero-banner-modes{
@@ -192,42 +211,84 @@
     }
 
     .hero-banner-modes .mode-btn{
-      min-width:110px;
-      min-height:46px;
-      border-radius:14px;
-      backdrop-filter:blur(4px);
+      min-width:118px;
+      min-height:48px;
+      border-radius:15px;
+      backdrop-filter:blur(6px);
+      background:rgba(2,15,26,.68);
+      border-color:rgba(255,255,255,.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        0 10px 24px rgba(0,0,0,.18);
+    }
+
+    .banner-row{
+      display:grid;
+      grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .discord-banner,
+    .info-banner{
+      padding:18px 20px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 12px 28px rgba(0,0,0,.24);
+      min-height:100%;
     }
 
     .discord-banner{
-      margin:0 0 20px;
-      padding:20px 24px;
-      border-radius:18px;
       background:linear-gradient(135deg,#0f172a,#1e3a8a);
-      border:1px solid rgba(255,255,255,.1);
-      box-shadow:0 12px 28px rgba(0,0,0,.28);
     }
 
-    .discord-content{
+    .info-banner{
+      background:
+        linear-gradient(135deg, var(--card-a) 0%, var(--card-b) 55%, var(--card-c) 100%);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .info-banner::after{
+      content:"";
+      position:absolute;
+      right:-50px;
+      bottom:-50px;
+      width:180px;
+      height:180px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,255,255,.10) 0 12%, transparent 12% 26%, rgba(255,255,255,.06) 26% 38%, transparent 38%);
+      pointer-events:none;
+    }
+
+    .discord-content,
+    .info-content{
+      position:relative;
+      z-index:1;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:20px;
+      gap:18px;
       flex-wrap:wrap;
     }
 
-    .discord-text h2{
+    .discord-text h2,
+    .info-text h2{
       margin:0;
       font-size:22px;
       font-weight:900;
     }
 
-    .discord-text p{
+    .discord-text p,
+    .info-text p{
       margin:6px 0 0;
       font-size:14px;
-      color:#cbd5f5;
       line-height:1.5;
       max-width:760px;
     }
+
+    .discord-text p{ color:#cbd5f5; }
+    .info-text p{ color:#d7ebf7; }
 
     .discord-btn{
       padding:10px 16px;
@@ -242,10 +303,33 @@
       align-items:center;
       justify-content:center;
       min-height:46px;
+      white-space:nowrap;
     }
 
     .discord-btn:hover{
       background:#6c78ff;
+      transform:translateY(-1px);
+    }
+
+    .info-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .info-btn{
+      min-width:110px;
+      background:rgba(4,25,36,.70);
+      border-color:rgba(255,255,255,.14);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .info-btn[aria-disabled="true"]{
+      opacity:.5;
+      pointer-events:none;
+      cursor:default;
     }
 
     .league-tabs{
@@ -288,7 +372,7 @@
     .matchday{
       border:1px solid var(--line);
       background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
-      box-shadow:var(--shadow);
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
       border-radius:18px;
     }
 
@@ -631,17 +715,18 @@
     }
 
     @media (max-width:1100px){
+      .banner-row{grid-template-columns:1fr}
       .main{grid-template-columns:1fr}
       .sidebar{order:2}
     }
 
     @media (max-width:760px){
       .wrap{width:min(100% - 16px, 1400px)}
-      .button,.mode-btn,.footer-btn,.footer-link{width:100%}
+      .button,.mode-btn,.footer-btn,.footer-link,.info-btn{width:100%}
       .status-badge{min-width:36px;padding:6px}
       .status-col,.status-cell,.col-status{width:110px;min-width:110px}
-      .hero-banner{padding:22px 20px}
-      .hero-banner h1{font-size:34px}
+      .hero-banner{padding:24px 20px}
+      .hero-banner h1{font-size:38px}
       .hero-banner-modes{
         width:100%;
         justify-content:flex-start;
@@ -650,6 +735,7 @@
         flex:1 1 160px;
       }
       .discord-btn{width:100%}
+      .info-actions{width:100%}
     }
   </style>
 </head>
@@ -670,17 +756,32 @@
       </div>
     </section>
 
-    <div class="discord-banner">
-      <div class="discord-content">
-        <div class="discord-text">
-          <h2>Community Dart Liga</h2>
-          <p>Trete unserer Liga bei, tausche dich mit Spielern aus und verpasse keine Updates.</p>
+    <section class="banner-row">
+      <div class="discord-banner">
+        <div class="discord-content">
+          <div class="discord-text">
+            <h2>Community Discord</h2>
+            <p>Trete unserer Liga bei, tausche dich mit Spielern aus und verpasse keine Updates.</p>
+          </div>
+          <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="discord-btn">
+            Discord beitreten
+          </a>
         </div>
-        <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="discord-btn">
-          Discord beitreten
-        </a>
       </div>
-    </div>
+
+      <div class="info-banner">
+        <div class="info-content">
+          <div class="info-text">
+            <h2>Wichtige Infos</h2>
+            <p>Hier findest du das Regelwerk und die FAQ direkt aus dem Sheet verlinkt.</p>
+          </div>
+          <div class="info-actions">
+            <a id="regelwerkBtn" class="info-btn" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">Regeln</a>
+            <a id="faqBtn" class="info-btn" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">FAQ</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <div id="leagueTabs" class="league-tabs"></div>
 
@@ -720,6 +821,8 @@
   <script>
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
     const PLAYER_SHEET = "Spieler_Discord";
+    const RULES_SHEET = "Regelwerk";
+    const FAQ_SHEET = "FAQ";
 
     const LEAGUES = [
       "Autodarts Liga 1",
@@ -742,7 +845,11 @@
       activeLeague: null,
       activeMode: "Autodarts",
       playerDiscordMap: {},
-      matchdayOpenState: {}
+      matchdayOpenState: {},
+      links: {
+        regelwerk: "",
+        faq: ""
+      }
     };
 
     const leagueTabsEl = document.getElementById("leagueTabs");
@@ -753,6 +860,8 @@
     const openImpressumBtn = document.getElementById("openImpressumBtn");
     const closeImpressumBtn = document.getElementById("closeImpressumBtn");
     const impressumModal = document.getElementById("impressumModal");
+    const regelwerkBtn = document.getElementById("regelwerkBtn");
+    const faqBtn = document.getElementById("faqBtn");
 
     function normalize(value) {
       return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -854,6 +963,27 @@
       }
 
       return map;
+    }
+
+    function findFirstLink(rows) {
+      if (!rows || !rows.length) return "";
+      for (const row of rows) {
+        for (const cell of row) {
+          const value = String(cell || "").trim();
+          if (/^https?:\/\//i.test(value)) return value;
+        }
+      }
+      return "";
+    }
+
+    function applyLinkButton(button, url) {
+      if (url) {
+        button.href = url;
+        button.setAttribute("aria-disabled", "false");
+      } else {
+        button.href = "#";
+        button.setAttribute("aria-disabled", "true");
+      }
     }
 
     function parseStandingsFromLeagueSheet(rows) {
@@ -1185,6 +1315,25 @@
       renderLeague();
     }
 
+    async function loadStaticLinks() {
+      try {
+        const [regelwerkRows, faqRows] = await Promise.all([
+          loadCsv(RULES_SHEET).catch(() => []),
+          loadCsv(FAQ_SHEET).catch(() => [])
+        ]);
+
+        state.links.regelwerk = findFirstLink(regelwerkRows);
+        state.links.faq = findFirstLink(faqRows);
+      } catch (e) {
+        console.warn("Regelwerk / FAQ nicht ladbar", e);
+        state.links.regelwerk = "";
+        state.links.faq = "";
+      }
+
+      applyLinkButton(regelwerkBtn, state.links.regelwerk);
+      applyLinkButton(faqBtn, state.links.faq);
+    }
+
     async function loadAll() {
       leagueTabsEl.innerHTML = "";
       tableAreaEl.innerHTML = `<div class="empty">Lade Daten…</div>`;
@@ -1200,6 +1349,8 @@
           console.warn("Spieler-Blatt nicht ladbar:", PLAYER_SHEET, e);
           state.playerDiscordMap = {};
         }
+
+        await loadStaticLinks();
 
         const entries = await Promise.all(
           state.leagues.map(async league => [league.name, await loadLeague(league.name)])
