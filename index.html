@@ -2,395 +2,407 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dart Online Liga</title>
   <style>
-    :root {
-      --bg: #03131b;
-      --bg-2: #061b25;
-      --panel: #041924;
-      --panel-2: #082433;
-      --line: rgba(120, 170, 195, 0.12);
-      --text: #f5fbff;
-      --muted: #90a9b7;
-      --accent: #20b7ff;
-      --accent-soft: rgba(32, 183, 255, 0.14);
-      --gold: #ffd166;
-      --red: #ff5f56;
-      --green: #3ddc97;
-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
-      --radius: 18px;
-      --row-a: #052130;
-      --row-b: #041924;
+    :root{
+      --bg:#03131b;
+      --bg2:#061b25;
+      --panel:#041924;
+      --panel2:#082433;
+      --line:rgba(120,170,195,.12);
+      --text:#f5fbff;
+      --muted:#90a9b7;
+      --accent:#20b7ff;
+      --accentSoft:rgba(32,183,255,.14);
+      --gold:#ffd166;
+      --red:#e74c3c;
+      --green:#3ddc97;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+      --radius:18px;
+      --rowA:#052130;
+      --rowB:#041924;
     }
 
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body {
-      font-family: Inter, Arial, Helvetica, sans-serif;
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Inter,Arial,Helvetica,sans-serif;
       background:
         radial-gradient(circle at top left, rgba(32,183,255,.08), transparent 22%),
         linear-gradient(180deg, var(--bg) 0%, #021017 100%);
-      color: var(--text);
-      min-height: 100vh;
+      color:var(--text);
+      min-height:100vh;
     }
 
-    .wrap {
-      width: min(1400px, calc(100% - 28px));
-      margin: 0 auto;
-      padding: 18px 0 42px;
+    .wrap{
+      width:min(1400px, calc(100% - 28px));
+      margin:0 auto;
+      padding:18px 0 42px;
     }
 
-    .hero {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 18px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
+    .hero{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:18px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
     }
 
-    .title-block h1 {
-      margin: 0;
-      font-size: clamp(34px, 5vw, 60px);
-      line-height: .95;
-      letter-spacing: -.03em;
-      font-weight: 900;
-      text-transform: uppercase;
+    .title-block h1{
+      margin:0;
+      font-size:clamp(34px,5vw,60px);
+      line-height:.95;
+      letter-spacing:-.03em;
+      font-weight:900;
+      text-transform:uppercase;
     }
 
-    .title-block p {
-      margin: 10px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-      max-width: 760px;
+    .title-block p{
+      margin:10px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      max-width:760px;
+      line-height:1.5;
     }
 
-    .top-controls {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
+    .top-controls{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
     }
 
-    .search,
     .button,
-    .select {
-      border: 1px solid rgba(75, 135, 165, 0.28);
-      background: rgba(4, 25, 36, 0.96);
-      color: var(--text);
-      border-radius: 12px;
-      min-height: 48px;
-      padding: 0 14px;
-      font-size: 15px;
-      outline: none;
+    .mode-btn{
+      border:1px solid rgba(75,135,165,.28);
+      background:rgba(4,25,36,.96);
+      color:var(--text);
+      border-radius:12px;
+      min-height:48px;
+      padding:0 16px;
+      font-size:15px;
+      outline:none;
+      cursor:pointer;
+      font-weight:800;
+      transition:.16s ease;
     }
 
-    .search { min-width: 240px; }
-    .select { min-width: 230px; }
-    .button {
-      cursor: pointer;
-      font-weight: 800;
-      background: linear-gradient(180deg, #0c3144, #092635);
+    .button:hover,
+    .mode-btn:hover{
+      border-color:rgba(32,183,255,.38);
+      background:#082738;
     }
 
-    .statusbar {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
+    .mode-btn.active{
+      background:#082738;
+      border-color:rgba(32,183,255,.45);
+      box-shadow:inset 3px 0 0 var(--accent);
+    }
+
+    .statusbar{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
     }
 
     .stat,
     .panel,
     .matchday,
-    .table-shell {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
-      box-shadow: var(--shadow);
+    .table-shell{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
+      box-shadow:var(--shadow);
     }
 
-    .stat {
-      padding: 14px 16px;
-      min-width: 160px;
-      border-radius: 14px;
+    .stat{
+      padding:14px 16px;
+      min-width:160px;
+      border-radius:14px;
     }
 
-    .stat-label {
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 4px;
+    .stat-label{
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:4px;
     }
 
-    .stat-value {
-      font-size: 28px;
-      font-weight: 900;
-      line-height: 1;
+    .stat-value{
+      font-size:28px;
+      font-weight:900;
+      line-height:1;
     }
 
-    .tabs {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
+    .league-tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
     }
 
-    .tab {
-      border: 1px solid rgba(75, 135, 165, 0.22);
-      background: #051a25;
-      color: #d3e7f0;
-      padding: 11px 14px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 800;
-      transition: .16s ease;
+    .league-tab{
+      border:1px solid rgba(75,135,165,.22);
+      background:#051a25;
+      color:#d3e7f0;
+      padding:11px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:800;
+      transition:.16s ease;
     }
 
-    .tab.active {
-      background: #082738;
-      color: #fff;
-      border-color: rgba(32,183,255,.45);
-      box-shadow: inset 3px 0 0 var(--accent);
+    .league-tab:hover{
+      border-color:rgba(32,183,255,.38);
     }
 
-    .main {
-      display: grid;
-      grid-template-columns: minmax(0, 1.7fr) minmax(320px, .8fr);
-      gap: 18px;
-      align-items: start;
+    .league-tab.active{
+      background:#082738;
+      color:#fff;
+      border-color:rgba(32,183,255,.45);
+      box-shadow:inset 3px 0 0 var(--accent);
     }
 
-    .table-shell {
-      border-radius: 18px;
-      overflow: hidden;
+    .main{
+      display:grid;
+      grid-template-columns:minmax(0,1.7fr) minmax(320px,.8fr);
+      gap:18px;
+      align-items:start;
     }
 
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      padding: 18px 18px 12px;
-      flex-wrap: wrap;
+    .table-shell{
+      border-radius:18px;
+      overflow:hidden;
     }
 
-    .section-title {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 900;
-      letter-spacing: .01em;
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      padding:18px 18px 12px;
+      flex-wrap:wrap;
     }
 
-    .section-sub {
-      color: var(--muted);
-      font-size: 13px;
+    .section-title{
+      margin:0;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.01em;
     }
 
-    .table-wrap {
-      overflow-x: auto;
-      padding: 0 0 6px;
+    .section-sub{
+      color:var(--muted);
+      font-size:13px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 900px;
+    .table-wrap{
+      overflow-x:auto;
+      padding:0 0 6px;
     }
 
-    thead th {
-      text-align: left;
-      padding: 14px 16px;
-      color: #c8dce6;
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      border-bottom: 1px solid var(--line);
-      background: #041722;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      white-space: nowrap;
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
     }
 
-    tbody tr:nth-child(odd) td { background: var(--row-a); }
-    tbody tr:nth-child(even) td { background: var(--row-b); }
-
-    tbody td {
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(120, 170, 195, 0.08);
-      font-size: 15px;
-      color: #f1f8fb;
-      white-space: nowrap;
+    thead th{
+      text-align:left;
+      padding:14px 16px;
+      color:#c8dce6;
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      border-bottom:1px solid var(--line);
+      background:#041722;
+      position:sticky;
+      top:0;
+      z-index:1;
+      white-space:nowrap;
     }
 
-    tbody tr:hover td { background: #0a2b3b; }
+    tbody tr:nth-child(odd) td{background:var(--rowA)}
+    tbody tr:nth-child(even) td{background:var(--rowB)}
 
-    .rank-col {
-      width: 84px;
-      font-weight: 900;
-      position: relative;
+    tbody td{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(120,170,195,.08);
+      font-size:15px;
+      color:#f1f8fb;
+      white-space:nowrap;
+      vertical-align:top;
+    }
+
+    tbody tr:hover td{background:#0a2b3b}
+
+    .rank-col{
+      width:84px;
+      font-weight:900;
+      position:relative;
     }
 
     .rank-col.top::before,
-    .rank-col.bottom::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 10px;
+    .rank-col.bottom::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      bottom:0;
+      width:10px;
     }
 
-    .rank-col.top::before { background: #27b8ff; }
-    .rank-col.bottom::before { background: #e74c3c; }
+    .rank-col.top::before{background:#27b8ff}
+    .rank-col.bottom::before{background:var(--red)}
 
-    .player-cell {
-      font-weight: 800;
-      min-width: 220px;
+    .player-cell{
+      font-weight:800;
+      min-width:220px;
     }
 
-    .points-cell {
-      font-weight: 900;
-      color: #ffffff;
+    .points-cell{
+      font-weight:900;
+      color:#fff;
     }
 
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+    .sidebar{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
 
-    .panel {
-      border-radius: 18px;
-      padding: 18px;
+    .panel{
+      border-radius:18px;
+      padding:18px;
     }
 
-    .panel h3 {
-      margin: 0 0 4px;
-      font-size: 15px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .04em;
+    .panel h3{
+      margin:0 0 4px;
+      font-size:15px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.04em;
     }
 
-    .panel p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
+    .panel p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
     }
 
-    .matchday-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .matchday-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
     }
 
-    .matchday {
-      border-radius: 18px;
-      overflow: hidden;
+    .matchday{
+      border-radius:18px;
+      overflow:hidden;
     }
 
-    .matchday-head {
-      width: 100%;
-      border: none;
-      background: transparent;
-      color: var(--text);
-      padding: 16px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      text-align: left;
+    .matchday-head{
+      width:100%;
+      border:none;
+      background:transparent;
+      color:var(--text);
+      padding:16px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      text-align:left;
     }
 
-    .matchday-title {
-      font-size: 16px;
-      font-weight: 900;
+    .matchday-title{
+      font-size:16px;
+      font-weight:900;
     }
 
-    .badge {
-      border: 1px solid rgba(255, 209, 102, 0.35);
-      color: var(--gold);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      white-space: nowrap;
-      text-transform: lowercase;
+    .badge{
+      border:1px solid rgba(255,209,102,.35);
+      color:var(--gold);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+      text-transform:lowercase;
     }
 
-    .badge.done {
-      border-color: rgba(61,220,151,.28);
-      color: var(--green);
+    .badge.done{
+      border-color:rgba(61,220,151,.28);
+      color:var(--green);
     }
 
-    .matchday-body {
-      display: none;
-      padding: 0 14px 14px;
+    .matchday-body{
+      display:none;
+      padding:0 14px 14px;
     }
 
-    .matchday.open .matchday-body {
-      display: block;
+    .matchday.open .matchday-body{
+      display:block;
     }
 
-    .match-table {
-      width: 100%;
-      min-width: 100%;
-      border-collapse: collapse;
-      overflow: hidden;
-      border-radius: 12px;
+    .match-table{
+      width:100%;
+      min-width:100%;
+      border-collapse:collapse;
+      border-radius:12px;
+      overflow:hidden;
     }
 
     .match-table th,
-    .match-table td {
-      padding: 10px 10px;
-      font-size: 13px;
-      border-bottom: 1px solid rgba(120,170,195,.08);
-      white-space: normal;
+    .match-table td{
+      padding:10px 10px;
+      font-size:13px;
+      border-bottom:1px solid rgba(120,170,195,.08);
+      white-space:normal;
     }
 
-    .match-table th {
-      background: #051d2a;
-      color: #c8dce6;
-      text-transform: uppercase;
-      font-size: 11px;
-      letter-spacing: .04em;
+    .match-table th{
+      background:#051d2a;
+      color:#c8dce6;
+      text-transform:uppercase;
+      font-size:11px;
+      letter-spacing:.04em;
     }
 
-    .match-table td {
-      background: rgba(255,255,255,.02);
-      color: #edf7fb;
+    .match-table td{
+      background:rgba(255,255,255,.02);
+      color:#edf7fb;
     }
 
-    .empty {
-      border: 1px dashed rgba(120,170,195,.18);
-      border-radius: 14px;
-      padding: 14px;
-      color: var(--muted);
-      font-size: 14px;
+    .empty{
+      border:1px dashed rgba(120,170,195,.18);
+      border-radius:14px;
+      padding:14px;
+      color:var(--muted);
+      font-size:14px;
     }
 
-    .footer {
-      margin-top: 20px;
-      color: #7c95a3;
-      font-size: 12px;
-      text-align: center;
+    .footer{
+      margin-top:20px;
+      color:#7c95a3;
+      font-size:12px;
+      text-align:center;
     }
 
-    @media (max-width: 1100px) {
-      .main { grid-template-columns: 1fr; }
-      .sidebar { order: 2; }
+    @media (max-width:1100px){
+      .main{grid-template-columns:1fr}
+      .sidebar{order:2}
     }
 
-    @media (max-width: 760px) {
-      .wrap { width: min(100% - 16px, 1400px); }
-      .hero { gap: 12px; }
-      .title-block h1 { font-size: 36px; }
-      .search, .select, .button { width: 100%; min-width: 0; }
-      .top-controls { width: 100%; }
+    @media (max-width:760px){
+      .wrap{width:min(100% - 16px, 1400px)}
+      .hero{gap:12px}
+      .title-block h1{font-size:36px}
+      .top-controls{width:100%}
+      .button,.mode-btn{width:100%}
     }
   </style>
 </head>
@@ -399,11 +411,11 @@
     <section class="hero">
       <div class="title-block">
         <h1>Divisions</h1>
-        <p>Dunkler Liga-Look mit großem Tabellenfokus und sauberer Spieltagsanzeige. Die Seite nutzt zuerst das normale Liga-Blatt und greift nur bei Bedarf auf das passende Erg-Blatt zurück.</p>
+        <p>Dunkler Liga-Look mit großem Tabellenfokus und sauberer Spieltagsanzeige. Oben wählst du zwischen Autodarts und DartCounter, darunter die passende Liga.</p>
       </div>
       <div class="top-controls">
-        <input id="searchInput" class="search" type="text" placeholder="Liga suchen…" />
-        <select id="leagueSelect" class="select"></select>
+        <button id="modeAutodarts" class="mode-btn active">Autodarts</button>
+        <button id="modeDartCounter" class="mode-btn">DartCounter</button>
         <button id="reloadBtn" class="button">Neu laden</button>
       </div>
     </section>
@@ -415,14 +427,14 @@
       <div class="stat"><div class="stat-label">Status</div><div id="statusText" class="stat-value" style="font-size:18px">Lade…</div></div>
     </section>
 
-    <div id="tabs" class="tabs"></div>
+    <div id="leagueTabs" class="league-tabs"></div>
 
     <section class="main">
       <div id="tableArea"></div>
       <aside class="sidebar">
         <div class="panel">
           <h3>Spieltage</h3>
-          <p>Alle Begegnungen werden nach Spieltag gruppiert. So wirkt die Seite deutlich sauberer als eine direkte Sheet-Ansicht.</p>
+          <p>Alle Begegnungen werden nach Spieltag gruppiert und sauber dargestellt. Die Daten kommen primär aus den jeweiligen Erg-Blättern.</p>
         </div>
         <div id="matchdayArea" class="matchday-list"></div>
       </aside>
@@ -433,6 +445,7 @@
 
   <script>
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
+
     const LEAGUES = [
       "Autodarts Liga 1",
       "Autodarts Liga 2",
@@ -452,15 +465,15 @@
       leagues: [],
       leagueData: {},
       activeLeague: null,
-      search: ""
+      activeMode: "Autodarts"
     };
 
-    const tabsEl = document.getElementById("tabs");
+    const leagueTabsEl = document.getElementById("leagueTabs");
     const tableAreaEl = document.getElementById("tableArea");
     const matchdayAreaEl = document.getElementById("matchdayArea");
-    const searchInput = document.getElementById("searchInput");
     const reloadBtn = document.getElementById("reloadBtn");
-    const leagueSelect = document.getElementById("leagueSelect");
+    const modeAutodartsBtn = document.getElementById("modeAutodarts");
+    const modeDartCounterBtn = document.getElementById("modeDartCounter");
     const statusText = document.getElementById("statusText");
 
     function normalize(value) {
@@ -497,6 +510,7 @@
       for (let i = 0; i < text.length; i++) {
         const char = text[i];
         const next = text[i + 1];
+
         if (inQuotes) {
           if (char === '"' && next === '"') {
             cell += '"';
@@ -548,6 +562,7 @@
       for (let c = 0; c < maxCols; c++) {
         if (filled.some(row => normalize(row[c]) !== "")) keepCols.push(c);
       }
+
       return filled.map(row => keepCols.map(c => row[c] || ""));
     }
 
@@ -555,8 +570,8 @@
       return rows.findIndex(row => {
         const cells = row.map(normalize);
         const hasPlatz = cells.some(v => v === "platz" || v.includes("platz"));
-        const hasSpieler = cells.some(v => v === "spieler" || v.includes("spieler"));
-        const hasPunkte = cells.some(v => v === "punkte" || v.includes("punkte"));
+        const hasSpieler = cells.some(v => v === "spieler" || v.includes("spieler") || v === "player" || v.includes("player"));
+        const hasPunkte = cells.some(v => v === "punkte" || v.includes("punkte") || v === "points" || v.includes("points"));
         return hasPlatz && hasSpieler && hasPunkte;
       });
     }
@@ -634,12 +649,16 @@
         matchdays = Array.from(grouped.entries()).map(([title, rowsForDay]) => {
           let status = "offen";
           if (statusCol >= 0) {
-            const statusValues = rowsForDay.map(r => String(r[statusCol] || "").trim()).filter(Boolean);
+            const statusValues = rowsForDay
+              .map(r => String(r[statusCol] || "").trim())
+              .filter(Boolean);
+
             if (statusValues.length) {
               const allFinished = statusValues.every(v => /fertig|abgeschlossen|closed|done/i.test(v));
               status = allFinished ? "fertig" : statusValues[0];
             }
           }
+
           return { title, status, headers: matchHeaders, rows: rowsForDay };
         });
       }
@@ -648,28 +667,47 @@
     }
 
     function looksUseful(data) {
-      return (data.standings.headers && data.standings.headers.length > 0) || (data.matchdays && data.matchdays.length > 0);
+      return (
+        (data.standings.headers && data.standings.headers.length > 0) ||
+        (data.matchdays && data.matchdays.length > 0)
+      );
     }
 
     async function loadLeague(leagueName) {
-      let publicParsed = null;
       let ergParsed = null;
+      let publicParsed = null;
 
       try {
-        publicParsed = parseLeagueRows(await loadCsv(leagueName));
-      } catch (e) {}
+        const ergRows = await loadCsv(ergName(leagueName));
+        ergParsed = parseLeagueRows(ergRows);
+      } catch (e) {
+        console.warn("Erg-Blatt nicht ladbar:", leagueName, e);
+      }
 
       try {
-        ergParsed = parseLeagueRows(await loadCsv(ergName(leagueName)));
-      } catch (e) {}
+        const publicRows = await loadCsv(leagueName);
+        publicParsed = parseLeagueRows(publicRows);
+      } catch (e) {
+        console.warn("Liga-Blatt nicht ladbar:", leagueName, e);
+      }
+
+      if (ergParsed && looksUseful(ergParsed)) {
+        return {
+          ...ergParsed,
+          source: ergName(leagueName),
+          fallbackUsed: false
+        };
+      }
 
       if (publicParsed && looksUseful(publicParsed)) {
-        return { ...publicParsed, source: leagueName, fallbackUsed: false };
+        return {
+          ...publicParsed,
+          source: leagueName,
+          fallbackUsed: true
+        };
       }
-      if (ergParsed && looksUseful(ergParsed)) {
-        return { ...ergParsed, source: ergName(leagueName), fallbackUsed: true };
-      }
-      return publicParsed || ergParsed || {
+
+      return {
         standings: { headers: [], rows: [] },
         matchdays: [],
         hasContent: false,
@@ -688,12 +726,24 @@
 
     function renderStandingsTable(headers, rows) {
       if (!headers.length || !rows.length) {
-        return `<div class="table-shell"><div class="section-head"><div><div class="section-title">Tabelle</div><div class="section-sub">Keine Tabellendaten gefunden.</div></div></div><div style="padding:0 18px 18px"><div class="empty">Keine Tabellendaten gefunden.</div></div></div>`;
+        return `
+          <div class="table-shell">
+            <div class="section-head">
+              <div>
+                <div class="section-title">Tabelle</div>
+                <div class="section-sub">Keine Tabellendaten gefunden.</div>
+              </div>
+            </div>
+            <div style="padding:0 18px 18px">
+              <div class="empty">Keine Tabellendaten gefunden.</div>
+            </div>
+          </div>
+        `;
       }
 
       const headersNormalized = headers.map(normalize);
-      const playerIndex = headersNormalized.findIndex(h => h === "spieler" || h.includes("spieler"));
-      const pointsIndex = headersNormalized.findIndex(h => h === "punkte" || h.includes("punkte"));
+      const playerIndex = headersNormalized.findIndex(h => h === "spieler" || h.includes("spieler") || h === "player" || h.includes("player"));
+      const pointsIndex = headersNormalized.findIndex(h => h === "punkte" || h.includes("punkte") || h === "points" || h.includes("points"));
 
       const thead = `<tr>${headers.map((h, i) => {
         let cls = "";
@@ -701,7 +751,7 @@
         return `<th${cls}>${htmlEscape(h || "-")}</th>`;
       }).join("")}</tr>`;
 
-      const tbody = rows.map((row) => {
+      const tbody = rows.map(row => {
         return `<tr>${headers.map((_, i) => {
           const cell = htmlEscape(row[i] || "-");
           let cls = "";
@@ -731,9 +781,13 @@
     }
 
     function renderMatchTable(headers, rows) {
-      if (!headers.length || !rows.length) return `<div class="empty">Keine Spiele gefunden.</div>`;
+      if (!headers.length || !rows.length) {
+        return `<div class="empty">Keine Spiele gefunden.</div>`;
+      }
+
       const thead = `<tr>${headers.map(h => `<th>${htmlEscape(h || "-")}</th>`).join("")}</tr>`;
       const tbody = rows.map(row => `<tr>${headers.map((_, i) => `<td>${htmlEscape(row[i] || "-")}</td>`).join("")}</tr>`).join("");
+
       return `<table class="match-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
     }
 
@@ -758,6 +812,39 @@
       }).join("");
     }
 
+    function getModeLeagues() {
+      return state.leagues.filter(l => l.name.startsWith(state.activeMode));
+    }
+
+    function renderLeagueTabs() {
+      const filtered = getModeLeagues();
+
+      if (!filtered.length) {
+        leagueTabsEl.innerHTML = `<div class="empty">Keine Ligen gefunden.</div>`;
+        tableAreaEl.innerHTML = `<div class="empty">Keine Liga gefunden.</div>`;
+        matchdayAreaEl.innerHTML = "";
+        return;
+      }
+
+      if (!filtered.some(l => l.name === state.activeLeague)) {
+        state.activeLeague = filtered[0].name;
+      }
+
+      leagueTabsEl.innerHTML = filtered.map(l => `
+        <button class="league-tab ${l.name === state.activeLeague ? "active" : ""}" data-name="${htmlEscape(l.name)}">
+          ${htmlEscape(l.name)}
+        </button>
+      `).join("");
+
+      leagueTabsEl.querySelectorAll(".league-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.activeLeague = btn.dataset.name;
+          renderLeagueTabs();
+          renderLeague();
+        });
+      });
+    }
+
     function renderLeague() {
       const league = state.leagues.find(l => l.name === state.activeLeague);
       if (!league) {
@@ -770,96 +857,59 @@
       tableAreaEl.innerHTML = renderStandingsTable(data.standings.headers, data.standings.rows);
       matchdayAreaEl.innerHTML = renderMatchdays(data.matchdays);
 
-      matchdayAreaEl.querySelectorAll('.matchday-head').forEach(btn => {
-        btn.addEventListener('click', () => btn.parentElement.classList.toggle('open'));
+      matchdayAreaEl.querySelectorAll(".matchday-head").forEach(btn => {
+        btn.addEventListener("click", () => btn.parentElement.classList.toggle("open"));
       });
     }
 
-    function renderTabs() {
-      const filtered = state.leagues.filter(l => normalize(l.name).includes(normalize(state.search)));
-      if (!filtered.length) {
-        tabsEl.innerHTML = "";
-        tableAreaEl.innerHTML = `<div class="empty">Keine Liga gefunden.</div>`;
-        matchdayAreaEl.innerHTML = "";
-        return;
-      }
-
-      if (!filtered.some(l => l.name === state.activeLeague)) {
-        state.activeLeague = filtered[0].name;
-      }
-
-      tabsEl.innerHTML = filtered.map(l => `
-        <button class="tab ${l.name === state.activeLeague ? "active" : ""}" data-name="${htmlEscape(l.name)}">
-          ${htmlEscape(l.name)}
-        </button>
-      `).join("");
-
-      tabsEl.querySelectorAll('.tab').forEach(btn => {
-        btn.addEventListener('click', () => {
-          state.activeLeague = btn.dataset.name;
-          leagueSelect.value = state.activeLeague;
-          renderTabs();
-          renderLeague();
-        });
-      });
-
+    function setMode(mode) {
+      state.activeMode = mode;
+      modeAutodartsBtn.classList.toggle("active", mode === "Autodarts");
+      modeDartCounterBtn.classList.toggle("active", mode === "DartCounter");
+      renderLeagueTabs();
       renderLeague();
-    }
-
-    function renderLeagueSelect() {
-      const filtered = state.leagues.filter(l => normalize(l.name).includes(normalize(state.search)));
-      leagueSelect.innerHTML = filtered.map(l => `<option value="${htmlEscape(l.name)}">${htmlEscape(l.name)}</option>`).join("");
-      if (filtered.some(l => l.name === state.activeLeague)) {
-        leagueSelect.value = state.activeLeague;
-      }
     }
 
     function updateStats() {
       const days = Object.values(state.leagueData).reduce((sum, item) => sum + (item.matchdays || []).length, 0);
       const publicCount = Object.values(state.leagueData).filter(item => !item.fallbackUsed).length;
-      document.getElementById('statLeagues').textContent = String(state.leagues.length);
-      document.getElementById('statPublic').textContent = String(publicCount);
-      document.getElementById('statDays').textContent = String(days);
-      statusText.textContent = 'Fertig';
+      document.getElementById("statLeagues").textContent = String(state.leagues.length);
+      document.getElementById("statPublic").textContent = String(publicCount);
+      document.getElementById("statDays").textContent = String(days);
+      statusText.textContent = "Fertig";
     }
 
     async function loadAll() {
-      statusText.textContent = 'Lade…';
-      tabsEl.innerHTML = '';
+      statusText.textContent = "Lade…";
+      leagueTabsEl.innerHTML = "";
       tableAreaEl.innerHTML = `<div class="empty">Lade Daten…</div>`;
-      matchdayAreaEl.innerHTML = '';
+      matchdayAreaEl.innerHTML = "";
 
       try {
         state.leagues = LEAGUES.map(name => ({ name }));
+
         const entries = await Promise.all(
           state.leagues.map(async league => [league.name, await loadLeague(league.name)])
         );
+
         state.leagueData = Object.fromEntries(entries);
-        state.activeLeague = state.leagues[0].name;
+        state.activeLeague = getModeLeagues()[0]?.name || state.leagues[0]?.name || null;
+
         updateStats();
-        renderLeagueSelect();
-        renderTabs();
+        renderLeagueTabs();
+        renderLeague();
       } catch (error) {
         console.error(error);
-        statusText.textContent = 'Fehler';
-        tableAreaEl.innerHTML = `<div class="empty">Fehler beim Laden: ${htmlEscape(error && error.message ? error.message : 'Unbekannter Fehler')}</div>`;
-        matchdayAreaEl.innerHTML = '';
+        statusText.textContent = "Fehler";
+        tableAreaEl.innerHTML = `<div class="empty">Fehler beim Laden: ${htmlEscape(error && error.message ? error.message : "Unbekannter Fehler")}</div>`;
+        matchdayAreaEl.innerHTML = "";
       }
     }
 
-    searchInput.addEventListener('input', (e) => {
-      state.search = e.target.value || '';
-      renderLeagueSelect();
-      renderTabs();
-    });
+    modeAutodartsBtn.addEventListener("click", () => setMode("Autodarts"));
+    modeDartCounterBtn.addEventListener("click", () => setMode("DartCounter"));
+    reloadBtn.addEventListener("click", loadAll);
 
-    leagueSelect.addEventListener('change', (e) => {
-      state.activeLeague = e.target.value;
-      renderTabs();
-      renderLeague();
-    });
-
-    reloadBtn.addEventListener('click', loadAll);
     loadAll();
   </script>
 </body>
