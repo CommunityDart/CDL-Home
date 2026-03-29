@@ -19,6 +19,7 @@
 
     * { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; }
+
     body {
       font-family: Inter, Arial, Helvetica, sans-serif;
       background:
@@ -184,6 +185,10 @@
       transition: .16s ease;
     }
 
+    .tab:hover {
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+
     .tab.active {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(249, 115, 22, 0.18));
       border-color: rgba(245, 158, 11, 0.45);
@@ -244,6 +249,7 @@
       text-align: left;
       border-bottom: 1px solid rgba(148, 163, 184, 0.12);
       font-size: 14px;
+      vertical-align: top;
     }
 
     th {
@@ -281,6 +287,10 @@
       text-align: left;
       font-size: 15px;
       font-weight: 800;
+    }
+
+    .matchday-head:hover {
+      background: rgba(255,255,255,0.03);
     }
 
     .matchday-badge {
@@ -334,7 +344,8 @@
         <div class="eyebrow">Dart Online Liga</div>
         <h1>Tabellen und Spieltage aus deinem Google Sheet</h1>
         <div class="hero-sub">
-          Diese reparierte GitHub-Version lädt immer alle Liga-Blätter. Wenn ein öffentliches Liga-Blatt leer ist oder keine brauchbaren Daten liefert, wird automatisch auf das passende Erg-Blatt zurückgegriffen.
+          Diese Version erkennt die echte Tabellen-Kopfzeile, trennt Tabelle und Matchbereich sauber
+          und gruppiert alle Begegnungen korrekt nach Spieltag.
         </div>
         <div class="hero-stats">
           <div class="pill" id="statLeagues">0 Ligen</div>
@@ -343,8 +354,8 @@
         </div>
       </div>
       <div class="panel">
-        <h2>Reparierter Aufbau</h2>
-        <p>Die vorige Version konnte leer bleiben, wenn im Blatt <strong>Spieler_Discord</strong> keine passenden Zuordnungen erkannt wurden. Diese Version filtert nicht mehr danach, sondern zeigt alle Liga-Blätter an und nutzt Erg-Blätter nur als Fallback.</p>
+        <h2>Fix eingebaut</h2>
+        <p>Hinweiszeilen werden nicht mehr als Tabelle gelesen. Außerdem werden Matchzeilen jetzt sauber pro Spieltag gesammelt statt mehrfach als einzelner Spieltag angezeigt.</p>
       </div>
     </section>
 
@@ -467,6 +478,8 @@
     }
 
     function compactTable(rows) {
+      if (!rows.length) return [];
+
       const maxCols = Math.max(0, ...rows.map(r => r.length));
       const filled = rows.map(row => {
         const copy = row.slice();
@@ -482,80 +495,124 @@
       return filled.map(row => keepCols.map(c => row[c] || ""));
     }
 
-    function detectStandingHeaderRow(rows) {
+    function findStandingsHeaderIndex(rows) {
       return rows.findIndex(row => {
-        const s = row.map(normalize).join(" | ");
-        const hits = ["platz", "spieler", "team", "spiele", "siege", "punkte", "legs", "differenz"]
-          .filter(k => s.includes(k)).length;
-        return hits >= 2;
+        const cells = row.map(normalize);
+        const hasPlatz = cells.some(v => v === "platz" || v.includes("platz"));
+        const hasSpieler = cells.some(v => v === "spieler" || v.includes("spieler"));
+        const hasPunkte = cells.some(v => v === "punkte" || v.includes("punkte"));
+        return hasPlatz && hasSpieler && hasPunkte;
+      });
+    }
+
+    function findMatchesHeaderIndex(rows) {
+      return rows.findIndex(row => {
+        const cells = row.map(normalize);
+        const hasSpieltag = cells.some(v => v === "spieltag" || v.includes("spieltag"));
+        const hasSpieler1 = cells.some(v => v === "spieler 1" || v === "spieler1" || v.includes("spieler 1"));
+        const hasSpieler2 = cells.some(v => v === "spieler 2" || v === "spieler2" || v.includes("spieler 2"));
+        const hasStatus = cells.some(v => v === "status" || v.includes("status"));
+        return hasSpieltag && hasSpieler1 && hasSpieler2 && hasStatus;
+      });
+    }
+
+    function isMatchdayValue(value) {
+      return /spieltag\s*\d+/i.test(String(value || "").trim());
+    }
+
+    function findStatusColumn(headers) {
+      return headers.findIndex(h => normalize(h).includes("status"));
+    }
+
+    function findColumnIndex(headers, names) {
+      return headers.findIndex(h => {
+        const n = normalize(h);
+        return names.some(name => n === name || n.includes(name));
       });
     }
 
     function parseLeagueRows(rows) {
       const compactRows = rows.filter(rowHasContent);
 
-      const standingHeaderIndex = detectStandingHeaderRow(compactRows);
+      const standingsHeaderIndex = findStandingsHeaderIndex(compactRows);
+      const matchesHeaderIndex = findMatchesHeaderIndex(compactRows);
+
       let standings = { headers: [], rows: [] };
+      let matchdays = [];
 
-      if (standingHeaderIndex >= 0) {
-        const nextMatchdayIndex = compactRows.findIndex(
-          (row, idx) => idx > standingHeaderIndex && row.some(cell => /spieltag\s*\d+/i.test(String(cell)))
-        );
+      if (standingsHeaderIndex >= 0) {
+        const standingsEnd =
+          matchesHeaderIndex > standingsHeaderIndex
+            ? matchesHeaderIndex
+            : compactRows.length;
 
-        const slice = compactRows.slice(
-          standingHeaderIndex,
-          nextMatchdayIndex >= 0 ? nextMatchdayIndex : compactRows.length
-        );
+        const standingsRaw = compactRows.slice(standingsHeaderIndex, standingsEnd);
+        const standingsTable = compactTable(standingsRaw).filter(rowHasContent);
 
-        const table = compactTable(slice).filter(rowHasContent);
-        if (table.length > 1) {
+        if (standingsTable.length > 1) {
+          const headers = standingsTable[0];
+          const body = standingsTable.slice(1).filter(row => {
+            const first = normalize(row[0]);
+            const rowText = row.map(normalize).join(" | ");
+            if (first === "") return false;
+            if (rowText.includes("spieler 1") && rowText.includes("spieler 2")) return false;
+            if (rowText.includes("spieltag") && rowText.includes("status")) return false;
+            return true;
+          });
+
           standings = {
-            headers: table[0],
-            rows: table.slice(1).filter(rowHasContent)
+            headers,
+            rows: body
           };
         }
       }
 
-      const markers = compactRows
-        .map((row, index) => ({ row, index }))
-        .filter(item => item.row.some(cell => /spieltag\s*\d+/i.test(String(cell))));
+      if (matchesHeaderIndex >= 0) {
+        const matchHeaderRow = compactRows[matchesHeaderIndex];
+        const matchHeaders = compactTable([matchHeaderRow])[0] || matchHeaderRow;
+        const dataRows = compactRows.slice(matchesHeaderIndex + 1).filter(rowHasContent);
 
-      const matchdays = markers.map((item, idx) => {
-        const title = String(
-          item.row.find(cell => /spieltag\s*\d+/i.test(String(cell))) || `Spieltag ${idx + 1}`
-        ).trim();
+        const statusCol = findStatusColumn(matchHeaders);
+        const spieltagCol = findColumnIndex(matchHeaders, ["spieltag"]);
+        const grouped = new Map();
 
-        const nextIndex = markers[idx + 1] ? markers[idx + 1].index : compactRows.length;
-        const block = compactRows.slice(item.index + 1, nextIndex).filter(rowHasContent);
+        dataRows.forEach(row => {
+          const padded = row.slice();
+          while (padded.length < matchHeaders.length) padded.push("");
 
-        const statusCandidates = [
-          ...item.row,
-          ...(block[0] || []),
-          ...(block[1] || [])
-        ]
-          .map(v => String(v || "").trim())
-          .filter(Boolean);
+          const spieltagCell = padded[spieltagCol >= 0 ? spieltagCol : 0];
+          if (!isMatchdayValue(spieltagCell)) return;
 
-        const status = statusCandidates.find(v => /offen|fertig|abgeschlossen|open|closed/i.test(v)) || "Status unbekannt";
+          const key = String(spieltagCell).trim();
+          if (!grouped.has(key)) grouped.set(key, []);
+          grouped.get(key).push(padded);
+        });
 
-        const candidates = block.filter(row => row.filter(cell => normalize(cell)).length >= 2);
-        let headers = [];
-        let matchRows = [];
+        matchdays = Array.from(grouped.entries()).map(([title, rowsForDay]) => {
+          let status = "offen";
 
-        if (candidates.length > 1) {
-          const table = compactTable(candidates).filter(rowHasContent);
-          headers = table[0] || [];
-          matchRows = table.slice(1).filter(rowHasContent);
-        }
+          if (statusCol >= 0) {
+            const statusValues = rowsForDay
+              .map(r => String(r[statusCol] || "").trim())
+              .filter(Boolean);
 
-        return {
-          title,
-          status,
-          headers,
-          rows: matchRows,
-          raw: block
-        };
-      });
+            if (statusValues.length) {
+              const allFinished = statusValues.every(v =>
+                /fertig|abgeschlossen|closed|done/i.test(v)
+              );
+              status = allFinished ? "fertig" : statusValues[0];
+            }
+          }
+
+          return {
+            title,
+            status,
+            headers: matchHeaders,
+            rows: rowsForDay,
+            raw: rowsForDay
+          };
+        });
+      }
 
       return {
         standings,
@@ -616,16 +673,18 @@
       }
 
       const thead = `<tr>${headers.map(h => `<th>${htmlEscape(h || "-")}</th>`).join("")}</tr>`;
-      const tbody = rows.map(row => `<tr>${headers.map((_, i) => `<td>${htmlEscape(row[i] || "-")}</td>`).join("")}</tr>`).join("");
+      const tbody = rows.map(row => {
+        return `<tr>${headers.map((_, i) => `<td>${htmlEscape(row[i] || "-")}</td>`).join("")}</tr>`;
+      }).join("");
+
       return `<div class="table-wrap"><table><thead>${thead}</thead><tbody>${tbody}</tbody></table></div>`;
     }
 
     function renderMatchday(day, idx) {
-      const body = (day.headers.length && day.rows.length)
-        ? renderTable(day.headers, day.rows)
-        : (day.raw.length
-            ? day.raw.map(row => `<div class="line-item">${htmlEscape(row.filter(Boolean).join(" • "))}</div>`).join("")
-            : `<div class="empty">Keine Einträge gefunden.</div>`);
+      const body =
+        day.headers.length && day.rows.length
+          ? renderTable(day.headers, day.rows)
+          : `<div class="empty">Keine Einträge gefunden.</div>`;
 
       return `
         <div class="matchday-card ${idx === 0 ? "open" : ""}">
@@ -674,20 +733,26 @@
             <div>
               <div class="section-title">Spieltage</div>
               <div class="matchdays">
-                ${data.matchdays.length ? data.matchdays.map(renderMatchday).join("") : `<div class="empty">Keine Spieltage erkannt.</div>`}
+                ${data.matchdays.length
+                  ? data.matchdays.map(renderMatchday).join("")
+                  : `<div class="empty">Keine Spieltage erkannt.</div>`}
               </div>
             </div>
           </div>
         </section>
       `;
 
-      contentEl.querySelectorAll('.matchday-head').forEach(btn => {
-        btn.addEventListener('click', () => btn.parentElement.classList.toggle('open'));
+      contentEl.querySelectorAll(".matchday-head").forEach(btn => {
+        btn.addEventListener("click", () => {
+          btn.parentElement.classList.toggle("open");
+        });
       });
     }
 
     function renderTabs() {
-      const filtered = state.leagues.filter(l => normalize(l.name).includes(normalize(state.search)));
+      const filtered = state.leagues.filter(l =>
+        normalize(l.name).includes(normalize(state.search))
+      );
 
       if (!filtered.length) {
         tabsEl.innerHTML = "";
@@ -699,9 +764,14 @@
         state.activeLeague = filtered[0].name;
       }
 
-      tabsEl.innerHTML = filtered.map(l => `<button class="tab ${l.name === state.activeLeague ? "active" : ""}" data-name="${htmlEscape(l.name)}">${htmlEscape(l.name)}</button>`).join("");
-      tabsEl.querySelectorAll('.tab').forEach(btn => {
-        btn.addEventListener('click', () => {
+      tabsEl.innerHTML = filtered.map(l => `
+        <button class="tab ${l.name === state.activeLeague ? "active" : ""}" data-name="${htmlEscape(l.name)}">
+          ${htmlEscape(l.name)}
+        </button>
+      `).join("");
+
+      tabsEl.querySelectorAll(".tab").forEach(btn => {
+        btn.addEventListener("click", () => {
           state.activeLeague = btn.dataset.name;
           renderTabs();
           renderLeague();
@@ -712,25 +782,34 @@
     }
 
     function updateStats() {
-      const days = Object.values(state.leagueData).reduce((sum, item) => sum + (item.matchdays || []).length, 0);
-      const publicCount = Object.values(state.leagueData).filter(item => !item.fallbackUsed).length;
+      const days = Object.values(state.leagueData).reduce(
+        (sum, item) => sum + (item.matchdays || []).length,
+        0
+      );
 
-      document.getElementById('statLeagues').textContent = `${state.leagues.length} Ligen`;
-      document.getElementById('statPublic').textContent = `${publicCount} direkte Liga-Blätter`;
-      document.getElementById('statDays').textContent = `${days} Spieltage erkannt`;
+      const publicCount = Object.values(state.leagueData).filter(
+        item => !item.fallbackUsed
+      ).length;
+
+      document.getElementById("statLeagues").textContent = `${state.leagues.length} Ligen`;
+      document.getElementById("statPublic").textContent = `${publicCount} direkte Liga-Blätter`;
+      document.getElementById("statDays").textContent = `${days} Spieltage erkannt`;
     }
 
     async function loadAll() {
-      statusEl.className = 'status';
-      statusEl.textContent = 'Lade Liga-Blätter…';
-      tabsEl.innerHTML = '';
-      contentEl.innerHTML = '';
+      statusEl.className = "status";
+      statusEl.textContent = "Lade Liga-Blätter…";
+      tabsEl.innerHTML = "";
+      contentEl.innerHTML = "";
 
       try {
         state.leagues = LEAGUES.map(name => ({ name }));
 
         const entries = await Promise.all(
-          state.leagues.map(async league => [league.name, await loadLeague(league.name)])
+          state.leagues.map(async league => [
+            league.name,
+            await loadLeague(league.name)
+          ])
         );
 
         state.leagueData = Object.fromEntries(entries);
@@ -739,21 +818,22 @@
         updateStats();
         renderTabs();
 
-        statusEl.textContent = 'Fertig geladen. Zuerst werden die normalen Liga-Blätter genutzt, nur bei Bedarf die Erg-Blätter.';
+        statusEl.textContent = "Fertig geladen. Zuerst werden die normalen Liga-Blätter genutzt, nur bei Bedarf die Erg-Blätter.";
       } catch (error) {
         console.error(error);
-        statusEl.className = 'status error';
-        statusEl.textContent = 'Die Daten konnten nicht geladen werden. Prüfe, ob das Google Sheet öffentlich freigegeben ist.';
-        contentEl.innerHTML = `<div class="league-card"><div class="empty">Fehler beim Laden: ${htmlEscape(error && error.message ? error.message : 'Unbekannter Fehler')}</div></div>`;
+        statusEl.className = "status error";
+        statusEl.textContent = "Die Daten konnten nicht geladen werden. Prüfe, ob das Google Sheet öffentlich freigegeben ist.";
+        contentEl.innerHTML = `<div class="league-card"><div class="empty">Fehler beim Laden: ${htmlEscape(error && error.message ? error.message : "Unbekannter Fehler")}</div></div>`;
       }
     }
 
-    searchInput.addEventListener('input', e => {
-      state.search = e.target.value || '';
+    searchInput.addEventListener("input", e => {
+      state.search = e.target.value || "";
       renderTabs();
     });
 
-    reloadBtn.addEventListener('click', loadAll);
+    reloadBtn.addEventListener("click", loadAll);
+
     loadAll();
   </script>
 </body>
