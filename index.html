@@ -263,13 +263,46 @@
     .info-banner{
       padding:18px 20px;
       border-radius:18px;
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:0 12px 28px rgba(0,0,0,.24);
       min-height:100%;
     }
 
     .discord-banner{
-      background:linear-gradient(135deg,#0f172a,#1e3a8a);
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.10), transparent 26%),
+        linear-gradient(135deg, #0b1220 0%, #18295f 45%, #243f9f 100%);
+      border:1px solid rgba(133,164,255,.28);
+      box-shadow:
+        0 14px 34px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 0 0 1px rgba(88,101,242,.10);
+    }
+
+    .discord-banner::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(120deg, transparent 0 38%, rgba(255,255,255,.06) 38% 41%, transparent 41% 100%),
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,.08), transparent 18%);
+      pointer-events:none;
+    }
+
+    .discord-banner::after{
+      content:"";
+      position:absolute;
+      right:-70px;
+      top:50%;
+      transform:translateY(-50%);
+      width:220px;
+      height:220px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle, rgba(255,255,255,.18) 0 6%, transparent 6% 14%, rgba(255,255,255,.08) 14% 22%, transparent 22% 100%);
+      opacity:.45;
+      pointer-events:none;
+      filter:blur(.4px);
     }
 
     .info-banner{
@@ -277,6 +310,8 @@
         linear-gradient(135deg, var(--card-a) 0%, var(--card-b) 55%, var(--card-c) 100%);
       position:relative;
       overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 12px 28px rgba(0,0,0,.24);
     }
 
     .info-banner::before,
@@ -302,6 +337,12 @@
       font-weight:900;
     }
 
+    .discord-text h2{
+      font-size:28px;
+      letter-spacing:-.02em;
+      text-shadow:0 4px 18px rgba(0,0,0,.22);
+    }
+
     .discord-text p,
     .info-text p{
       margin:6px 0 0;
@@ -310,101 +351,123 @@
       max-width:760px;
     }
 
-    .discord-text p{ color:#cbd5f5; }
+    .discord-text p{
+      margin:8px 0 0;
+      font-size:15px;
+      line-height:1.6;
+      color:#d8e2ff;
+    }
+
     .info-text p{ color:#d7ebf7; }
 
     .discord-title-row{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:14px;
       margin-bottom:2px;
     }
 
     .discord-logo{
-      width:30px;
-      height:30px;
-      flex:0 0 30px;
+      width:46px;
+      height:46px;
+      flex:0 0 46px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      border-radius:10px;
-      background:rgba(255,255,255,.10);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.18),
+        0 10px 24px rgba(0,0,0,.22),
+        0 0 20px rgba(88,101,242,.20);
+      backdrop-filter:blur(6px);
     }
 
     .discord-logo svg{
-      width:20px;
-      height:20px;
+      width:28px;
+      height:28px;
       fill:#ffffff;
       display:block;
     }
 
     .discord-btn{
-      padding:10px 16px;
-      border-radius:10px;
-      background:#5865F2;
+      position:relative;
+      padding:12px 20px;
+      border-radius:14px;
+      background:linear-gradient(180deg, #7380ff 0%, #5865F2 100%);
       color:#fff;
       text-decoration:none;
-      font-weight:800;
-      border:1px solid rgba(255,255,255,.18);
+      font-weight:900;
+      font-size:15px;
+      border:1px solid rgba(255,255,255,.22);
       box-shadow:
-        0 8px 18px rgba(0,0,0,.16),
-        inset 0 1px 0 rgba(255,255,255,.18);
+        0 10px 22px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.22);
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-height:46px;
+      min-height:48px;
+      min-width:190px;
       white-space:nowrap;
       transition:
         transform .16s ease,
         box-shadow .18s ease,
         background .18s ease,
-        border-color .18s ease;
+        border-color .18s ease,
+        filter .18s ease;
+    }
+
+    .discord-btn::before{
+      content:"";
+      position:absolute;
+      inset:1px;
+      border-radius:13px;
+      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0));
+      pointer-events:none;
     }
 
     body[data-mode="Autodarts"] .discord-btn:hover,
     body[data-mode="Autodarts"] .discord-btn:focus-visible{
-      background:#6673ff;
-      border-color:rgba(32,183,255,.55);
+      background:linear-gradient(180deg, #7c88ff 0%, #6270ff 100%);
+      border-color:rgba(32,183,255,.58);
       box-shadow:
-        0 0 0 1px rgba(32,183,255,.30),
-        0 0 18px rgba(32,183,255,.45),
-        0 0 34px rgba(32,183,255,.28),
-        0 10px 22px rgba(0,0,0,.20);
-      transform:translateY(-1px) scale(1.01);
+        0 0 0 1px rgba(32,183,255,.28),
+        0 0 18px rgba(32,183,255,.42),
+        0 0 36px rgba(32,183,255,.26),
+        0 12px 26px rgba(0,0,0,.24);
+      transform:translateY(-1px) scale(1.015);
+      filter:saturate(1.06);
     }
 
     body[data-mode="Autodarts"] .discord-btn:active{
-      background:#6f7cff;
-      border-color:rgba(32,183,255,.65);
       box-shadow:
-        0 0 0 1px rgba(32,183,255,.35),
-        0 0 24px rgba(32,183,255,.55),
-        0 0 42px rgba(32,183,255,.34),
-        0 10px 24px rgba(0,0,0,.22);
+        0 0 0 1px rgba(32,183,255,.34),
+        0 0 24px rgba(32,183,255,.52),
+        0 0 42px rgba(32,183,255,.32),
+        0 10px 20px rgba(0,0,0,.24);
       transform:translateY(0) scale(.99);
     }
 
     body[data-mode="DartCounter"] .discord-btn:hover,
     body[data-mode="DartCounter"] .discord-btn:focus-visible{
-      background:#6673ff;
-      border-color:rgba(245,158,11,.55);
+      background:linear-gradient(180deg, #7c88ff 0%, #6270ff 100%);
+      border-color:rgba(245,158,11,.60);
       box-shadow:
-        0 0 0 1px rgba(245,158,11,.30),
-        0 0 18px rgba(245,158,11,.42),
-        0 0 34px rgba(245,158,11,.26),
-        0 10px 22px rgba(0,0,0,.20);
-      transform:translateY(-1px) scale(1.01);
+        0 0 0 1px rgba(245,158,11,.28),
+        0 0 18px rgba(245,158,11,.40),
+        0 0 36px rgba(245,158,11,.24),
+        0 12px 26px rgba(0,0,0,.24);
+      transform:translateY(-1px) scale(1.015);
+      filter:saturate(1.06);
     }
 
     body[data-mode="DartCounter"] .discord-btn:active{
-      background:#6f7cff;
-      border-color:rgba(245,158,11,.65);
       box-shadow:
-        0 0 0 1px rgba(245,158,11,.35),
-        0 0 24px rgba(245,158,11,.50),
-        0 0 42px rgba(245,158,11,.30),
-        0 10px 24px rgba(0,0,0,.22);
+        0 0 0 1px rgba(245,158,11,.34),
+        0 0 24px rgba(245,158,11,.48),
+        0 0 42px rgba(245,158,11,.28),
+        0 10px 20px rgba(0,0,0,.24);
       transform:translateY(0) scale(.99);
     }
 
@@ -891,6 +954,12 @@
       }
       .discord-btn{width:100%}
       .info-actions{width:100%}
+      .discord-title-row{
+        align-items:flex-start;
+      }
+      .discord-text h2{
+        font-size:24px;
+      }
     }
   </style>
 </head>
@@ -923,10 +992,13 @@
                   <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2A75.57,75.57,0,0,0,95.73,78c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C35.88,65.69,30.5,59.66,30.5,52.25s5.31-13.44,11.95-13.44S54.4,44.87,54.39,52.25,49,65.69,42.45,65.69Zm42.24,0c-6.57,0-11.95-6-11.95-13.44s5.31-13.44,11.95-13.44S96.64,44.87,96.63,52.25,91.26,65.69,84.69,65.69Z"/>
                 </svg>
               </span>
-              <h2>Community Discord</h2>
+              <div>
+                <h2>Community Discord</h2>
+                <p>Trete unserer Liga bei, tausche dich mit Spielern aus und verpasse keine Updates.</p>
+              </div>
             </div>
-            <p>Trete unserer Liga bei, tausche dich mit Spielern aus und verpasse keine Updates.</p>
           </div>
+
           <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="discord-btn">
             Discord beitreten
           </a>
