@@ -599,6 +599,21 @@
       min-width:0;
     }
 
+    .matchday-head-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-shrink:0;
+    }
+
+    .matchday-progress{
+      font-size:12px;
+      font-weight:900;
+      color:#cfe5ef;
+      letter-spacing:.02em;
+      white-space:nowrap;
+    }
+
     .status-dot{
       width:11px;
       height:11px;
@@ -1196,19 +1211,15 @@
       }
 
       return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
-        const statuses = rowsForDay
-          .map(r => String(r[7] || "").trim())
-          .filter(Boolean);
-
-        let dayStatus = "offen";
-        if (statuses.length) {
-          const allDone = statuses.every(v => /fertig|abgeschlossen|done|closed/i.test(v));
-          dayStatus = allDone ? "fertig" : "offen";
-        }
+        const totalMatches = rowsForDay.length;
+        const doneMatches = rowsForDay.filter(r => /fertig|abgeschlossen|done|closed/i.test(String(r[7] || ""))).length;
+        const dayStatus = totalMatches > 0 && doneMatches === totalMatches ? "fertig" : "offen";
 
         return {
           title,
           status: dayStatus,
+          doneMatches,
+          totalMatches,
           headers: ["Spieler 1", "Spieler 2", "Legs 1", "Legs 2", "Status"],
           rows: rowsForDay
         };
@@ -1460,12 +1471,16 @@
       return matchdays.map((day, idx) => {
         const key = getMatchdayStateKey(state.activeLeague, day.title);
         const isOpen = key in state.matchdayOpenState ? state.matchdayOpenState[key] : idx === defaultOpenIndex;
+        const progressText = `${day.doneMatches || 0}/${day.totalMatches || 0}`;
 
         return `
           <div class="matchday ${isOpen ? "open" : ""}" data-key="${htmlEscape(key)}">
             <button class="matchday-head" type="button">
               <span class="matchday-title">${htmlEscape(day.title)}</span>
-              ${renderMatchStatusDot(day.status)}
+              <span class="matchday-head-right">
+                <span class="matchday-progress">${htmlEscape(progressText)}</span>
+                ${renderMatchStatusDot(day.status)}
+              </span>
             </button>
             <div class="matchday-body">
               ${renderMatchTable(day.headers, day.rows)}
