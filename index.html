@@ -532,35 +532,29 @@
     .player-cards{
       display:inline-flex;
       align-items:center;
-      gap:6px;
+      gap:5px;
       flex-wrap:wrap;
     }
 
     .card-badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:26px;
-      height:20px;
-      padding:0 8px;
-      border-radius:6px;
-      font-size:11px;
-      font-weight:900;
-      line-height:1;
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+      display:inline-block;
+      width:14px;
+      height:18px;
+      border-radius:3px;
+      border:1px solid rgba(255,255,255,.20);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.18),
+        0 2px 6px rgba(0,0,0,.18);
     }
 
     .card-badge.yellow{
-      background:var(--yellow);
-      color:#1a1a1a;
-      border-color:rgba(0,0,0,.18);
+      background:#f7c948;
+      border-color:rgba(0,0,0,.22);
     }
 
     .card-badge.red{
-      background:var(--red);
-      color:#fff;
-      border-color:rgba(255,255,255,.12);
+      background:#e74c3c;
+      border-color:rgba(255,255,255,.14);
     }
 
     .points-cell{
@@ -1067,7 +1061,11 @@
     }
 
     function parseCardInfo(rawValue) {
-      const value = normalize(rawValue);
+      const value = normalize(rawValue)
+        .replace(/,/g, " ")
+        .replace(/;/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 
       if (!value) {
         return { yellow: 0, red: 0, hasRed: false };
@@ -1077,12 +1075,19 @@
         return { yellow: 0, red: 1, hasRed: true };
       }
 
-      const gelbMatches = value.match(/gelb/g) || [];
-      if (gelbMatches.length >= 2 || value.includes("2x") || value.includes("zweimal")) {
+      const gelbCount = (value.match(/gelb/g) || []).length;
+
+      if (
+        gelbCount >= 2 ||
+        value.includes("2x gelb") ||
+        value.includes("2xgelb") ||
+        value.includes("zweimal gelb") ||
+        value.includes("gelb gelb")
+      ) {
         return { yellow: 2, red: 0, hasRed: false };
       }
 
-      if (gelbMatches.length === 1) {
+      if (gelbCount >= 1) {
         return { yellow: 1, red: 0, hasRed: false };
       }
 
@@ -1091,6 +1096,7 @@
 
     function parsePlayerDiscordSheet(rows) {
       if (!rows || !rows.length) return {};
+
       const map = {};
 
       for (let i = 0; i < rows.length; i++) {
@@ -1101,15 +1107,11 @@
         if (!spieler) continue;
 
         const nSpieler = normalize(spieler);
-        const nDiscord = normalize(discord);
-        const nKarte = normalize(karte);
-
-        if (nSpieler === "spieler" || nSpieler === "name" || nSpieler === "spielername") continue;
-        if (nDiscord === "discordname") continue;
-        if (nKarte === "karte") continue;
+        if (!nSpieler) continue;
+        if (["spieler", "name", "spielername"].includes(nSpieler)) continue;
 
         map[nSpieler] = {
-          discord,
+          discord: discord || "",
           ...parseCardInfo(karte)
         };
       }
@@ -1322,11 +1324,11 @@
       const cards = [];
 
       for (let i = 0; i < (meta.yellow || 0); i++) {
-        cards.push(`<span class="card-badge yellow" title="Gelbe Karte">Gelb</span>`);
+        cards.push(`<span class="card-badge yellow" title="Gelbe Karte"></span>`);
       }
 
       for (let i = 0; i < (meta.red || 0); i++) {
-        cards.push(`<span class="card-badge red" title="Rote Karte">Rot</span>`);
+        cards.push(`<span class="card-badge red" title="Rote Karte"></span>`);
       }
 
       if (!cards.length) return "";
@@ -1368,7 +1370,7 @@
       const tbody = sortedRows.map(entry => {
         const row = entry.originalRow;
         const spielerName = row[1] || "-";
-        const meta = state.playerMetaMap[normalize(spielerName)] || {};
+        const meta = state.playerMetaMap[normalize(spielerName)] || { discord: "", yellow: 0, red: 0, hasRed: false };
         const discordName = meta.discord || "";
 
         return `
