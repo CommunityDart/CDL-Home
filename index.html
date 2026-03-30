@@ -1225,6 +1225,17 @@
       return row && row.some(cell => normalize(cell) !== "");
     }
 
+    function isFinishedMatch(statusValue, legs1, legs2) {
+      const statusText = String(statusValue || "").trim().toLowerCase();
+      const l1 = String(legs1 || "").trim();
+      const l2 = String(legs2 || "").trim();
+
+      const statusDone = /fertig|abgeschlossen|done|closed/i.test(statusText);
+      const legsDone = l1 !== "" && l2 !== "" && l1 !== "-" && l2 !== "-";
+
+      return statusDone || legsDone;
+    }
+
     function parseCardInfo(rawValue) {
       const value = normalize(rawValue)
         .replace(/,/g, " ")
@@ -1362,7 +1373,7 @@
 
       return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
         const totalMatches = rowsForDay.length;
-        const doneMatches = rowsForDay.filter(r => /fertig|abgeschlossen|done|closed/i.test(String(r[7] || ""))).length;
+        const doneMatches = rowsForDay.filter(r => isFinishedMatch(r[7], r[5], r[6])).length;
         const dayStatus = totalMatches > 0 && doneMatches === totalMatches ? "fertig" : "offen";
 
         return {
@@ -1570,8 +1581,9 @@
       `;
     }
 
-    function renderMatchStatusDot(statusValue) {
-      const done = /fertig|abgeschlossen|closed|done/i.test(String(statusValue || ""));
+    function renderMatchStatusDot(statusValue, legs1 = "", legs2 = "") {
+      const done = isFinishedMatch(statusValue, legs1, legs2);
+
       return `
         <span class="status-badge ${done ? "done" : "open"}" title="${done ? "Fertig" : "Offen"}">
           <span class="status-dot ${done ? "done" : "open"}"></span>
@@ -1594,7 +1606,7 @@
             <td class="col-player"><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
             <td class="col-legs">${htmlEscape(row[5] || "-")}</td>
             <td class="col-legs">${htmlEscape(row[6] || "-")}</td>
-            <td class="status-cell">${renderMatchStatusDot(row[7])}</td>
+            <td class="status-cell">${renderMatchStatusDot(row[7], row[5], row[6])}</td>
           </tr>
         `;
       }).join("");
@@ -1629,7 +1641,7 @@
               <span class="matchday-title">${htmlEscape(day.title)}</span>
               <span class="matchday-head-right">
                 <span class="matchday-progress">${htmlEscape(progressText)}</span>
-                ${renderMatchStatusDot(day.status)}
+                ${renderMatchStatusDot(day.status, day.doneMatches, day.totalMatches)}
               </span>
             </button>
             <div class="matchday-body">
