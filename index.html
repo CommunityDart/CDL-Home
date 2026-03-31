@@ -94,7 +94,7 @@
     .hero-banner.image-banner{
       position:relative;
       margin:0 0 14px;
-      min-height:260px;
+      min-height:265px;
       border-radius:28px;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.10);
@@ -102,7 +102,7 @@
         0 18px 44px rgba(0,0,0,.34),
         inset 0 1px 0 rgba(255,255,255,.08);
       background:
-        linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.16)),
+        linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.14)),
         url("banner.png") center 34% / cover no-repeat;
     }
 
@@ -110,35 +110,47 @@
       content:"";
       position:absolute;
       inset:0;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.04) 0%, rgba(0,0,0,.08) 42%, rgba(0,0,0,.18) 100%);
+      background:linear-gradient(180deg, rgba(0,0,0,.03) 0%, rgba(0,0,0,.08) 55%, rgba(0,0,0,.18) 100%);
       pointer-events:none;
     }
 
     .hero-banner-overlay{
       position:relative;
       z-index:2;
-      min-height:260px;
-      padding:20px 20px 26px;
+      min-height:265px;
+      padding:18px 20px 18px;
       display:flex;
-      justify-content:flex-end;
       align-items:flex-end;
-      gap:16px;
+      justify-content:center;
+    }
+
+    .hero-banner-bar{
+      width:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
     }
 
     .hero-banner-right{
-      margin-left:auto;
       display:flex;
       flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:flex-end;
+      justify-content:center;
+      align-items:center;
       gap:12px;
-      max-width:620px;
+      max-width:980px;
+      padding:10px 12px;
+      border-radius:22px;
+      background:rgba(4,12,14,.34);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:
+        0 10px 24px rgba(0,0,0,.24),
+        inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter:blur(6px);
     }
 
     .hero-action-btn{
       border:1px solid rgba(255,196,74,.45);
-      background:rgba(9,22,27,.82);
+      background:rgba(9,22,27,.88);
       color:#fff7ea;
       border-radius:16px;
       min-height:48px;
@@ -151,7 +163,6 @@
       align-items:center;
       justify-content:center;
       transition:.16s ease;
-      backdrop-filter:blur(6px);
       box-shadow:
         0 8px 18px rgba(0,0,0,.22),
         inset 0 1px 0 rgba(255,255,255,.05);
@@ -160,7 +171,7 @@
     .hero-action-btn:hover{
       transform:translateY(-1px);
       border-color:rgba(255,205,92,.78);
-      background:rgba(16,32,38,.92);
+      background:rgba(16,32,38,.96);
       box-shadow:
         0 10px 22px rgba(0,0,0,.24),
         0 0 18px rgba(255,170,40,.18);
@@ -702,19 +713,18 @@
 
     @media (max-width:1100px){
       .hero-banner.image-banner{
-        min-height:220px;
+        min-height:225px;
         background-position:center 32%;
       }
 
       .hero-banner-overlay{
-        min-height:220px;
-        padding:16px 16px 18px;
-        align-items:flex-end;
+        min-height:225px;
+        padding:14px 14px 14px;
       }
 
       .hero-banner-right{
-        max-width:none;
-        justify-content:flex-end;
+        gap:10px;
+        padding:10px;
       }
 
       .main{grid-template-columns:1fr}
@@ -726,14 +736,14 @@
       .button,.footer-btn,.footer-link{width:100%}
 
       .hero-banner.image-banner{
-        min-height:190px;
+        min-height:195px;
         border-radius:20px;
         background-position:center 30%;
       }
 
       .hero-banner-overlay{
-        min-height:190px;
-        padding:12px 12px 14px;
+        min-height:195px;
+        padding:10px 10px 12px;
       }
 
       .hero-banner-right{
@@ -741,6 +751,8 @@
         display:grid;
         grid-template-columns:1fr 1fr;
         gap:10px;
+        padding:8px;
+        border-radius:18px;
       }
 
       .hero-action-btn{
@@ -773,14 +785,16 @@
   <div class="wrap">
     <section class="hero-banner image-banner">
       <div class="hero-banner-overlay">
-        <div class="hero-banner-right">
-          <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="hero-action-btn discord-main-btn">
-            Discord
-          </a>
-          <button id="modeAutodarts" class="hero-action-btn mode-btn active" type="button">Autodarts</button>
-          <button id="modeDartCounter" class="hero-action-btn mode-btn" type="button">DartCounter</button>
-          <button id="regelwerkBtn" class="hero-action-btn info-btn" type="button">Regelwerk</button>
-          <button id="faqBtn" class="hero-action-btn info-btn" type="button">FAQ</button>
+        <div class="hero-banner-bar">
+          <div class="hero-banner-right">
+            <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="hero-action-btn discord-main-btn">
+              Discord
+            </a>
+            <button id="modeAutodarts" class="hero-action-btn mode-btn active" type="button">Autodarts</button>
+            <button id="modeDartCounter" class="hero-action-btn mode-btn" type="button">DartCounter</button>
+            <button id="regelwerkBtn" class="hero-action-btn info-btn" type="button">Regelwerk</button>
+            <button id="faqBtn" class="hero-action-btn info-btn" type="button">FAQ</button>
+          </div>
         </div>
       </div>
     </section>
