@@ -731,12 +731,13 @@
       align-items:center;
       justify-content:flex-end;
       gap:10px;
-      flex:0 0 92px;
-      min-width:92px;
+      width:96px;
+      min-width:96px;
+      flex:0 0 96px;
     }
 
     .matchday-progress{
-      width:44px;
+      width:46px;
       text-align:right;
       font-size:12px;
       font-weight:900;
@@ -767,8 +768,10 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-width:36px;
-      padding:6px;
+      width:38px;
+      min-width:38px;
+      height:28px;
+      padding:0;
       border-radius:999px;
       font-size:12px;
       font-weight:800;
@@ -807,12 +810,13 @@
     }
 
     .match-table td{
-      padding:10px 10px;
+      padding:12px 10px;
       font-size:13px;
       border-bottom:1px solid rgba(120,170,195,.08);
       white-space:normal;
       background:rgba(255,255,255,.02);
       color:#edf7fb;
+      vertical-align:middle;
     }
 
     .match-table tbody tr:first-child td{
@@ -820,7 +824,9 @@
     }
 
     .match-player{
-      display:block;
+      display:flex;
+      align-items:center;
+      min-height:22px;
       max-width:100%;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -829,16 +835,19 @@
 
     .col-player{ width:35%; }
     .col-legs{ width:12%; text-align:center; }
-    .col-status{ width:92px; text-align:right; }
+    .col-status{
+      width:96px;
+      text-align:right;
+    }
 
     .status-cell{
+      width:96px;
+      min-width:96px;
       text-align:right !important;
-      width:92px;
-      min-width:92px;
       vertical-align:middle;
       white-space:nowrap !important;
       overflow:visible;
-      padding-right:12px !important;
+      padding-right:10px !important;
     }
 
     .empty{
@@ -954,8 +963,6 @@
     @media (max-width:760px){
       .wrap{width:min(100% - 16px, 1400px)}
       .button,.mode-btn,.footer-btn,.footer-link,.info-btn{width:100%}
-      .status-badge{min-width:36px;padding:6px}
-      .status-cell{width:92px;min-width:92px}
       .hero-banner{padding:24px 20px}
       .hero-banner h1{font-size:38px}
       .hero-banner-modes{
@@ -988,12 +995,19 @@
       }
 
       .matchday-head-right{
-        flex:0 0 88px;
-        min-width:88px;
+        width:92px;
+        min-width:92px;
+        flex:0 0 92px;
       }
 
       .matchday-progress{
-        width:40px;
+        width:42px;
+      }
+
+      .status-cell,
+      .col-status{
+        width:92px;
+        min-width:92px;
       }
     }
   </style>
