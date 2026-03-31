@@ -22,30 +22,12 @@
       --accent:#20b7ff;
       --accent-soft:rgba(32,183,255,.18);
       --accent-border:rgba(32,183,255,.42);
-
-      --banner-a:#050d14;
-      --banner-b:#0d2233;
-      --banner-c:#134a6b;
-      --banner-d:#20b7ff;
-
-      --card-a:#091826;
-      --card-b:#132b4d;
-      --card-c:#1d3f74;
     }
 
     body[data-mode="DartCounter"]{
       --accent:#ff9f1c;
       --accent-soft:rgba(255,159,28,.18);
       --accent-border:rgba(255,159,28,.42);
-
-      --banner-a:#2a1404;
-      --banner-b:#5a2b08;
-      --banner-c:#b85a12;
-      --banner-d:#ff9f1c;
-
-      --card-a:#2a1606;
-      --card-b:#5a2d0b;
-      --card-c:#c96a18;
     }
 
     *{box-sizing:border-box}
@@ -64,7 +46,7 @@
     .wrap{
       width:min(1400px, calc(100% - 28px));
       margin:0 auto;
-      padding:18px 0 42px;
+      padding:8px 0 42px;
     }
 
     .button,
@@ -109,390 +91,117 @@
         0 0 22px color-mix(in srgb, var(--accent) 20%, transparent);
     }
 
-    .hero-banner{
+    .hero-banner.image-banner{
       position:relative;
       margin:0 0 16px;
-      padding:24px 26px;
-      border-radius:26px;
+      min-height:360px;
+      border-radius:28px;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.10);
-      background:
-        linear-gradient(135deg, var(--banner-a) 0%, var(--banner-b) 28%, var(--banner-c) 62%, var(--banner-d) 100%);
       box-shadow:
         0 18px 44px rgba(0,0,0,.34),
-        inset 0 1px 0 rgba(255,255,255,.08),
-        inset 0 -50px 90px rgba(0,0,0,.15);
+        inset 0 1px 0 rgba(255,255,255,.08);
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.22)),
+        url("banner.png") center center / cover no-repeat;
     }
 
-    .hero-banner::before{
+    .hero-banner.image-banner::before{
       content:"";
       position:absolute;
       inset:0;
       background:
-        linear-gradient(120deg, transparent 0 44%, rgba(255,255,255,.05) 44% 46%, transparent 46% 100%),
-        linear-gradient(60deg, transparent 0 48%, rgba(255,255,255,.04) 48% 50%, transparent 50% 100%);
-      pointer-events:none;
-      opacity:.45;
-    }
-
-    .hero-banner::after{
-      content:"";
-      position:absolute;
-      right:-90px;
-      top:50%;
-      width:420px;
-      height:420px;
-      transform:translateY(-50%);
-      border-radius:50%;
-      background:
-        radial-gradient(circle, rgba(255,255,255,.24) 0 4%, transparent 4% 11%, rgba(255,255,255,.11) 11% 18%, transparent 18% 28%, rgba(255,255,255,.08) 28% 35%, transparent 35% 44%, rgba(255,255,255,.07) 44% 50%, transparent 50% 100%);
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.06),
-        0 0 90px rgba(255,255,255,.10);
-      opacity:.86;
+        linear-gradient(90deg, rgba(0,0,0,.30) 0%, rgba(0,0,0,.12) 35%, rgba(0,0,0,.18) 100%);
       pointer-events:none;
     }
 
-    .dart-rays{
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      opacity:.18;
-      background:
-        radial-gradient(circle at 18% 30%, rgba(255,255,255,.65), transparent 14%),
-        linear-gradient(180deg, rgba(255,255,255,.04), transparent 30%);
-      mix-blend-mode:screen;
-    }
-
-    .hero-stripe{
-      position:absolute;
-      left:-8%;
-      bottom:12%;
-      width:52%;
-      height:16px;
-      transform:rotate(-8deg);
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
-      opacity:.22;
-      filter:blur(1px);
-      pointer-events:none;
-    }
-
-    .hero-banner-inner{
+    .hero-banner-overlay{
       position:relative;
       z-index:2;
+      min-height:360px;
+      padding:18px 20px;
       display:flex;
       justify-content:space-between;
-      align-items:center;
-      gap:20px;
+      align-items:flex-start;
+      gap:16px;
+    }
+
+    .hero-banner-left{
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-start;
+    }
+
+    .hero-banner-right{
+      margin-left:auto;
+      display:flex;
       flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:flex-start;
+      gap:10px;
+      max-width:540px;
     }
 
-    .hero-banner-copy{
-      flex:1 1 620px;
-      min-width:280px;
-    }
-
-    .hero-banner h1{
-      margin:0;
-      font-size:clamp(28px,4.2vw,58px);
-      font-weight:900;
-      line-height:.94;
-      letter-spacing:-.045em;
-      text-transform:uppercase;
-      text-shadow:
-        0 8px 20px rgba(0,0,0,.18),
-        0 0 14px rgba(255,255,255,.06);
-    }
-
-    .hero-banner p{
-      margin:10px 0 0;
+    .hero-action-btn{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(5,22,34,.72);
+      color:#fff;
+      border-radius:16px;
+      min-height:46px;
+      padding:0 18px;
       font-size:14px;
-      line-height:1.5;
-      max-width:760px;
-      opacity:.96;
-      color:#edf7ff;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      transition:.16s ease;
+      backdrop-filter:blur(8px);
+      box-shadow:
+        0 8px 18px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    .hero-action-btn:hover{
+      transform:translateY(-1px);
+      border-color:var(--accent-border);
+      box-shadow:
+        0 10px 22px rgba(0,0,0,.22),
+        0 0 18px color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+
+    .hero-action-btn.mode-btn.active{
+      background:rgba(9,39,56,.88);
+      border-color:var(--accent-border);
+      box-shadow:
+        inset 3px 0 0 var(--accent),
+        0 0 18px color-mix(in srgb, var(--accent) 26%, transparent);
+    }
+
+    .discord-main-btn{
+      background:linear-gradient(180deg, #8892ff 0%, #6672ff 100%);
+      border-color:rgba(255,255,255,.20);
+    }
+
+    .discord-main-btn:hover{
+      background:linear-gradient(180deg, #98a1ff 0%, #7581ff 100%);
     }
 
     .hero-tag{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.16);
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.32);
+      color:#fff;
       padding:8px 12px;
       border-radius:999px;
       font-size:11px;
-      font-weight:800;
+      font-weight:900;
       text-transform:uppercase;
       letter-spacing:.08em;
-      margin-bottom:10px;
       box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
-    }
-
-    .hero-banner-modes{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-end;
-      flex:0 0 auto;
-      align-self:center;
-      margin-top:10px;
-    }
-
-    .hero-banner-modes .mode-btn{
-      min-width:112px;
-      min-height:42px;
-      padding:0 14px;
-      border-radius:14px;
-      backdrop-filter:blur(8px);
-      background:rgba(20,15,12,.42);
-      border-color:rgba(255,255,255,.12);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.05),
-        0 8px 18px rgba(0,0,0,.16);
-    }
-
-    .banner-row{
-      display:grid;
-      grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
-      gap:12px;
-      margin-bottom:14px;
-    }
-
-    .discord-banner,
-    .info-banner{
-      position:relative;
-      overflow:hidden;
-      padding:14px 16px;
-      border-radius:18px;
-      min-height:104px;
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:
-        0 10px 26px rgba(0,0,0,.22),
-        inset 0 1px 0 rgba(255,255,255,.05);
-    }
-
-    .discord-banner{
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,.11), transparent 24%),
-        linear-gradient(135deg, #121a30 0%, #1b2f70 48%, #2947a8 100%);
-      border-color:rgba(120,145,255,.24);
-    }
-
-    .discord-banner::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        linear-gradient(120deg, transparent 0 34%, rgba(255,255,255,.05) 34% 37%, transparent 37% 100%),
-        radial-gradient(circle at 88% 50%, rgba(255,255,255,.08), transparent 16%);
-      pointer-events:none;
-    }
-
-    .discord-banner::after{
-      content:"";
-      position:absolute;
-      right:18px;
-      top:50%;
-      transform:translateY(-50%);
-      width:62px;
-      height:62px;
-      border-radius:50%;
-      background:
-        radial-gradient(circle, rgba(255,255,255,.12) 0 18%, transparent 18% 42%, rgba(255,255,255,.06) 42% 58%, transparent 58% 100%);
-      opacity:.45;
-      pointer-events:none;
-    }
-
-    .info-banner{
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,.06), transparent 24%),
-        linear-gradient(135deg, #071b2d 0%, #0d2844 45%, #1d4379 100%);
-      border-color:rgba(110,165,215,.18);
-    }
-
-    .info-banner::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        linear-gradient(120deg, transparent 0 40%, rgba(255,255,255,.035) 40% 43%, transparent 43% 100%);
-      pointer-events:none;
-    }
-
-    .info-banner::after{
-      content:"";
-      position:absolute;
-      right:-18px;
-      bottom:-18px;
-      width:120px;
-      height:120px;
-      border-radius:50%;
-      background:radial-gradient(circle, rgba(255,255,255,.06), transparent 65%);
-      pointer-events:none;
-    }
-
-    .discord-content,
-    .info-content{
-      position:relative;
-      z-index:1;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:14px;
-      flex-wrap:wrap;
-      min-height:72px;
-    }
-
-    .discord-text h2,
-    .info-text h2{
-      margin:0;
-      font-size:17px;
-      font-weight:900;
-      letter-spacing:-.02em;
-    }
-
-    .discord-text p,
-    .info-text p{
-      margin:5px 0 0;
-      font-size:12px;
-      line-height:1.45;
-      max-width:640px;
-    }
-
-    .discord-text p{ color:#dbe4ff; }
-    .info-text p{ color:#d8e8f5; }
-
-    .discord-title-row{
-      display:flex;
-      align-items:flex-start;
-      gap:12px;
-    }
-
-    .discord-logo{
-      width:40px;
-      height:40px;
-      flex:0 0 40px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:13px;
-      background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05));
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.14),
-        0 6px 14px rgba(0,0,0,.16);
-      backdrop-filter:blur(8px);
-    }
-
-    .discord-logo svg{
-      width:22px;
-      height:22px;
-      fill:#fff;
-      display:block;
-    }
-
-    .discord-btn{
-      position:relative;
-      padding:10px 16px;
-      border-radius:14px;
-      background:linear-gradient(180deg, #8892ff 0%, #6672ff 100%);
-      color:#fff;
-      text-decoration:none;
-      font-weight:900;
-      font-size:13px;
-      border:1px solid rgba(255,255,255,.20);
-      box-shadow:
-        0 6px 16px rgba(0,0,0,.18),
-        inset 0 1px 0 rgba(255,255,255,.18);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:42px;
-      min-width:170px;
-      white-space:nowrap;
-      transition:
-        transform .16s ease,
-        box-shadow .18s ease,
-        background .18s ease,
-        border-color .18s ease,
-        filter .18s ease;
-    }
-
-    .discord-btn::before{
-      content:"";
-      position:absolute;
-      inset:1px;
-      border-radius:13px;
-      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0));
-      pointer-events:none;
-    }
-
-    body[data-mode="Autodarts"] .discord-btn:hover,
-    body[data-mode="Autodarts"] .discord-btn:focus-visible{
-      background:linear-gradient(180deg, #97a0ff 0%, #7581ff 100%);
-      border-color:rgba(32,183,255,.58);
-      box-shadow:
-        0 0 0 1px rgba(32,183,255,.28),
-        0 0 18px rgba(32,183,255,.40),
-        0 0 34px rgba(32,183,255,.24),
-        0 10px 22px rgba(0,0,0,.22);
-      transform:translateY(-1px) scale(1.01);
-    }
-
-    body[data-mode="Autodarts"] .discord-btn:active{
-      transform:translateY(0) scale(.99);
-      box-shadow:
-        0 0 0 1px rgba(32,183,255,.34),
-        0 0 24px rgba(32,183,255,.48),
-        0 0 40px rgba(32,183,255,.28),
-        0 8px 18px rgba(0,0,0,.22);
-    }
-
-    body[data-mode="DartCounter"] .discord-btn:hover,
-    body[data-mode="DartCounter"] .discord-btn:focus-visible{
-      background:linear-gradient(180deg, #97a0ff 0%, #7581ff 100%);
-      border-color:rgba(255,159,28,.58);
-      box-shadow:
-        0 0 0 1px rgba(255,159,28,.28),
-        0 0 18px rgba(255,159,28,.38),
-        0 0 34px rgba(255,159,28,.22),
-        0 10px 22px rgba(0,0,0,.22);
-      transform:translateY(-1px) scale(1.01);
-    }
-
-    body[data-mode="DartCounter"] .discord-btn:active{
-      transform:translateY(0) scale(.99);
-      box-shadow:
-        0 0 0 1px rgba(255,159,28,.34),
-        0 0 24px rgba(255,159,28,.46),
-        0 0 40px rgba(255,159,28,.26),
-        0 8px 18px rgba(0,0,0,.22);
-    }
-
-    .info-actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:flex-end;
-    }
-
-    .info-btn{
-      min-width:98px;
-      min-height:42px;
-      padding:0 14px;
-      border-radius:14px;
-      background:rgba(6,26,42,.72);
-      border-color:rgba(255,255,255,.12);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.04),
-        0 5px 14px rgba(0,0,0,.12);
-    }
-
-    .info-btn:hover{
-      background:#0b3149;
     }
 
     .league-tabs{
@@ -1009,65 +718,61 @@
     }
 
     @media (max-width:1100px){
-      .banner-row{grid-template-columns:1fr}
+      .hero-banner.image-banner{
+        min-height:300px;
+        background-position:center center;
+      }
+
+      .hero-banner-overlay{
+        min-height:300px;
+        flex-direction:column;
+        justify-content:space-between;
+        align-items:flex-start;
+      }
+
+      .hero-banner-right{
+        margin-left:0;
+        justify-content:flex-start;
+        max-width:none;
+      }
+
       .main{grid-template-columns:1fr}
       .sidebar{order:2}
     }
 
     @media (max-width:760px){
       .wrap{width:min(100% - 16px, 1400px)}
-      .button,.mode-btn,.footer-btn,.footer-link,.info-btn{width:100%}
+      .button,.footer-btn,.footer-link{width:100%}
 
-      .hero-banner{padding:18px 16px}
-      .hero-banner h1{font-size:32px}
-      .hero-banner p{
-        font-size:13px;
-        line-height:1.45;
+      .hero-banner.image-banner{
+        min-height:240px;
+        border-radius:20px;
+        background-position:center center;
       }
+
+      .hero-banner-overlay{
+        min-height:240px;
+        padding:14px;
+      }
+
+      .hero-banner-right{
+        width:100%;
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+      }
+
+      .hero-action-btn{
+        width:100%;
+        min-height:44px;
+        border-radius:14px;
+        font-size:13px;
+        padding:0 12px;
+      }
+
       .hero-tag{
         font-size:10px;
         padding:7px 10px;
-      }
-
-      .hero-banner-modes{
-        width:100%;
-        justify-content:flex-start;
-      }
-
-      .hero-banner-modes .mode-btn{
-        flex:1 1 160px;
-      }
-
-      .discord-banner,
-      .info-banner{
-        min-height:auto;
-        padding:12px 12px;
-        border-radius:16px;
-      }
-
-      .discord-content,
-      .info-content{
-        min-height:auto;
-        align-items:flex-start;
-      }
-
-      .discord-text h2,
-      .info-text h2{
-        font-size:16px;
-      }
-
-      .discord-text p,
-      .info-text p{
-        font-size:12px;
-      }
-
-      .discord-btn,
-      .info-btn{
-        width:100%;
-      }
-
-      .info-actions{
-        width:100%;
       }
 
       .matchday-head-right{
@@ -1090,56 +795,20 @@
 </head>
 <body data-mode="Autodarts">
   <div class="wrap">
-    <section class="hero-banner">
-      <div class="dart-rays"></div>
-      <div class="hero-stripe"></div>
-      <div class="hero-banner-inner">
-        <div class="hero-banner-copy">
+    <section class="hero-banner image-banner">
+      <div class="hero-banner-overlay">
+        <div class="hero-banner-left">
           <div class="hero-tag">Online Liga • Darts</div>
-          <h1>Community Dart Liga</h1>
-          <p>Tabellen, Spieltage und Ergebnisse im CDL-Look. Wähle zwischen Autodarts und DartCounter und spring direkt in deine Liga.</p>
         </div>
 
-        <div class="hero-banner-modes">
-          <button id="modeAutodarts" class="mode-btn active">Autodarts</button>
-          <button id="modeDartCounter" class="mode-btn">DartCounter</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="banner-row">
-      <div class="discord-banner">
-        <div class="discord-content">
-          <div class="discord-text">
-            <div class="discord-title-row">
-              <span class="discord-logo" aria-hidden="true">
-                <svg viewBox="0 0 127.14 96.36" role="img" aria-hidden="true">
-                  <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2A75.57,75.57,0,0,0,95.73,78c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C35.88,65.69,30.5,59.66,30.5,52.25s5.31-13.44,11.95-13.44S54.4,44.87,54.39,52.25,49,65.69,42.45,65.69Zm42.24,0c-6.57,0-11.95-6-11.95-13.44s5.31-13.44,11.95-13.44S96.64,44.87,96.63,52.25,91.26,65.69,84.69,65.69Z"/>
-                </svg>
-              </span>
-              <div>
-                <h2>Community Discord</h2>
-                <p>Trete unserer Liga bei, tausche dich mit Spielern aus und verpasse keine Updates.</p>
-              </div>
-            </div>
-          </div>
-
-          <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="discord-btn">
-            Discord beitreten
+        <div class="hero-banner-right">
+          <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="hero-action-btn discord-main-btn">
+            Discord
           </a>
-        </div>
-      </div>
-
-      <div class="info-banner">
-        <div class="info-content">
-          <div class="info-text">
-            <h2>Wichtige Infos</h2>
-            <p>Regelwerk und FAQ werden direkt aus dem Google Sheet geladen.</p>
-          </div>
-          <div class="info-actions">
-            <button id="regelwerkBtn" class="info-btn" type="button">Regeln</button>
-            <button id="faqBtn" class="info-btn" type="button">FAQ</button>
-          </div>
+          <button id="modeAutodarts" class="hero-action-btn mode-btn active" type="button">Autodarts</button>
+          <button id="modeDartCounter" class="hero-action-btn mode-btn" type="button">DartCounter</button>
+          <button id="regelwerkBtn" class="hero-action-btn info-btn" type="button">Regelwerk</button>
+          <button id="faqBtn" class="hero-action-btn info-btn" type="button">FAQ</button>
         </div>
       </div>
     </section>
