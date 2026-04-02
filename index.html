@@ -421,10 +421,10 @@
       width:100%;
       border-collapse:collapse;
       min-width:760px;
+      table-layout:fixed;
     }
 
     thead th{
-      text-align:left;
       padding:14px 16px;
       color:#c8dce6;
       font-size:12px;
@@ -434,6 +434,14 @@
       border-bottom:1px solid var(--line);
       background:#041722;
       white-space:nowrap;
+      text-align:left;
+    }
+
+    thead th:nth-child(3),
+    thead th:nth-child(4),
+    thead th:nth-child(5),
+    thead th:nth-child(6){
+      text-align:center;
     }
 
     body[data-mode="DartCounter"] thead th{
@@ -484,8 +492,9 @@
     .rank-col.last::before{ background: var(--red); }
 
     .player-cell{
+      width:240px;
+      min-width:240px;
       font-weight:800;
-      min-width:280px;
     }
 
     .player-name{
@@ -555,6 +564,18 @@
     }
 
     body[data-mode="DartCounter"] .points-cell{ color:#fff4e3; }
+
+    thead th:nth-child(3),
+    thead th:nth-child(4),
+    thead th:nth-child(5),
+    thead th:nth-child(6),
+    tbody td:nth-child(3),
+    tbody td:nth-child(4),
+    tbody td:nth-child(5),
+    tbody td:nth-child(6){
+      width:95px;
+      text-align:center;
+    }
 
     .sidebar{
       display:flex;
@@ -876,6 +897,11 @@
         font-size:13px;
         padding:0 10px;
         white-space:normal;
+      }
+
+      .player-cell{
+        width:210px;
+        min-width:210px;
       }
 
       .matchday-head-right{
