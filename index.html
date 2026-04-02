@@ -94,7 +94,7 @@
     .hero-banner.image-banner{
       position:relative;
       margin:0 0 14px;
-      min-height:290px;
+      min-height:320px;
       border-radius:30px;
       overflow:hidden;
       border:1px solid rgba(255,255,255,.10);
@@ -102,39 +102,31 @@
         0 18px 44px rgba(0,0,0,.34),
         inset 0 1px 0 rgba(255,255,255,.06);
       background:
-        radial-gradient(circle at center, rgba(32,183,255,.08), transparent 55%),
-        linear-gradient(90deg, #02131b 0%, #041b25 50%, #02131b 100%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px 22px;
+        linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.14)),
+        url("banner.png") center center / cover no-repeat;
+    }
+
+    .hero-banner.image-banner::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.03) 0%, rgba(0,0,0,.08) 55%, rgba(0,0,0,.16) 100%);
+      pointer-events:none;
+    }
+
+    body[data-mode="Autodarts"] .hero-banner.image-banner{
+      box-shadow:
+        0 18px 44px rgba(0,0,0,.34),
+        0 0 0 1px rgba(32,183,255,.12),
+        0 0 24px rgba(32,183,255,.08);
     }
 
     body[data-mode="DartCounter"] .hero-banner.image-banner{
-      background:
-        radial-gradient(circle at center, rgba(255,159,28,.08), transparent 55%),
-        linear-gradient(90deg, #02131b 0%, #041b25 50%, #02131b 100%);
-    }
-
-    .hero-banner-frame{
-      width:min(1180px, 100%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:24px;
-      overflow:hidden;
       box-shadow:
-        0 14px 34px rgba(0,0,0,.35),
-        0 0 0 1px rgba(255,255,255,.06);
-      background:#000;
-    }
-
-    .hero-banner-img{
-      display:block;
-      width:100%;
-      height:auto;
-      max-height:250px;
-      object-fit:contain;
+        0 18px 44px rgba(0,0,0,.34),
+        0 0 0 1px rgba(255,159,28,.12),
+        0 0 24px rgba(255,159,28,.08);
     }
 
     .banner-nav-shell{
@@ -727,12 +719,8 @@
 
     @media (max-width:1100px){
       .hero-banner.image-banner{
-        min-height:250px;
-        padding:16px;
-      }
-
-      .hero-banner-img{
-        max-height:210px;
+        min-height:260px;
+        background-position:center center;
       }
 
       .banner-nav{
@@ -755,17 +743,10 @@
       .button,.footer-btn,.footer-link{width:100%}
 
       .hero-banner.image-banner{
-        min-height:190px;
+        min-height:180px;
         border-radius:20px;
-        padding:10px;
-      }
-
-      .hero-banner-frame{
-        border-radius:16px;
-      }
-
-      .hero-banner-img{
-        max-height:160px;
+        background-position:center center;
+        background-size:cover;
       }
 
       .banner-nav{
@@ -803,11 +784,7 @@
 </head>
 <body data-mode="Autodarts">
   <div class="wrap">
-    <section class="hero-banner image-banner">
-      <div class="hero-banner-frame">
-        <img src="banner.png" alt="Community Dart Liga Banner" class="hero-banner-img">
-      </div>
-    </section>
+    <section class="hero-banner image-banner"></section>
 
     <section class="banner-nav-shell">
       <div class="banner-nav">
