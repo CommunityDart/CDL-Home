@@ -101,8 +101,7 @@
       content:"";
       position:absolute;
       inset:0;
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.03) 0%, rgba(0,0,0,.08) 55%, rgba(0,0,0,.16) 100%);
+      background:linear-gradient(180deg, rgba(0,0,0,.03) 0%, rgba(0,0,0,.08) 55%, rgba(0,0,0,.16) 100%);
       pointer-events:none;
     }
 
@@ -417,6 +416,7 @@
       padding:0 0 6px;
     }
 
+    /* GROSSE TABELLE: nur hier enger zwischen Spieler und Siege */
     table{
       width:100%;
       border-collapse:collapse;
@@ -435,18 +435,14 @@
       background:#041722;
       white-space:nowrap;
       text-align:left;
+      min-width:90px;
     }
 
-     thead th:nth-child(3),
+    thead th:nth-child(3),
     thead th:nth-child(4),
     thead th:nth-child(5),
-    thead th:nth-child(6),
-tbody td:nth-child(3),
-tbody td:nth-child(4),
-tbody td:nth-child(5),
-tbody td:nth-child(6){
-  width:90px;
-  text-align:center;
+    thead th:nth-child(6){
+      text-align:center;
     }
 
     body[data-mode="DartCounter"] thead th{
@@ -497,8 +493,8 @@ tbody td:nth-child(6){
     .rank-col.last::before{ background: var(--red); }
 
     .player-cell{
-      width:210px;
-      min-width:210px;
+      width:190px;
+      min-width:190px;
       font-weight:800;
     }
 
@@ -578,7 +574,7 @@ tbody td:nth-child(6){
     tbody td:nth-child(4),
     tbody td:nth-child(5),
     tbody td:nth-child(6){
-      width:90px;
+      width:95px;
       text-align:center;
     }
 
@@ -689,6 +685,7 @@ tbody td:nth-child(6){
 
     .matchday.open .matchday-body{ display:block; }
 
+    /* SPIELTAGS-TABELLE: bewusst separat und nicht enger gemacht */
     .match-table{
       width:100%;
       min-width:100%;
@@ -908,8 +905,8 @@ tbody td:nth-child(6){
       }
 
       .player-cell{
-        width:190px;
-        min-width:190px;
+        width:180px;
+        min-width:180px;
       }
 
       .matchday-head-right{
@@ -940,7 +937,6 @@ tbody td:nth-child(6){
       <section class="banner-nav-shell">
         <div class="banner-nav">
           <button id="modeAutodarts" class="hero-action-btn hero-btn-autodarts mode-btn active" type="button">Autodarts</button>
-
           <button id="modeDartCounter" class="hero-action-btn hero-btn-dartcounter mode-btn" type="button">DartCounter</button>
 
           <a href="https://discord.gg/DEINLINK" target="_blank" rel="noopener noreferrer" class="hero-action-btn hero-btn-discord discord-main-btn">
@@ -983,12 +979,8 @@ tbody td:nth-child(6){
       <div class="modal-body">
         <p><strong>Community Dart Liga</strong></p>
         <p>Hier kannst du dein vollständiges Impressum eintragen.</p>
-        <p>Name / Firma<br>
-        Straße und Hausnummer<br>
-        PLZ Ort<br>
-        E-Mail: deine@email.de</p>
-        <p>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:<br>
-        Max Mustermann</p>
+        <p>Name / Firma<br>Straße und Hausnummer<br>PLZ Ort<br>E-Mail: deine@email.de</p>
+        <p>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:<br>Max Mustermann</p>
       </div>
     </div>
   </div>
@@ -1024,18 +1016,8 @@ tbody td:nth-child(6){
     const FAQ_SHEET = "FAQ";
 
     const LEAGUES = [
-      "Autodarts Liga 1",
-      "Autodarts Liga 2",
-      "Autodarts Liga 3",
-      "Autodarts Liga 4",
-      "Autodarts Liga 5",
-      "Autodarts Liga 6",
-      "DartCounter Liga 1",
-      "DartCounter Liga 2",
-      "DartCounter Liga 3",
-      "DartCounter Liga 4",
-      "DartCounter Liga 5",
-      "DartCounter Liga 6"
+      "Autodarts Liga 1","Autodarts Liga 2","Autodarts Liga 3","Autodarts Liga 4","Autodarts Liga 5","Autodarts Liga 6",
+      "DartCounter Liga 1","DartCounter Liga 2","DartCounter Liga 3","DartCounter Liga 4","DartCounter Liga 5","DartCounter Liga 6"
     ];
 
     const state = {
@@ -1128,9 +1110,7 @@ tbody td:nth-child(6){
 
     async function loadCsv(sheetName) {
       const response = await fetch(csvUrl(sheetName));
-      if (!response.ok) {
-        throw new Error(`${sheetName}: HTTP ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`${sheetName}: HTTP ${response.status}`);
       const text = await response.text();
       return parseCsv(text);
     }
@@ -1157,12 +1137,7 @@ tbody td:nth-child(6){
     }
 
     function parseCardInfo(rawValue) {
-      const value = normalize(rawValue)
-        .replace(/,/g, " ")
-        .replace(/;/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-
+      const value = normalize(rawValue).replace(/,/g, " ").replace(/;/g, " ").replace(/\s+/g, " ").trim();
       if (!value) return { yellow: 0, red: 0, hasRed: false };
       if (value.includes("rot")) return { yellow: 0, red: 1, hasRed: true };
 
@@ -1192,6 +1167,7 @@ tbody td:nth-child(6){
         const karte = safeCell(rows[i], 6);
 
         if (!spieler) continue;
+
         const nSpieler = normalize(spieler);
         if (!nSpieler) continue;
         if (["spieler", "name", "spielername"].includes(nSpieler)) continue;
@@ -1246,6 +1222,7 @@ tbody td:nth-child(6){
 
     function parseMatchdaysFromErgSheet(rows) {
       if (!rows || !rows.length) return [];
+
       const grouped = new Map();
 
       for (let i = 0; i < rows.length; i++) {
@@ -1295,9 +1272,7 @@ tbody td:nth-child(6){
       if (mode === "faq" && cleaned.length > 0) {
         const bodyRows = cleaned.filter((row, index) => {
           const joined = row.join(" ").toLowerCase();
-          if (index === 0 && (joined.includes("frage") || joined.includes("antwort") || joined.includes("faq"))) {
-            return false;
-          }
+          if (index === 0 && (joined.includes("frage") || joined.includes("antwort") || joined.includes("faq"))) return false;
           return true;
         });
 
@@ -1319,9 +1294,7 @@ tbody td:nth-child(6){
       const blocks = cleaned.map((row) => {
         const filled = row.filter(cell => cell);
         if (!filled.length) return "";
-        if (filled.length === 1) {
-          return `<div class="content-block"><p>${htmlEscape(filled[0])}</p></div>`;
-        }
+        if (filled.length === 1) return `<div class="content-block"><p>${htmlEscape(filled[0])}</p></div>`;
 
         const title = filled[0];
         const body = filled.slice(1).map(text => `<p>${htmlEscape(text)}</p>`).join("");
@@ -1381,15 +1354,10 @@ tbody td:nth-child(6){
 
     function renderPlayerCards(meta) {
       if (!meta) return "";
+
       const cards = [];
-
-      for (let i = 0; i < (meta.yellow || 0); i++) {
-        cards.push(`<span class="card-badge yellow" title="Gelbe Karte"></span>`);
-      }
-
-      for (let i = 0; i < (meta.red || 0); i++) {
-        cards.push(`<span class="card-badge red" title="Rote Karte"></span>`);
-      }
+      for (let i = 0; i < (meta.yellow || 0); i++) cards.push(`<span class="card-badge yellow" title="Gelbe Karte"></span>`);
+      for (let i = 0; i < (meta.red || 0); i++) cards.push(`<span class="card-badge red" title="Rote Karte"></span>`);
 
       if (!cards.length) return "";
       return `<span class="player-cards">${cards.join("")}</span>`;
@@ -1614,10 +1582,8 @@ tbody td:nth-child(6){
     function setMode(mode) {
       state.activeMode = mode;
       document.body.setAttribute("data-mode", mode);
-
       modeAutodartsBtn.classList.toggle("active", mode === "Autodarts");
       modeDartCounterBtn.classList.toggle("active", mode === "DartCounter");
-
       renderLeagueTabs();
       renderLeague();
     }
