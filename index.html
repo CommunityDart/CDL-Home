@@ -420,7 +420,7 @@
     table{
       width:100%;
       border-collapse:collapse;
-      min-width:860px;
+      min-width:760px;
       table-layout:fixed;
     }
 
@@ -492,8 +492,8 @@
     .rank-col.last::before{ background: var(--red); }
 
     .player-cell{
-      width:320px;
-      min-width:320px;
+      width:210px;
+      min-width:210px;
       font-weight:800;
     }
 
@@ -573,7 +573,7 @@
     tbody td:nth-child(4),
     tbody td:nth-child(5),
     tbody td:nth-child(6){
-      width:120px;
+      width:90px;
       text-align:center;
     }
 
@@ -690,7 +690,7 @@
       border-collapse:collapse;
       border-radius:12px;
       overflow:hidden;
-      table-layout:fixed;
+      table-layout:auto;
     }
 
     .match-table td{
@@ -711,8 +711,7 @@
     .match-table tbody tr:first-child td{ border-top:none; }
 
     .match-player{
-      display:flex;
-      align-items:center;
+      display:block;
       min-height:22px;
       max-width:100%;
       overflow:hidden;
@@ -720,8 +719,12 @@
       white-space:nowrap;
     }
 
-    .col-player{ width:35%; }
-    .col-legs{ width:12%; text-align:center; }
+    .match-table td.col-player{
+      min-width:120px;
+    }
+
+    .col-player{ width:auto; }
+    .col-legs{ width:64px; text-align:center; }
     .col-status{
       width:96px;
       text-align:right;
@@ -900,8 +903,8 @@
       }
 
       .player-cell{
-        width:260px;
-        min-width:260px;
+        width:190px;
+        min-width:190px;
       }
 
       .matchday-head-right{
@@ -916,6 +919,10 @@
       .col-status{
         width:92px;
         min-width:92px;
+      }
+
+      .match-table td.col-player{
+        min-width:100px;
       }
     }
   </style>
