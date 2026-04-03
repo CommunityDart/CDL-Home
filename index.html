@@ -286,9 +286,27 @@
     .submenu-slot{
       min-height:52px;
       display:none;
-      flex-wrap:wrap;
+      flex-wrap:nowrap;
       gap:10px;
-      align-content:flex-start;
+      align-items:flex-start;
+      overflow-x:auto;
+      overflow-y:hidden;
+      scrollbar-width:thin;
+      padding-bottom:2px;
+    }
+
+    .submenu-slot::-webkit-scrollbar{
+      height:8px;
+    }
+
+    .submenu-slot::-webkit-scrollbar-track{
+      background:rgba(255,255,255,.04);
+      border-radius:999px;
+    }
+
+    .submenu-slot::-webkit-scrollbar-thumb{
+      background:rgba(120,170,195,.30);
+      border-radius:999px;
     }
 
     .submenu-slot.active{
@@ -318,6 +336,7 @@
         inset 0 1px 0 rgba(255,255,255,.04),
         0 6px 14px rgba(0,0,0,.18);
       white-space:nowrap;
+      flex:0 0 auto;
     }
 
     .submenu-btn:hover{
