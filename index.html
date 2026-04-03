@@ -286,27 +286,11 @@
     .submenu-slot{
       min-height:52px;
       display:none;
-      flex-wrap:nowrap;
+      flex-wrap:wrap;
       gap:10px;
       align-items:flex-start;
-      overflow-x:auto;
-      overflow-y:hidden;
-      scrollbar-width:thin;
-      padding-bottom:2px;
-    }
-
-    .submenu-slot::-webkit-scrollbar{
-      height:8px;
-    }
-
-    .submenu-slot::-webkit-scrollbar-track{
-      background:rgba(255,255,255,.04);
-      border-radius:999px;
-    }
-
-    .submenu-slot::-webkit-scrollbar-thumb{
-      background:rgba(120,170,195,.30);
-      border-radius:999px;
+      overflow:visible;
+      padding-bottom:0;
     }
 
     .submenu-slot.active{
@@ -314,11 +298,11 @@
     }
 
     .submenu-slot.left{
-      grid-column:1 / span 2;
+      grid-column:1 / span 3;
     }
 
     .submenu-slot.middle{
-      grid-column:2 / span 2;
+      grid-column:2 / span 3;
     }
 
     .submenu-btn{
