@@ -14,6 +14,7 @@
       --green:#3ddc97;
       --red:#e74c3c;
       --yellow:#f7c948;
+
       --accent:#20b7ff;
       --accent-border:rgba(32,183,255,.42);
       --row-a:#052130;
@@ -44,11 +45,43 @@
       padding:8px 0 42px;
     }
 
-    /* ===== BANNER OPTIMIERUNG (KEINE SCHWARZEN BALKEN) ===== */
+    .button,
+    .mode-btn,
+    .footer-btn,
+    .footer-link,
+    .info-btn{
+      border:1px solid rgba(75,135,165,.28);
+      background:rgba(4,25,36,.96);
+      color:var(--text);
+      border-radius:12px;
+      min-height:46px;
+      padding:0 16px;
+      font-size:14px;
+      outline:none;
+      cursor:pointer;
+      font-weight:800;
+      transition:.16s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .button:hover,
+    .mode-btn:hover,
+    .footer-btn:hover,
+    .footer-link:hover,
+    .info-btn:hover{
+      border-color:var(--accent-border);
+      background:#082738;
+      transform:translateY(-1px);
+    }
+
+    /* ===== BANNER OPTIMIERT ===== */
     .hero-banner.image-banner{
       position:relative;
       margin:0 0 14px;
-      /* Das Seitenverhältnis sorgt dafür, dass der Kasten so breit/hoch wie das Bild ist */
       aspect-ratio: 4 / 1; 
       width: 100%;
       border-radius:30px;
@@ -71,9 +104,32 @@
       pointer-events:none;
     }
 
-    /* Navigation & Layout */
-    .top-nav-wrap{ width:min(1200px, 100%); margin:0 auto 12px; }
-    .banner-nav-shell{ display:flex; justify-content:center; align-items:center; margin-bottom:10px; }
+    body[data-mode="Autodarts"] .hero-banner.image-banner{
+      box-shadow:
+        0 18px 44px rgba(0,0,0,.34),
+        0 0 0 1px rgba(32,183,255,.12),
+        0 0 24px rgba(32,183,255,.08);
+    }
+
+    body[data-mode="DartCounter"] .hero-banner.image-banner{
+      box-shadow:
+        0 18px 44px rgba(0,0,0,.34),
+        0 0 0 1px rgba(255,159,28,.12),
+        0 0 24px rgba(255,159,28,.08);
+    }
+
+    .top-nav-wrap{
+      width:min(1200px, 100%);
+      margin:0 auto 12px;
+    }
+
+    .banner-nav-shell{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      margin-bottom:10px;
+    }
+
     .banner-nav{
       width:100%;
       display:grid;
@@ -83,75 +139,163 @@
       border-radius:22px;
       background:rgba(4,12,14,.22);
       border:1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 24px rgba(0,0,0,.20);
+      box-shadow:
+        0 10px 24px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.05);
       backdrop-filter:blur(12px);
       -webkit-backdrop-filter:blur(12px);
     }
 
-    .button, .mode-btn, .footer-btn, .footer-link, .info-btn, .hero-action-btn{
-      border:1px solid rgba(75,135,165,.28);
-      background:rgba(4,25,36,.96);
-      color:var(--text);
-      border-radius:12px;
-      min-height:46px;
-      padding:0 16px;
+    .hero-action-btn{
+      position:relative;
+      width:100%;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(6,20,30,.38);
+      color:#f5fbff;
+      border-radius:16px;
+      min-height:50px;
+      padding:0 14px;
       font-size:14px;
+      font-weight:900;
       cursor:pointer;
-      font-weight:800;
-      transition:.16s ease;
       text-decoration:none;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap:8px;
+      text-align:center;
+      gap:10px;
+      transition:.22s ease;
+      white-space:nowrap;
+      overflow:hidden;
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      box-shadow:
+        0 10px 22px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.10),
+        inset 0 -1px 0 rgba(255,255,255,.03);
     }
 
-    .hero-action-btn{ width:100%; border:1px solid rgba(255,255,255,.16); background:rgba(6,20,30,.38); }
-    .hero-action-btn:hover{ transform:translateY(-2px); background:rgba(10,28,40,.48); }
+    .hero-action-btn:hover{
+      transform:translateY(-2px);
+      background:rgba(10,28,40,.48);
+      border-color:rgba(255,255,255,.24);
+    }
+
     .hero-btn-autodarts{ background:rgba(36,141,255,.20); border-color:rgba(90,180,255,.45); }
     .hero-btn-dartcounter{ background:rgba(255,154,31,.18); border-color:rgba(255,186,90,.42); }
-    
-    .active{ border-color:var(--accent-border) !important; background:#082738 !important; }
+    .hero-btn-discord{ background:rgba(88,101,242,.28); border-color:rgba(162,170,255,.42); }
+    .hero-btn-dark{ background:rgba(3,19,27,.42); border-color:rgba(120,170,195,.18); }
 
-    .main{ display:grid; grid-template-columns:minmax(0,1.7fr) minmax(320px,.8fr); gap:18px; align-items:start; }
-    .table-shell, .matchday{ border:1px solid var(--line); background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98)); border-radius:18px; overflow:hidden; }
+    .submenu-row{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(0, 1fr));
+      gap:12px;
+      margin-top:10px;
+      align-items:start;
+    }
 
-    /* Tabellen Styling */
-    table{ width:100%; border-collapse:collapse; }
-    th{ padding:14px; background:#041722; text-align:left; font-size:12px; text-transform:uppercase; color:var(--muted); }
-    td{ padding:14px; border-bottom:1px solid var(--line); font-size:14px; }
-    .rank-col{ width:60px; font-weight:900; }
-    .rank-col.first{ border-left:4px solid var(--green); }
-    .rank-col.last{ border-left:4px solid var(--red); }
-    .points-cell{ font-weight:900; color:var(--accent); }
+    .submenu-slot{
+      min-height:52px;
+      display:none;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:flex-start;
+    }
 
-    /* Sidebar / Spieltage */
-    .matchday-list{ display:flex; flex-direction:column; gap:12px; }
-    .matchday-head{ width:100%; background:none; border:none; color:white; padding:16px; display:flex; justify-content:space-between; cursor:pointer; font-weight:800; }
+    .submenu-slot.active{ display:flex; }
+    .submenu-slot.left{ grid-column:1 / span 3; }
+    .submenu-slot.middle{ grid-column:2 / span 3; }
+
+    .submenu-btn{
+      border:1px solid rgba(75,135,165,.24);
+      background:rgba(5,26,37,.92);
+      color:#dff3ff;
+      padding:11px 14px;
+      min-height:42px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.16s ease;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 6px 14px rgba(0,0,0,.18);
+      white-space:nowrap;
+    }
+
+    .submenu-btn.active{
+      color:#fff;
+      border-color:var(--accent-border);
+      background:#082738;
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    .main{
+      display:grid;
+      grid-template-columns:minmax(0,1.7fr) minmax(320px,.8fr);
+      gap:18px;
+      align-items:start;
+    }
+
+    .table-shell, .matchday{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+      border-radius:18px;
+      overflow:hidden;
+    }
+
+    .section-head{ display:flex; justify-content:space-between; align-items:center; padding:18px 18px 12px; flex-wrap:wrap; }
+    .section-title{ margin:0; font-size:18px; font-weight:900; }
+    .section-sub{ color:var(--muted); font-size:13px; }
+
+    .table-wrap{ overflow-x:auto; padding:0 0 6px; }
+    table{ width:100%; border-collapse:collapse; min-width:760px; table-layout:fixed; }
+    thead th{ padding:14px 16px; color:#c8dce6; font-size:12px; font-weight:800; text-transform:uppercase; border-bottom:1px solid var(--line); background:#041722; text-align:left; }
+    tbody td{ padding:14px 16px; border-bottom:1px solid rgba(120,170,195,.08); font-size:15px; color:#f1f8fb; vertical-align:top; }
+
+    .rank-col{ width:84px; font-weight:900; position:relative; }
+    .rank-col.first::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:10px; background:var(--green); }
+    .rank-col.last::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:10px; background:var(--red); }
+
+    /* NEU: Spielername Style */
+    .player-name-link {
+      display: block;
+      font-weight: 800;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: underline;
+      transition: opacity 0.15s ease;
+    }
+    .player-name-link:hover { opacity: 0.7; }
+
+    .player-meta-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px; }
+    .player-discord{ font-size:12px; color:#8ec9ee; font-weight:700; }
+    .card-badge{ width:14px; height:18px; border-radius:3px; border:1px solid rgba(255,255,255,.20); display:inline-block; }
+    .card-badge.yellow{ background:#f7c948; }
+    .card-badge.red{ background:#e74c3c; }
+
+    .matchday-head{ width:100%; background:transparent; border:none; color:var(--text); padding:16px; display:flex; justify-content:space-between; cursor:pointer; font-weight:900; }
     .matchday-body{ display:none; padding:0 14px 14px; }
-    .open .matchday-body{ display:block; }
+    .matchday.open .matchday-body{ display:block; }
 
-    /* Discord & Player Meta */
-    .player-meta-row{ display:flex; gap:8px; font-size:11px; color:var(--muted); margin-top:4px; }
-    .card-badge{ width:10px; height:14px; border-radius:2px; display:inline-block; }
-    .yellow{ background:var(--yellow); }
-    .red{ background:var(--red); }
-
-    .footer{ margin-top:40px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
-    .footer-note{ width:100%; text-align:center; color:var(--muted); font-size:12px; }
+    .footer{ margin-top:20px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+    .footer-note{ width:100%; text-align:center; color:#7c95a3; font-size:12px; }
 
     /* Modals */
-    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.7); display:none; align-items:center; justify-content:center; z-index:1000; }
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.62); display:none; align-items:center; justify-content:center; padding:20px; z-index:1000; }
     .modal-backdrop.open{ display:flex; }
-    .modal{ width:min(800px, 95%); background:var(--panel); border-radius:20px; overflow:hidden; }
-    .modal-head{ padding:18px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
-    .modal-body{ padding:18px; max-height:70vh; overflow-y:auto; color:#ccc; line-height:1.6; }
+    .modal{ width:min(500px, 100%); background:linear-gradient(180deg, rgba(6,27,37,.98), rgba(4,20,28,.99)); border:1px solid var(--line); border-radius:20px; box-shadow:0 24px 60px rgba(0,0,0,.45); overflow:hidden; }
+    .modal-head{ display:flex; justify-content:space-between; align-items:center; padding:18px; border-bottom:1px solid rgba(120,170,195,.10); }
+    .modal-body{ padding:20px; color:#d7e8ef; line-height:1.6; }
 
-    @media (max-width:1100px){ .main{ grid-template-columns:1fr; } }
+    .player-info-grid { display: grid; gap: 12px; }
+    .player-info-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+    .player-info-label { font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 800; }
+    .player-info-value { font-size: 16px; font-weight: 900; color: var(--text); }
+
+    @media (max-width:1100px){ .main{grid-template-columns:1fr} }
     @media (max-width:760px){
-      .hero-banner.image-banner{ aspect-ratio: 2.5 / 1; border-radius:15px; } /* Mobil etwas höher für bessere Lesbarkeit */
-      .banner-nav{ grid-template-columns:repeat(2, 1fr); }
-      .submenu-row{ grid-template-columns:1fr; }
+      .hero-banner.image-banner{ aspect-ratio: 2.5 / 1; border-radius:20px; }
+      .banner-nav, .submenu-row{ grid-template-columns:repeat(2, 1fr); }
     }
   </style>
 </head>
@@ -162,15 +306,17 @@
     <div class="top-nav-wrap">
       <section class="banner-nav-shell">
         <div class="banner-nav">
-          <button id="modeAutodarts" class="hero-action-btn hero-btn-autodarts active">Autodarts</button>
-          <button id="modeDartCounter" class="hero-action-btn hero-btn-dartcounter">DartCounter</button>
-          <a href="https://discord.gg/DEINLINK" target="_blank" class="hero-action-btn" style="background:rgba(88,101,242,.2)">Discord</a>
-          <button id="regelwerkBtn" class="hero-action-btn">Regelwerk</button>
-          <button id="faqBtn" class="hero-action-btn">FAQ</button>
+          <button id="modeAutodarts" class="hero-action-btn hero-btn-autodarts mode-btn active">Autodarts</button>
+          <button id="modeDartCounter" class="hero-action-btn hero-btn-dartcounter mode-btn">DartCounter</button>
+          <a href="https://discord.gg/DEINLINK" target="_blank" class="hero-action-btn hero-btn-discord">Discord</a>
+          <button id="regelwerkBtn" class="hero-action-btn hero-btn-dark info-btn">Regelwerk</button>
+          <button id="faqBtn" class="hero-action-btn hero-btn-dark info-btn">FAQ</button>
         </div>
       </section>
-      <div id="submenuArea" class="submenu-row" style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
-        </div>
+      <div class="submenu-row">
+        <div id="autodartsSubmenu" class="submenu-slot left active"></div>
+        <div id="dartcounterSubmenu" class="submenu-slot middle"></div>
+      </div>
     </div>
 
     <section class="main">
@@ -182,82 +328,214 @@
 
     <div class="footer">
       <button id="openImpressumBtn" class="footer-btn">Impressum</button>
-      <a class="footer-link" href="#">Spenden</a>
+      <a class="footer-link" href="https://paypal.me/DEINLINK" target="_blank">Spenden</a>
       <div class="footer-note">Community Dart Liga 2026</div>
     </div>
   </div>
 
-  <div id="genericModal" class="modal-backdrop">
+  <div id="playerInfoModal" class="modal-backdrop" aria-hidden="true">
     <div class="modal">
-      <div class="modal-head"><h3 id="modalTitle">Info</h3><button id="closeModal" class="button">✕</button></div>
-      <div id="modalBody" class="modal-body"></div>
+      <div class="modal-head">
+        <h3 class="modal-title">Spieler-Details</h3>
+        <button id="closePlayerModal" class="button" style="min-height:36px; padding:0 12px;">✕</button>
+      </div>
+      <div id="playerInfoContent" class="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="staticModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-head"><h3 id="staticTitle" class="modal-title"></h3><button id="closeStaticModal" class="button">✕</button></div>
+      <div id="staticContent" class="modal-body"></div>
     </div>
   </div>
 
   <script>
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
-    const LEAGUES = ["Autodarts Liga 1", "Autodarts Liga 2", "Autodarts Liga 3", "Autodarts Liga 4", "Autodarts Liga 5", "Autodarts Liga 6", "DartCounter Liga 1", "DartCounter Liga 2", "DartCounter Liga 3"];
-    
-    let state = { mode: "Autodarts", activeLeague: "Autodarts Liga 1", leagueData: {} };
+    const PLAYER_SHEET = "Spieler_Discord";
+    const RULES_SHEET = "Regelwerk";
+    const FAQ_SHEET = "FAQ";
+    const LEAGUES = ["Autodarts Liga 1", "Autodarts Liga 2", "Autodarts Liga 3", "Autodarts Liga 4", "Autodarts Liga 5", "Autodarts Liga 6", "DartCounter Liga 1", "DartCounter Liga 2", "DartCounter Liga 3", "DartCounter Liga 4", "DartCounter Liga 5", "DartCounter Liga 6"];
 
-    async function loadData() {
-      // Vereinfachte Lade-Logik für dieses Beispiel (nutzt deine Struktur)
-      for (const l of LEAGUES) {
-        state.leagueData[l] = { 
-          standings: { rows: [["1", "Beispiel Spieler", "10", "2", "20", "30"]] },
-          matchdays: [{ title: "Spieltag 1", status: "offen", doneMatches: 0, totalMatches: 4, rows: [] }]
+    const state = { leagues: [], leagueData: {}, activeLeague: null, activeMode: "Autodarts", playerMetaMap: {}, matchdayOpenState: {} };
+
+    const tableAreaEl = document.getElementById("tableArea");
+    const matchdayAreaEl = document.getElementById("matchdayArea");
+    const autodartsSubmenuEl = document.getElementById("autodartsSubmenu");
+    const dartcounterSubmenuEl = document.getElementById("dartcounterSubmenu");
+
+    function normalize(v) { return String(v ?? "").trim().toLowerCase().replace(/\s+/g, " "); }
+    function htmlEscape(v) { return String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    function csvUrl(sn) { return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sn)}`; }
+
+    function parseCsv(text) {
+      const rows = []; let row = []; let cell = ""; let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        if (inQuotes) {
+          if (char === '"' && text[i+1] === '"') { cell += '"'; i++; }
+          else if (char === '"') inQuotes = false;
+          else cell += char;
+        } else {
+          if (char === '"') inQuotes = true;
+          else if (char === ',') { row.push(cell); cell = ""; }
+          else if (char === '\n') { row.push(cell); rows.push(row); row = []; cell = ""; }
+          else if (char !== '\r') cell += char;
+        }
+      }
+      row.push(cell); rows.push(row); return rows;
+    }
+
+    async function loadCsv(sn) {
+      const r = await fetch(csvUrl(sn));
+      return parseCsv(await r.text());
+    }
+
+    function safeCell(row, idx) { return row && row[idx] !== undefined ? String(row[idx]).trim() : ""; }
+
+    function parsePlayerDiscordSheet(rows) {
+      if (!rows) return {}; const map = {};
+      for (let i = 0; i < rows.length; i++) {
+        const spieler = safeCell(rows[i], 0);
+        if (!spieler || normalize(spieler) === "spieler") continue;
+        map[normalize(spieler)] = {
+          originalName: spieler,
+          discord: safeCell(rows[i], 1),
+          avg: safeCell(rows[i], 4), // Spalte E
+          ...parseCardInfo(safeCell(rows[i], 6))
         };
       }
-      render();
+      return map;
     }
 
-    function render() {
-      const modeLeagues = LEAGUES.filter(l => l.startsWith(state.mode));
-      
-      // Submenu
-      const sub = document.getElementById("submenuArea");
-      sub.innerHTML = modeLeagues.map(l => `<button class="submenu-btn ${l === state.activeLeague ? 'active' : ''}" onclick="changeLeague('${l}')">${l}</button>`).join("");
-
-      // Tabelle
-      const data = state.leagueData[state.activeLeague];
-      document.getElementById("tableArea").innerHTML = `
-        <div class="table-shell">
-          <div class="section-head"><h3 class="section-title">Tabelle ${state.activeLeague}</h3></div>
-          <table>
-            <thead><tr><th class="rank-col">#</th><th>Spieler</th><th>S</th><th>N</th><th>+/-</th><th>Pkt</th></tr></thead>
-            <tbody>${data.standings.rows.map(r => `<tr><td class="rank-col first">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td class="points-cell">${r[5]}</td></tr>`).join("")}</tbody>
-          </table>
-        </div>`;
-
-      // Spieltage
-      document.getElementById("matchdayArea").innerHTML = data.matchdays.map(d => `
-        <div class="matchday">
-          <button class="matchday-head" onclick="this.parentElement.classList.toggle('open')">
-            <span>${d.title}</span>
-            <span style="font-size:12px; opacity:0.6">${d.doneMatches}/${d.totalMatches}</span>
-          </button>
-          <div class="matchday-body"><div style="padding:10px; opacity:0.5; font-size:13px;">Keine Spiele eingetragen.</div></div>
-        </div>`).join("");
+    function parseCardInfo(val) {
+      const v = normalize(val);
+      if (!v) return { yellow: 0, red: 0, hasRed: false };
+      if (v.includes("rot")) return { yellow: 0, red: 1, hasRed: true };
+      const gc = (v.match(/gelb/g) || []).length;
+      if (gc >= 2 || v.includes("2x gelb")) return { yellow: 2, red: 0, hasRed: false };
+      return { yellow: gc >= 1 ? 1 : 0, red: 0, hasRed: false };
     }
 
-    function changeLeague(l) { state.activeLeague = l; render(); }
-
-    document.getElementById("modeAutodarts").onclick = () => { state.mode = "Autodarts"; state.activeLeague = "Autodarts Liga 1"; render(); };
-    document.getElementById("modeDartCounter").onclick = () => { state.mode = "DartCounter"; state.activeLeague = "DartCounter Liga 1"; render(); };
-
-    // Modal Handling
-    const modal = document.getElementById("genericModal");
-    function showModal(title, body) {
-      document.getElementById("modalTitle").innerText = title;
-      document.getElementById("modalBody").innerHTML = body;
-      modal.classList.add("open");
+    function parseStandings(rows) {
+      let tm = -1; for(let i=0; i<rows.length; i++) if(rows[i].join("").toLowerCase().includes("tabelle")) tm = i;
+      if (tm === -1) return { rows: [] };
+      const body = [];
+      for (let i = tm + 1; i < rows.length; i++) {
+        const p = safeCell(rows[i], 0); if (!p || isNaN(parseInt(p))) continue;
+        body.push([p, safeCell(rows[i], 1), safeCell(rows[i], 2), safeCell(rows[i], 3), safeCell(rows[i], 4), safeCell(rows[i], 5)]);
+      }
+      return { rows: body };
     }
-    document.getElementById("closeModal").onclick = () => modal.classList.remove("open");
-    document.getElementById("openImpressumBtn").onclick = () => showModal("Impressum", "Kontaktinformationen hier...");
-    document.getElementById("regelwerkBtn").onclick = () => showModal("Regelwerk", "Die Regeln der Liga...");
-    document.getElementById("faqBtn").onclick = () => showModal("FAQ", "Häufig gestellte Fragen...");
 
-    loadData();
+    function openPlayerInfo(name) {
+      const meta = state.playerMetaMap[normalize(name)] || { originalName: name, discord: "Unbekannt", avg: "Kein AVG" };
+      document.getElementById("playerInfoContent").innerHTML = `
+        <div class="player-info-grid">
+          <div class="player-info-item"><div class="player-info-label">Plattform Name</div><div class="player-info-value">${htmlEscape(meta.originalName)}</div></div>
+          <div class="player-info-item"><div class="player-info-label">Discord Name</div><div class="player-info-value">${htmlEscape(meta.discord || 'Nicht hinterlegt')}</div></div>
+          <div class="player-info-item"><div class="player-info-label">Eingereichter AVG</div><div class="player-info-value">${htmlEscape(meta.avg || 'Kein Wert')}</div></div>
+        </div>
+      `;
+      document.getElementById("playerInfoModal").classList.add("open");
+    }
+
+    function renderStandingsTable(headers, rows) {
+      if(!rows.length) return `<div class="empty">Keine Daten gefunden.</div>`;
+      const sorted = [...rows].sort((a,b) => {
+        const ma = state.playerMetaMap[normalize(a[1])] || {};
+        const mb = state.playerMetaMap[normalize(b[1])] || {};
+        if(ma.hasRed !== mb.hasRed) return ma.hasRed ? 1 : -1;
+        return parseInt(a[0]) - parseInt(b[0]);
+      });
+
+      const tbody = sorted.map((r, idx) => {
+        const meta = state.playerMetaMap[normalize(r[1])] || {};
+        const cards = [];
+        for(let i=0; i<meta.yellow; i++) cards.push('<span class="card-badge yellow"></span>');
+        for(let i=0; i<meta.red; i++) cards.push('<span class="card-badge red"></span>');
+
+        return `<tr>
+          <td class="rank-col ${idx===0?'first':(idx===sorted.length-1?'last':'')}">${idx+1}</td>
+          <td>
+            <span class="player-name-link" onclick="openPlayerInfo('${r[1]}')">${htmlEscape(r[1])}</span>
+            <div class="player-meta-row">${meta.discord ? `<span class="player-discord">${htmlEscape(meta.discord)}</span>` : ''} ${cards.join("")}</div>
+          </td>
+          <td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td style="font-weight:900; color:var(--accent)">${r[5]}</td>
+        </tr>`;
+      }).join("");
+
+      return `<div class="table-shell">
+        <div class="section-head"><div class="section-title">Tabelle</div><div class="section-sub">Klicken für Spieler-Details</div></div>
+        <div class="table-wrap"><table><thead><tr><th class="rank-col">#</th><th>Spieler</th><th>S</th><th>N</th><th>+/-</th><th>Pkt</th></tr></thead><tbody>${tbody}</tbody></table></div>
+      </div>`;
+    }
+
+    async function loadLeague(ln) {
+      const lr = await loadCsv(ln).catch(()=>[]);
+      const er = await loadCsv(`Erg ${ln}`).catch(()=>[]);
+      const grouped = new Map();
+      er.forEach(row => {
+        const sn = safeCell(row, 0); if(!sn || isNaN(parseInt(sn))) return;
+        if(!grouped.has(sn)) grouped.set(sn, []);
+        grouped.get(sn).push(row);
+      });
+      const matchdays = Array.from(grouped.entries()).map(([sn, rows]) => {
+        const done = rows.filter(r => safeCell(r, 7).toLowerCase().includes("fertig") || (safeCell(r, 5) && safeCell(r, 6) && safeCell(r, 5) !== "-")).length;
+        return { title: `Spieltag ${sn}`, doneMatches: done, totalMatches: rows.length, rows };
+      }).sort((a,b) => parseInt(a.title.split(" ")[1]) - parseInt(b.title.split(" ")[1]));
+      return { standings: parseStandings(lr), matchdays };
+    }
+
+    async function loadAll() {
+      tableAreaEl.innerHTML = `<div class="empty">Daten werden geladen...</div>`;
+      const pRows = await loadCsv(PLAYER_SHEET).catch(()=>[]);
+      state.playerMetaMap = parsePlayerDiscordSheet(pRows);
+      for (const l of LEAGUES) state.leagueData[l] = await loadLeague(l);
+      setMode("Autodarts");
+    }
+
+    function setMode(m) {
+      state.activeMode = m; document.body.setAttribute("data-mode", m);
+      const visible = LEAGUES.filter(l => l.startsWith(m) && state.leagueData[l].standings.rows.length > 0);
+      state.activeLeague = visible[0] || null;
+      renderSubmenus(); renderLeague();
+    }
+
+    function renderSubmenus() {
+      const sub = (mode, el) => {
+        el.innerHTML = LEAGUES.filter(l => l.startsWith(mode) && state.leagueData[l].standings.rows.length > 0).map(l => 
+          `<button class="submenu-btn ${l===state.activeLeague?'active':''}" onclick="state.activeLeague='${l}';renderSubmenus();renderLeague();">${l}</button>`
+        ).join("");
+      };
+      sub("Autodarts", autodartsSubmenuEl); sub("DartCounter", dartcounterSubmenuEl);
+      autodartsSubmenuEl.classList.toggle("active", state.activeMode === "Autodarts");
+      dartcounterSubmenuEl.classList.toggle("active", state.activeMode === "DartCounter");
+    }
+
+    function renderLeague() {
+      const d = state.leagueData[state.activeLeague];
+      tableAreaEl.innerHTML = d ? renderStandingsTable([], d.standings.rows) : "";
+      matchdayAreaEl.innerHTML = d ? d.matchdays.map(m => `
+        <div class="matchday"><button class="matchday-head" onclick="this.parentElement.classList.toggle('open')"><span>${m.title}</span><span>${m.doneMatches}/${m.totalMatches}</span></button>
+        <div class="matchday-body"><table style="width:100%">${m.rows.map(r => `<tr><td>${htmlEscape(r[1])}</td><td>${htmlEscape(r[3])}</td><td align="right">${r[5]}:${r[6]}</td></tr>`).join("")}</table></div></div>
+      `).join("") : "";
+    }
+
+    // Modal Control
+    document.getElementById("closePlayerModal").onclick = () => document.getElementById("playerInfoModal").classList.remove("open");
+    document.getElementById("closeStaticModal").onclick = () => document.getElementById("staticModal").classList.remove("open");
+    
+    document.getElementById("modeAutodarts").onclick = () => setMode("Autodarts");
+    document.getElementById("modeDartCounter").onclick = () => setMode("DartCounter");
+    
+    document.getElementById("openImpressumBtn").onclick = () => {
+      document.getElementById("staticTitle").innerText = "Impressum";
+      document.getElementById("staticContent").innerText = "Hier deine Impressumsdaten einfügen.";
+      document.getElementById("staticModal").classList.add("open");
+    };
+
+    loadAll();
   </script>
 </body>
 </html>
