@@ -932,7 +932,6 @@
           </a>
 
           <button id="regelwerkBtn" class="hero-action-btn hero-btn-dark info-btn" type="button">Regelwerk</button>
-          <button id="faqBtn" class="hero-action-btn hero-btn-dark info-btn" type="button">FAQ</button>
         </div>
       </section>
 
@@ -983,23 +982,10 @@
     </div>
   </div>
 
-  <div id="faqModal" class="modal-backdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="faqTitle">
-      <div class="modal-head">
-        <h3 id="faqTitle" class="modal-title">FAQ</h3>
-        <button class="button modal-close" type="button" data-close-modal="faqModal">✕</button>
-      </div>
-      <div id="faqContent" class="modal-body">
-        <p>Lade FAQ…</p>
-      </div>
-    </div>
-  </div>
-
   <script>
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
     const PLAYER_SHEET = "Spieler_Discord";
     const RULES_SHEET = "Regelwerk";
-    const FAQ_SHEET = "FAQ";
 
     const LEAGUES = [
       "Autodarts Liga 1",
@@ -1024,7 +1010,6 @@
       playerMetaMap: {},
       matchdayOpenState: {},
       regelwerkRows: [],
-      faqRows: []
     };
 
     const tableAreaEl = document.getElementById("tableArea");
@@ -1037,11 +1022,8 @@
     const closeImpressumBtn = document.getElementById("closeImpressumBtn");
     const impressumModal = document.getElementById("impressumModal");
     const regelwerkBtn = document.getElementById("regelwerkBtn");
-    const faqBtn = document.getElementById("faqBtn");
     const regelwerkModal = document.getElementById("regelwerkModal");
-    const faqModal = document.getElementById("faqModal");
     const regelwerkContent = document.getElementById("regelwerkContent");
-    const faqContent = document.getElementById("faqContent");
 
     function normalize(value) {
       return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -1607,11 +1589,11 @@
 
     async function loadStaticSheetContent() {
       try {
-        const [regelwerkRows, faqRows] = await Promise.all([
-          loadCsv(RULES_SHEET).catch(() => []),
-          loadCsv(FAQ_SHEET).catch(() => [])
-        ]);
+       const regelwerkRows = await loadCsv(RULES_SHEET).catch(() => []);
 
+      state.regelwerkRows = regelwerkRows;
+
+        regelwerkContent.innerHTML = renderSheetAsBlocks(regelwerkRows, "rules");
         state.regelwerkRows = regelwerkRows;
         state.faqRows = faqRows;
 
@@ -1620,7 +1602,6 @@
       } catch (e) {
         console.warn("Regelwerk / FAQ nicht ladbar", e);
         regelwerkContent.innerHTML = `<p>Regelwerk konnte nicht geladen werden.</p>`;
-        faqContent.innerHTML = `<p>FAQ konnte nicht geladen werden.</p>`;
       }
     }
 
@@ -1684,7 +1665,7 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        [impressumModal, regelwerkModal, faqModal].forEach(closeModal);
+        [impressumModal, regelwerkModal].forEach(closeModal);
       }
     });
 
