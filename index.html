@@ -1,402 +1,370 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Community Dart Liga</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Community Dart Liga</title>
 
-  <style>
-    :root{
-      --bg:#03131b;
-      --panel:#041924;
-      --line:rgba(120,170,195,.12);
-      --text:#f5fbff;
-      --muted:#90a9b7;
-      --green:#3ddc97;
-      --red:#e74c3c;
-      --yellow:#f7c948;
+<style>
+:root{
+  --bg:#03131b;
+  --panel:#041924;
+  --line:rgba(120,170,195,.12);
+  --text:#f5fbff;
+  --muted:#90a9b7;
+  --green:#3ddc97;
+  --red:#e74c3c;
+  --yellow:#f7c948;
 
-      --accent:#20b7ff;
-      --accent-border:rgba(32,183,255,.42);
-      --row-a:#052130;
-      --row-b:#041924;
-    }
+  --accent:#20b7ff;
+  --accent-border:rgba(32,183,255,.42);
 
-    body[data-mode="DartCounter"]{
-      --accent:#ff9f1c;
-      --accent-border:rgba(255,159,28,.42);
-    }
+  --row-a:#052130;
+  --row-b:#041924;
+}
 
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
+body[data-mode="DartCounter"]{
+  --accent:#ff9f1c;
+  --accent-border:rgba(255,159,28,.42);
+}
 
-    body{
-      font-family:Arial,Helvetica,sans-serif;
-      background:
-        radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 14%, transparent), transparent 22%),
-        linear-gradient(180deg, var(--bg) 0%, #021017 100%);
-      color:var(--text);
-      min-height:100vh;
-    }
+*{
+  box-sizing:border-box;
+}
 
-    .wrap{
-      width:min(1400px, calc(100% - 28px));
-      margin:0 auto;
-      padding:8px 0 42px;
-    }
+html,body{
+  margin:0;
+  padding:0;
+}
 
-    .hero-banner.image-banner{
-      position:relative;
-      margin:0 0 14px;
-      min-height:320px;
-      border-radius:30px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.10);
-      background:
-        linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.14)),
-        url("banner.png") center center / cover no-repeat;
-    }
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--accent) 14%, transparent), transparent 22%),
+    linear-gradient(180deg, var(--bg) 0%, #021017 100%);
+  color:var(--text);
+  min-height:100vh;
+}
 
-    .top-nav-wrap{
-      width:min(1200px, 100%);
-      margin:0 auto 12px;
-    }
+.wrap{
+  width:min(1400px, calc(100% - 28px));
+  margin:0 auto;
+  padding:8px 0 42px;
+}
 
-    .banner-nav{
-      width:100%;
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0, 1fr));
-      gap:12px;
-      padding:12px;
-      border-radius:22px;
-      background:rgba(4,12,14,.22);
-      border:1px solid rgba(255,255,255,.10);
-      backdrop-filter:blur(12px);
-    }
+.hero-banner.image-banner{
+  position:relative;
+  margin:0 0 14px;
+  min-height:320px;
+  border-radius:30px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+  background:url("banner.png") center center / cover no-repeat;
+}
 
-    .hero-action-btn{
-      width:100%;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(6,20,30,.38);
-      color:#f5fbff;
-      border-radius:16px;
-      min-height:50px;
-      padding:0 14px;
-      font-size:14px;
-      font-weight:900;
-      cursor:pointer;
-      text-decoration:none;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      gap:10px;
-      transition:.2s ease;
-    }
+.top-nav-wrap{
+  width:min(1200px, 100%);
+  margin:0 auto 12px;
+}
 
-    .hero-action-btn:hover{
-      transform:translateY(-2px);
-    }
+.banner-nav{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:12px;
+  padding:12px;
+  border-radius:22px;
+  background:rgba(4,12,14,.22);
+  border:1px solid rgba(255,255,255,.10);
+}
 
-    .hero-btn-autodarts{
-      background:rgba(36,141,255,.20);
-    }
+.hero-action-btn{
+  width:100%;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(6,20,30,.38);
+  color:#fff;
+  border-radius:16px;
+  min-height:50px;
+  padding:0 14px;
+  font-size:14px;
+  font-weight:900;
+  cursor:pointer;
+}
 
-    .hero-btn-dartcounter{
-      background:rgba(255,154,31,.18);
-    }
+.hero-btn-autodarts{
+  background:rgba(36,141,255,.20);
+}
 
-    .hero-btn-discord{
-      background:rgba(88,101,242,.28);
-    }
+.hero-btn-dartcounter{
+  background:rgba(255,154,31,.18);
+}
 
-    .hero-btn-dark{
-      background:rgba(3,19,27,.42);
-    }
+.hero-btn-discord{
+  background:rgba(88,101,242,.28);
+}
 
-    .submenu-row{
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0, 1fr));
-      gap:12px;
-      margin-top:10px;
-    }
+.hero-btn-dark{
+  background:rgba(3,19,27,.42);
+}
 
-    .submenu-slot{
-      display:none;
-      flex-wrap:wrap;
-      gap:10px;
-    }
+.submenu-row{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:12px;
+  margin-top:10px;
+}
 
-    .submenu-slot.active{
-      display:flex;
-    }
+.submenu-slot{
+  display:none;
+  flex-wrap:wrap;
+  gap:10px;
+}
 
-    .submenu-btn{
-      border:1px solid rgba(75,135,165,.24);
-      background:rgba(5,26,37,.92);
-      color:#dff3ff;
-      padding:11px 14px;
-      border-radius:12px;
-      font-size:14px;
-      font-weight:800;
-      cursor:pointer;
-    }
+.submenu-slot.active{
+  display:flex;
+}
 
-    .submenu-btn.active{
-      border-color:var(--accent-border);
-      background:#082738;
-    }
+.submenu-btn{
+  border:1px solid rgba(75,135,165,.24);
+  background:rgba(5,26,37,.92);
+  color:#dff3ff;
+  padding:11px 14px;
+  border-radius:12px;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+}
 
-    .main{
-      display:grid;
-      grid-template-columns:minmax(0,1.7fr) minmax(320px,.8fr);
-      gap:18px;
-      align-items:start;
-    }
+.submenu-btn.active{
+  border-color:var(--accent-border);
+  background:#082738;
+}
 
-    .table-shell,
-    .matchday{
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
-      border-radius:18px;
-      overflow:hidden;
-    }
+.main{
+  display:grid;
+  grid-template-columns:minmax(0,1.7fr) minmax(320px,.8fr);
+  gap:18px;
+}
 
-    .section-head{
-      padding:18px;
-    }
+.table-shell,
+.matchday{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg, rgba(6,27,37,.96), rgba(4,20,28,.98));
+  border-radius:18px;
+  overflow:hidden;
+}
 
-    .section-title{
-      margin:0;
-      font-size:18px;
-      font-weight:900;
-    }
+.section-head{
+  padding:18px;
+}
 
-    .table-wrap{
-      overflow-x:auto;
-    }
+.section-title{
+  margin:0;
+  font-size:18px;
+  font-weight:900;
+}
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      min-width:760px;
-    }
+.table-wrap{
+  overflow-x:auto;
+}
 
-    thead th{
-      padding:14px 16px;
-      font-size:12px;
-      text-transform:uppercase;
-      background:#041722;
-    }
+table{
+  width:100%;
+  border-collapse:collapse;
+}
 
-    tbody td{
-      padding:14px 16px;
-      border-bottom:1px solid rgba(120,170,195,.08);
-    }
+thead th{
+  padding:14px 16px;
+  background:#041722;
+  text-align:left;
+}
 
-    tbody tr:nth-child(odd) td{background:#052130}
-    tbody tr:nth-child(even) td{background:#041924}
+tbody td{
+  padding:14px 16px;
+}
 
-    .sidebar{
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
+tbody tr:nth-child(odd) td{
+  background:var(--row-a);
+}
 
-    .matchday-head{
-      width:100%;
-      border:none;
-      background:transparent;
-      color:var(--text);
-      padding:16px;
-      display:flex;
-      justify-content:space-between;
-      cursor:pointer;
-    }
+tbody tr:nth-child(even) td{
+  background:var(--row-b);
+}
 
-    .matchday-body{
-      display:none;
-      padding:0 14px 14px;
-    }
+.matchday-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
 
-    .matchday.open .matchday-body{
-      display:block;
-    }
+.matchday-head{
+  width:100%;
+  border:none;
+  background:transparent;
+  color:#fff;
+  padding:16px;
+  cursor:pointer;
+  text-align:left;
+}
 
-    .footer{
-      margin-top:20px;
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      flex-wrap:wrap;
-    }
+.matchday-body{
+  display:none;
+  padding:14px;
+}
 
-    .footer-btn,
-    .footer-link{
-      border:1px solid rgba(75,135,165,.28);
-      background:rgba(4,25,36,.96);
-      color:var(--text);
-      border-radius:12px;
-      min-height:46px;
-      padding:0 16px;
-      font-size:14px;
-      cursor:pointer;
-      text-decoration:none;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
+.matchday.open .matchday-body{
+  display:block;
+}
 
-    .modal-backdrop{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.62);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-      z-index:1000;
-    }
+.footer{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
 
-    .modal-backdrop.open{
-      display:flex;
-    }
+.footer-btn,
+.footer-link{
+  border:1px solid rgba(75,135,165,.28);
+  background:rgba(4,25,36,.96);
+  color:#fff;
+  border-radius:12px;
+  min-height:46px;
+  padding:0 16px;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
 
-    .modal{
-      width:min(840px, 100%);
-      background:#041924;
-      border-radius:20px;
-      overflow:hidden;
-    }
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.62);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
 
-    .modal-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:18px;
-    }
+.modal-backdrop.open{
+  display:flex;
+}
 
-    .modal-body{
-      padding:18px;
-    }
+.modal{
+  width:min(840px, 100%);
+  background:#041924;
+  border-radius:20px;
+  overflow:hidden;
+}
 
-    @media (max-width:900px){
-      .main{
-        grid-template-columns:1fr;
-      }
-    }
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px;
+}
 
-    @media (max-width:760px){
-      .banner-nav,
-      .submenu-row{
-        grid-template-columns:repeat(2, minmax(0,1fr));
-      }
-    }
+.modal-body{
+  padding:18px;
+}
 
-    @media (max-width:560px){
-      .banner-nav,
-      .submenu-row{
-        grid-template-columns:1fr;
-      }
-    }
-  </style>
+@media (max-width:760px){
+
+  .banner-nav,
+  .submenu-row{
+    grid-template-columns:repeat(2, minmax(0,1fr));
+  }
+
+  .main{
+    grid-template-columns:1fr;
+  }
+}
+</style>
 </head>
 
 <body data-mode="Autodarts">
 
 <div class="wrap">
 
-  <section class="hero-banner image-banner"></section>
+<section class="hero-banner image-banner"></section>
 
-  <div class="top-nav-wrap">
+<div class="top-nav-wrap">
 
-    <div class="banner-nav">
+<div class="banner-nav">
 
-      <button id="modeAutodarts" class="hero-action-btn hero-btn-autodarts active">
-        Autodarts
-      </button>
+<button id="modeAutodarts" class="hero-action-btn hero-btn-autodarts active">
+Autodarts
+</button>
 
-      <button id="modeDartCounter" class="hero-action-btn hero-btn-dartcounter">
-        DartCounter
-      </button>
+<button id="modeDartCounter" class="hero-action-btn hero-btn-dartcounter">
+DartCounter
+</button>
 
-      <a href="https://discord.gg/DEINLINK"
-         target="_blank"
-         class="hero-action-btn hero-btn-discord">
-        Discord
-      </a>
+<a href="https://discord.gg/DEINLINK"
+target="_blank"
+class="hero-action-btn hero-btn-discord">
+Discord
+</a>
 
-      <button id="regelwerkBtn" class="hero-action-btn hero-btn-dark">
-        Regelwerk
-      </button>
+<button id="regelwerkBtn" class="hero-action-btn hero-btn-dark">
+Regelwerk
+</button>
 
-    </div>
+</div>
 
-    <div class="submenu-row">
-      <div id="autodartsSubmenu" class="submenu-slot active"></div>
-      <div id="dartcounterSubmenu" class="submenu-slot"></div>
-    </div>
+<div class="submenu-row">
+<div id="autodartsSubmenu" class="submenu-slot active"></div>
+<div id="dartcounterSubmenu" class="submenu-slot"></div>
+</div>
 
-  </div>
+</div>
 
-  <section class="main">
+<section class="main">
+<div id="tableArea"></div>
+<aside>
+<div id="matchdayArea" class="matchday-list"></div>
+</aside>
+</section>
 
-    <div id="tableArea"></div>
+<div class="footer">
+<button id="openImpressumBtn" class="footer-btn">
+Impressum
+</button>
 
-    <aside class="sidebar">
-      <div id="matchdayArea"></div>
-    </aside>
-
-  </section>
-
-  <div class="footer">
-
-    <button id="openImpressumBtn" class="footer-btn">
-      Impressum
-    </button>
-
-    <a class="footer-link"
-       href="https://paypal.me/DEINLINK"
-       target="_blank">
-      Spenden
-    </a>
-
-  </div>
+<a class="footer-link"
+href="https://paypal.me/DEINLINK"
+target="_blank">
+Spenden
+</a>
+</div>
 
 </div>
 
 <div id="impressumModal" class="modal-backdrop">
+<div class="modal">
+<div class="modal-head">
+<h3>Impressum</h3>
+<button id="closeImpressumBtn">✕</button>
+</div>
 
-  <div class="modal">
-
-    <div class="modal-head">
-      <h3>Impressum</h3>
-      <button id="closeImpressumBtn">✕</button>
-    </div>
-
-    <div class="modal-body">
-      Hier dein Impressum eintragen.
-    </div>
-
-  </div>
-
+<div class="modal-body">
+<p>Hier dein Impressum.</p>
+</div>
+</div>
 </div>
 
 <div id="regelwerkModal" class="modal-backdrop">
+<div class="modal">
+<div class="modal-head">
+<h3>Regelwerk</h3>
+<button id="closeRegelwerkBtn">✕</button>
+</div>
 
-  <div class="modal">
-
-    <div class="modal-head">
-      <h3>Regelwerk</h3>
-      <button id="closeRegelwerkBtn">✕</button>
-    </div>
-
-    <div id="regelwerkContent" class="modal-body">
-      Lade Regelwerk...
-    </div>
-
-  </div>
-
+<div id="regelwerkContent" class="modal-body">
+<p>Lade Regelwerk...</p>
+</div>
+</div>
 </div>
 
 <script>
@@ -428,6 +396,9 @@ const state = {
   activeMode: "Autodarts"
 };
 
+const tableAreaEl = document.getElementById("tableArea");
+const matchdayAreaEl = document.getElementById("matchdayArea");
+
 function csvUrl(sheetName){
   return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
 }
@@ -437,189 +408,85 @@ async function loadCsv(sheetName){
   return await response.text();
 }
 
-function parseCsv(text){
-  return text
-    .trim()
-    .split("\n")
-    .map(row => row.split(","));
-}
-
 async function loadLeague(name){
 
   try{
 
-    const tableRaw = await loadCsv(name);
-    const ergRaw = await loadCsv(`Erg ${name}`);
+    const csv = await loadCsv(name);
 
     return {
-      standings: parseCsv(tableRaw),
-      matches: parseCsv(ergRaw)
+      standings: csv
     };
 
   }catch(e){
 
     return {
-      standings: [],
-      matches: []
+      standings: ""
     };
 
   }
-
 }
 
 async function loadAll(){
 
+  tableAreaEl.innerHTML = `
+    <div class="table-shell">
+      <div class="section-head">
+        <div class="section-title">Lade Liga...</div>
+      </div>
+    </div>
+  `;
+
   const entries = await Promise.all(
-    LEAGUES.map(async league => {
-      return [league, await loadLeague(league)];
-    })
+    LEAGUES.map(async league => [
+      league,
+      await loadLeague(league)
+    ])
   );
 
   state.leagueData = Object.fromEntries(entries);
 
-  state.activeLeague = LEAGUES[0];
-
   renderLeagueButtons();
-  renderLeague();
 
 }
 
 function renderLeagueButtons(){
 
-  const autodarts = document.getElementById("autodartsSubmenu");
-  const dartcounter = document.getElementById("dartcounterSubmenu");
+  const autodarts = LEAGUES.filter(l => l.startsWith("Autodarts"));
 
-  autodarts.innerHTML = "";
-  dartcounter.innerHTML = "";
+  const dartcounter = LEAGUES.filter(l => l.startsWith("DartCounter"));
 
-  LEAGUES.forEach(league => {
+  document.getElementById("autodartsSubmenu").innerHTML =
+    autodarts.map(l =>
+      `<button class="submenu-btn">${l}</button>`
+    ).join("");
 
-    const btn = document.createElement("button");
-
-    btn.className = "submenu-btn";
-    btn.innerText = league;
-
-    btn.onclick = () => {
-      state.activeLeague = league;
-      renderLeague();
-    };
-
-    if(league.startsWith("Autodarts")){
-      autodarts.appendChild(btn);
-    }else{
-      dartcounter.appendChild(btn);
-    }
-
-  });
+  document.getElementById("dartcounterSubmenu").innerHTML =
+    dartcounter.map(l =>
+      `<button class="submenu-btn">${l}</button>`
+    ).join("");
 
 }
 
-function renderLeague(){
+document.getElementById("openImpressumBtn")
+.addEventListener("click", () => {
+  document.getElementById("impressumModal").classList.add("open");
+});
 
-  const data = state.leagueData[state.activeLeague];
+document.getElementById("closeImpressumBtn")
+.addEventListener("click", () => {
+  document.getElementById("impressumModal").classList.remove("open");
+});
 
-  const tableArea = document.getElementById("tableArea");
+document.getElementById("regelwerkBtn")
+.addEventListener("click", () => {
+  document.getElementById("regelwerkModal").classList.add("open");
+});
 
-  if(!data || !data.standings.length){
-
-    tableArea.innerHTML = `
-      <div class="table-shell">
-        <div class="section-head">
-          <div class="section-title">Keine Daten gefunden</div>
-        </div>
-      </div>
-    `;
-
-    return;
-  }
-
-  let html = `
-    <div class="table-shell">
-      <div class="section-head">
-        <div class="section-title">${state.activeLeague}</div>
-      </div>
-
-      <div class="table-wrap">
-
-      <table>
-  `;
-
-  data.standings.forEach((row,index)=>{
-
-    html += "<tr>";
-
-    row.forEach(cell=>{
-
-      if(index===0){
-        html += `<th>${cell}</th>`;
-      }else{
-        html += `<td>${cell}</td>`;
-      }
-
-    });
-
-    html += "</tr>";
-
-  });
-
-  html += `
-      </table>
-      </div>
-    </div>
-  `;
-
-  tableArea.innerHTML = html;
-
-}
-
-document.getElementById("modeAutodarts").onclick = () => {
-
-  document.body.dataset.mode = "Autodarts";
-
-  document.getElementById("autodartsSubmenu").classList.add("active");
-  document.getElementById("dartcounterSubmenu").classList.remove("active");
-
-};
-
-document.getElementById("modeDartCounter").onclick = () => {
-
-  document.body.dataset.mode = "DartCounter";
-
-  document.getElementById("dartcounterSubmenu").classList.add("active");
-  document.getElementById("autodartsSubmenu").classList.remove("active");
-
-};
-
-const impressumModal = document.getElementById("impressumModal");
-const regelwerkModal = document.getElementById("regelwerkModal");
-
-document.getElementById("openImpressumBtn").onclick = ()=>{
-  impressumModal.classList.add("open");
-};
-
-document.getElementById("closeImpressumBtn").onclick = ()=>{
-  impressumModal.classList.remove("open");
-};
-
-document.getElementById("regelwerkBtn").onclick = ()=>{
-  regelwerkModal.classList.add("open");
-};
-
-document.getElementById("closeRegelwerkBtn").onclick = ()=>{
-  regelwerkModal.classList.remove("open");
-};
-
-window.onclick = (e)=>{
-
-  if(e.target === impressumModal){
-    impressumModal.classList.remove("open");
-  }
-
-  if(e.target === regelwerkModal){
-    regelwerkModal.classList.remove("open");
-  }
-
-};
+document.getElementById("closeRegelwerkBtn")
+.addEventListener("click", () => {
+  document.getElementById("regelwerkModal").classList.remove("open");
+});
 
 loadAll();
 
