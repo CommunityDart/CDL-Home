@@ -960,6 +960,7 @@
     <div class="footer">
       <button id="openImpressumBtn" class="footer-btn" type="button">Impressum</button>
       <a class="footer-link" href="https://paypal.me/DEINLINK" target="_blank" rel="noopener noreferrer">Spenden</a>
+      <button id="openLinksBtn" class="footer-btn" type="button">Links</button>
       <div class="footer-note">Community Dart Liga • GitHub Pages Version</div>
     </div>
   </div>
@@ -991,10 +992,23 @@
     </div>
   </div>
 
+  <div id="linksModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="linksTitle">
+      <div class="modal-head">
+        <h3 id="linksTitle" class="modal-title">Links</h3>
+        <button class="button modal-close" type="button" data-close-modal="linksModal">✕</button>
+      </div>
+      <div id="linksContent" class="modal-body">
+        <p>Lade Links…</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
     const PLAYER_SHEET = "Spieler_Discord";
     const RULES_SHEET = "Regelwerk";
+    const LINKS_SHEET = "Links";
 
     const LEAGUES = [
       "Autodarts Liga 1",
@@ -1019,6 +1033,7 @@
       playerMetaMap: {},
       matchdayOpenState: {},
       regelwerkRows: [],
+      linksRows: [],
     };
 
     const tableAreaEl = document.getElementById("tableArea");
@@ -1027,12 +1042,18 @@
     const modeDartCounterBtn = document.getElementById("modeDartCounter");
     const autodartsSubmenuEl = document.getElementById("autodartsSubmenu");
     const dartcounterSubmenuEl = document.getElementById("dartcounterSubmenu");
+    
     const openImpressumBtn = document.getElementById("openImpressumBtn");
     const closeImpressumBtn = document.getElementById("closeImpressumBtn");
     const impressumModal = document.getElementById("impressumModal");
+    
     const regelwerkBtn = document.getElementById("regelwerkBtn");
     const regelwerkModal = document.getElementById("regelwerkModal");
     const regelwerkContent = document.getElementById("regelwerkContent");
+
+    const openLinksBtn = document.getElementById("openLinksBtn");
+    const linksModal = document.getElementById("linksModal");
+    const linksContent = document.getElementById("linksContent");
 
     function normalize(value) {
       return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -1047,10 +1068,14 @@
         .replace(/'/g, "&#39;");
     }
 
-    // ACHTUNG: Hier ist die neue, bombensichere Logik für den Link!
+    function makeClickable(text) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(urlRegex, function(url) {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline; word-break:break-all;">${url}</a>`;
+      });
+    }
+
     function csvUrl(sheetName) {
-      // Wenn das Skript nach der Tabelle "Spieler_Discord" sucht, 
-      // nutzt es nun zwingend die exakte Google Sheet Tabellen-ID (GID)
       if (sheetName === PLAYER_SHEET) {
         return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=2009950588`;
       }
@@ -1274,25 +1299,24 @@
           if (!first) return "";
           return `
             <div class="content-block">
-              <h4>${htmlEscape(first)}</h4>
-              ${rest.length ? rest.map(text => `<p>${htmlEscape(text)}</p>`).join("") : `<p>-</p>`}
+              <h4>${makeClickable(htmlEscape(first))}</h4>
+              ${rest.length ? rest.map(text => `<p>${makeClickable(htmlEscape(text))}</p>`).join("") : `<p>-</p>`}
             </div>
           `;
         }).join("");
-        
       }
 
       const blocks = cleaned.map((row) => {
         const filled = row.filter(cell => cell);
         if (!filled.length) return "";
-        if (filled.length === 1) return `<div class="content-block"><p>${htmlEscape(filled[0])}</p></div>`;
+        if (filled.length === 1) return `<div class="content-block"><p>${makeClickable(htmlEscape(filled[0]))}</p></div>`;
 
         const title = filled[0];
-        const body = filled.slice(1).map(text => `<p>${htmlEscape(text)}</p>`).join("");
+        const body = filled.slice(1).map(text => `<p>${makeClickable(htmlEscape(text))}</p>`).join("");
 
         return `
           <div class="content-block">
-            <h4>${htmlEscape(title)}</h4>
+            <h4>${makeClickable(htmlEscape(title))}</h4>
             ${body}
           </div>
         `;
@@ -1618,16 +1642,20 @@
 
     async function loadStaticSheetContent() {
       try {
-        const [regelwerkRows] = await Promise.all([
+        const [regelwerkRows, linksRows] = await Promise.all([
           loadCsv(RULES_SHEET).catch(() => []),
+          loadCsv(LINKS_SHEET).catch(() => []),
         ]);
 
         state.regelwerkRows = regelwerkRows;
+        state.linksRows = linksRows;
 
         regelwerkContent.innerHTML = renderSheetAsBlocks(regelwerkRows, "rules");
+        linksContent.innerHTML = renderSheetAsBlocks(linksRows, "links");
       } catch (e) {
-        console.warn("Regelwerk / FAQ nicht ladbar", e);
+        console.warn("Regelwerk / Links nicht ladbar", e);
         regelwerkContent.innerHTML = `<p>Regelwerk konnte nicht geladen werden.</p>`;
+        linksContent.innerHTML = `<p>Links konnten nicht geladen werden.</p>`;
       }
     }
 
@@ -1671,6 +1699,8 @@
 
     openImpressumBtn.addEventListener("click", () => openModal(impressumModal));
     closeImpressumBtn.addEventListener("click", () => closeModal(impressumModal));
+    
+    openLinksBtn.addEventListener("click", () => openModal(linksModal));
 
     regelwerkBtn.addEventListener("click", () => openModal(regelwerkModal));
 
@@ -1682,7 +1712,7 @@
       });
     });
 
-    [impressumModal, regelwerkModal].forEach(modal => {
+    [impressumModal, regelwerkModal, linksModal].forEach(modal => {
       modal.addEventListener("click", (e) => {
         if (e.target === modal) closeModal(modal);
       });
@@ -1690,7 +1720,7 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        [impressumModal, regelwerkModal].forEach(closeModal);
+        [impressumModal, regelwerkModal, linksModal].forEach(closeModal);
       }
     });
 
