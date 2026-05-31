@@ -1047,7 +1047,13 @@
         .replace(/'/g, "&#39;");
     }
 
+    // ACHTUNG: Hier ist die neue, bombensichere Logik für den Link!
     function csvUrl(sheetName) {
+      // Wenn das Skript nach der Tabelle "Spieler_Discord" sucht, 
+      // nutzt es nun zwingend die exakte Google Sheet Tabellen-ID (GID)
+      if (sheetName === PLAYER_SHEET) {
+        return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=2009950588`;
+      }
       return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
     }
 
@@ -1149,7 +1155,6 @@
       if (!rows || !rows.length) return {};
       const map = {};
 
-      // Spalte A (Index 0) ist Spieler, Spalte B (Index 1) ist Discord
       for (let i = 0; i < rows.length; i++) {
         const spieler = safeCell(rows[i], 0);
         const discord = safeCell(rows[i], 1); 
@@ -1220,8 +1225,6 @@
 
         const spieltagNummer = safeCell(row, 0);
         const spieler1 = safeCell(row, 1);
-        // Wir ignorieren hier bewusst, was in der Erg-Tabelle für Discord steht,
-        // da wir es nachher sauber aus der Spieler_Discord Tabelle holen!
         const spieler2 = safeCell(row, 3);
         const legs1 = safeCell(row, 5);
         const legs2 = safeCell(row, 6);
@@ -1385,7 +1388,6 @@
         const row = entry.originalRow;
         const spielerName = row[1] || "-";
         
-        // Zieht den Discordnamen sicher aus dem Sheet Spieler_Discord (Spalte B)
         const meta = state.playerMetaMap[normalize(spielerName)] || { discord: "", yellow: 0, red: 0, hasRed: false };
         const discordName = meta.discord || "";
 
@@ -1450,11 +1452,9 @@
         const spieler1 = row[1] || "-";
         const spieler2 = row[2] || "-";
 
-        // Holt den Discord-Namen für Spieler 1 direkt aus dem Sheet "Spieler_Discord" Spalte B!
         const meta1 = state.playerMetaMap[normalize(spieler1)] || {};
         const discord1 = meta1.discord || "";
 
-        // Holt den Discord-Namen für Spieler 2 direkt aus dem Sheet "Spieler_Discord" Spalte B!
         const meta2 = state.playerMetaMap[normalize(spieler2)] || {};
         const discord2 = meta2.discord || "";
 
