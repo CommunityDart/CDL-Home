@@ -416,10 +416,11 @@
       min-width:90px;
     }
 
-    thead th:nth-child(3),
+    /* Angepasst für die neue Discord-Spalte (Index 4-7 statt 3-6) */
     thead th:nth-child(4),
     thead th:nth-child(5),
-    thead th:nth-child(6){
+    thead th:nth-child(6),
+    thead th:nth-child(7){
       text-align:center;
     }
 
@@ -470,7 +471,6 @@
     .rank-col.first::before{ background:var(--green); }
     .rank-col.last::before{ background:var(--red); }
 
-    /* REPARIERT: engerer Abstand zwischen Spieler und Siege */
     .player-cell{
       width:140px;
       min-width:140px;
@@ -496,19 +496,14 @@
       margin-top:4px;
     }
 
-    .player-discord{
-      display:block;
-      font-size:12px;
-      line-height:1.25;
+    /* Neu: Discord Zelle in eigener Spalte */
+    .discord-cell {
       color:#8ec9ee;
       font-weight:700;
-      white-space:normal;
-      overflow:visible;
-      text-overflow:clip;
-      max-width:none;
+      font-size:14px;
     }
 
-    body[data-mode="DartCounter"] .player-discord{
+    body[data-mode="DartCounter"] .discord-cell {
       color:#ffd08a;
     }
 
@@ -549,14 +544,15 @@
       color:#fff4e3;
     }
 
-    thead th:nth-child(3),
+    /* Angepasst für die neue Discord-Spalte (Index 4-7 statt 3-6) */
     thead th:nth-child(4),
     thead th:nth-child(5),
     thead th:nth-child(6),
-    tbody td:nth-child(3),
+    thead th:nth-child(7),
     tbody td:nth-child(4),
     tbody td:nth-child(5),
-    tbody td:nth-child(6){
+    tbody td:nth-child(6),
+    tbody td:nth-child(7){
       width:110px;
       text-align:center;
     }
@@ -1358,7 +1354,9 @@
         `;
       }
 
-      const displayHeaders = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      // HIER IST DIE ANPASSUNG: "Discord" als neue Spalte hinzugefügt!
+      const displayHeaders = ["Platz", "Spieler", "Discord", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      
       const sortedRows = sortStandingsWithCards(rows).map((row, index, arr) => ({
         displayRank: String(index + 1),
         originalRow: row,
@@ -1376,16 +1374,17 @@
         const meta = state.playerMetaMap[normalize(spielerName)] || { discord: "", yellow: 0, red: 0, hasRed: false };
         const discordName = meta.discord || "";
 
+        // HIER IST DIE ANPASSUNG: Discord Name hat jetzt seine eigene <td> Zelle
         return `
           <tr>
             <td class="${`rank-col ${rankClass(entry.displayRank, entry.totalRows)}`.trim()}">${htmlEscape(entry.displayRank)}</td>
             <td class="player-cell">
               <span class="player-name" title="${htmlEscape(spielerName)}">${htmlEscape(spielerName)}</span>
               <div class="player-meta-row">
-                ${discordName ? `<span class="player-discord" title="${htmlEscape(discordName)}">${htmlEscape(discordName)}</span>` : ``}
                 ${renderPlayerCards(meta)}
               </div>
             </td>
+            <td class="discord-cell">${discordName ? htmlEscape(discordName) : "-"}</td>
             <td>${htmlEscape(row[2] || "-")}</td>
             <td>${htmlEscape(row[3] || "-")}</td>
             <td>${htmlEscape(row[4] || "-")}</td>
