@@ -1434,12 +1434,24 @@
 
       const tbody = rows.map(row => {
         const spieler1 = row[1] || "-";
+        const discord1 = row[2] || ""; // Greift den Discord-Namen für Spieler 1 aus dem Sheet ab
         const spieler2 = row[3] || "-";
+        const discord2 = row[4] || ""; // Greift den Discord-Namen für Spieler 2 aus dem Sheet ab
+
+        // Baut das HTML für die Discord-Namen (nutzt die gleiche Farbe/Größe wie in der Haupttabelle)
+        const discord1Html = discord1 ? `<span class="player-discord">${htmlEscape(discord1)}</span>` : "";
+        const discord2Html = discord2 ? `<span class="player-discord">${htmlEscape(discord2)}</span>` : "";
 
         return `
           <tr>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span></td>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span>
+              ${discord1Html}
+            </td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span>
+              ${discord2Html}
+            </td>
             <td class="col-legs">${htmlEscape(row[5] || "-")}</td>
             <td class="col-legs">${htmlEscape(row[6] || "-")}</td>
             <td class="status-cell">${renderMatchStatusDot(row[7], row[5], row[6])}</td>
@@ -1448,6 +1460,7 @@
       }).join("");
 
       return `<table class="match-table"><tbody>${tbody}</tbody></table>`;
+    }
     }
 
     function getDefaultOpenMatchdayIndex(matchdays) {
