@@ -416,7 +416,6 @@
       min-width:90px;
     }
 
-    /* Angepasst für die neue Discord-Spalte (Index 4-7 statt 3-6) */
     thead th:nth-child(4),
     thead th:nth-child(5),
     thead th:nth-child(6),
@@ -496,7 +495,6 @@
       margin-top:4px;
     }
 
-    /* Neu: Discord Zelle in eigener Spalte */
     .discord-cell {
       color:#8ec9ee;
       font-weight:700;
@@ -504,6 +502,22 @@
     }
 
     body[data-mode="DartCounter"] .discord-cell {
+      color:#ffd08a;
+    }
+
+    .player-discord{
+      display:block;
+      font-size:12px;
+      line-height:1.25;
+      color:#8ec9ee;
+      font-weight:700;
+      white-space:normal;
+      overflow:visible;
+      text-overflow:clip;
+      max-width:none;
+    }
+
+    body[data-mode="DartCounter"] .player-discord{
       color:#ffd08a;
     }
 
@@ -544,7 +558,6 @@
       color:#fff4e3;
     }
 
-    /* Angepasst für die neue Discord-Spalte (Index 4-7 statt 3-6) */
     thead th:nth-child(4),
     thead th:nth-child(5),
     thead th:nth-child(6),
@@ -1136,9 +1149,10 @@
       if (!rows || !rows.length) return {};
       const map = {};
 
+      // Spalte A (Index 0) ist Spieler, Spalte B (Index 1) ist Discord
       for (let i = 0; i < rows.length; i++) {
         const spieler = safeCell(rows[i], 0);
-        const discord = safeCell(rows[i], 1);
+        const discord = safeCell(rows[i], 1); 
         const karte = safeCell(rows[i], 6);
 
         if (!spieler) continue;
@@ -1206,9 +1220,9 @@
 
         const spieltagNummer = safeCell(row, 0);
         const spieler1 = safeCell(row, 1);
-        const discord1 = safeCell(row, 2);
+        // Wir ignorieren hier bewusst, was in der Erg-Tabelle für Discord steht,
+        // da wir es nachher sauber aus der Spieler_Discord Tabelle holen!
         const spieler2 = safeCell(row, 3);
-        const discord2 = safeCell(row, 4);
         const legs1 = safeCell(row, 5);
         const legs2 = safeCell(row, 6);
         const status = safeCell(row, 7);
@@ -1219,12 +1233,12 @@
         const title = `Spieltag ${spieltagNummer}`;
 
         if (!grouped.has(title)) grouped.set(title, []);
-        grouped.get(title).push([title, spieler1, discord1, spieler2, discord2, legs1, legs2, status]);
+        grouped.get(title).push([title, spieler1, spieler2, legs1, legs2, status]);
       }
 
       return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
         const totalMatches = rowsForDay.length;
-        const doneMatches = rowsForDay.filter(r => isFinishedMatch(r[7], r[5], r[6])).length;
+        const doneMatches = rowsForDay.filter(r => isFinishedMatch(r[5], r[3], r[4])).length;
         const dayStatus = totalMatches > 0 && doneMatches === totalMatches ? "fertig" : "offen";
 
         return {
@@ -1354,7 +1368,6 @@
         `;
       }
 
-      // HIER IST DIE ANPASSUNG: "Discord" als neue Spalte hinzugefügt!
       const displayHeaders = ["Platz", "Spieler", "Discord", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
       
       const sortedRows = sortStandingsWithCards(rows).map((row, index, arr) => ({
@@ -1371,10 +1384,11 @@
       const tbody = sortedRows.map(entry => {
         const row = entry.originalRow;
         const spielerName = row[1] || "-";
+        
+        // Zieht den Discordnamen sicher aus dem Sheet Spieler_Discord (Spalte B)
         const meta = state.playerMetaMap[normalize(spielerName)] || { discord: "", yellow: 0, red: 0, hasRed: false };
         const discordName = meta.discord || "";
 
-        // HIER IST DIE ANPASSUNG: Discord Name hat jetzt seine eigene <td> Zelle
         return `
           <tr>
             <td class="${`rank-col ${rankClass(entry.displayRank, entry.totalRows)}`.trim()}">${htmlEscape(entry.displayRank)}</td>
@@ -1434,15 +1448,32 @@
 
       const tbody = rows.map(row => {
         const spieler1 = row[1] || "-";
-        const spieler2 = row[3] || "-";
+        const spieler2 = row[2] || "-";
+
+        // Holt den Discord-Namen für Spieler 1 direkt aus dem Sheet "Spieler_Discord" Spalte B!
+        const meta1 = state.playerMetaMap[normalize(spieler1)] || {};
+        const discord1 = meta1.discord || "";
+
+        // Holt den Discord-Namen für Spieler 2 direkt aus dem Sheet "Spieler_Discord" Spalte B!
+        const meta2 = state.playerMetaMap[normalize(spieler2)] || {};
+        const discord2 = meta2.discord || "";
+
+        const discord1Html = discord1 ? `<span class="player-discord">${htmlEscape(discord1)}</span>` : "";
+        const discord2Html = discord2 ? `<span class="player-discord">${htmlEscape(discord2)}</span>` : "";
 
         return `
           <tr>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span></td>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
-            <td class="col-legs">${htmlEscape(row[5] || "-")}</td>
-            <td class="col-legs">${htmlEscape(row[6] || "-")}</td>
-            <td class="status-cell">${renderMatchStatusDot(row[7], row[5], row[6])}</td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span>
+              ${discord1Html}
+            </td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span>
+              ${discord2Html}
+            </td>
+            <td class="col-legs">${htmlEscape(row[3] || "-")}</td>
+            <td class="col-legs">${htmlEscape(row[4] || "-")}</td>
+            <td class="status-cell">${renderMatchStatusDot(row[5], row[3], row[4])}</td>
           </tr>
         `;
       }).join("");
