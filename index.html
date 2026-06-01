@@ -416,10 +416,11 @@
       min-width:90px;
     }
 
-    thead th:nth-child(3),
+    /* Neu: Zentriert jetzt die Spalten 4 bis 7 wegen der Discord-Spalte */
     thead th:nth-child(4),
     thead th:nth-child(5),
-    thead th:nth-child(6){
+    thead th:nth-child(6),
+    thead th:nth-child(7){
       text-align:center;
     }
 
@@ -470,7 +471,6 @@
     .rank-col.first::before{ background:var(--green); }
     .rank-col.last::before{ background:var(--red); }
 
-    /* REPARIERT: engerer Abstand zwischen Spieler und Siege */
     .player-cell{
       width:140px;
       min-width:140px;
@@ -496,6 +496,18 @@
       margin-top:4px;
     }
 
+    /* NEU: Formatierung für die Discord-Spalte in der Tabelle */
+    .discord-cell {
+      color:#8ec9ee;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    body[data-mode="DartCounter"] .discord-cell {
+      color:#ffd08a;
+    }
+
+    /* NEU: Formatierung für die Discord-Namen in den Spieltagen */
     .player-discord{
       display:block;
       font-size:12px;
@@ -549,14 +561,15 @@
       color:#fff4e3;
     }
 
-    thead th:nth-child(3),
+    /* NEU: Zentrierung der Spalten angepasst */
     thead th:nth-child(4),
     thead th:nth-child(5),
     thead th:nth-child(6),
-    tbody td:nth-child(3),
+    thead th:nth-child(7),
     tbody td:nth-child(4),
     tbody td:nth-child(5),
-    tbody td:nth-child(6){
+    tbody td:nth-child(6),
+    tbody td:nth-child(7){
       width:110px;
       text-align:center;
     }
@@ -951,6 +964,9 @@
     <div class="footer">
       <button id="openImpressumBtn" class="footer-btn" type="button">Impressum</button>
       <a class="footer-link" href="https://paypal.me/DEINLINK" target="_blank" rel="noopener noreferrer">Spenden</a>
+      
+      <button id="openLinksBtn" class="footer-btn" type="button">Links</button>
+      
       <div class="footer-note">Community Dart Liga • GitHub Pages Version</div>
     </div>
   </div>
@@ -982,10 +998,23 @@
     </div>
   </div>
 
+  <div id="linksModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="linksTitle">
+      <div class="modal-head">
+        <h3 id="linksTitle" class="modal-title">Links</h3>
+        <button class="button modal-close" type="button" data-close-modal="linksModal">✕</button>
+      </div>
+      <div id="linksContent" class="modal-body">
+        <p>Lade Links…</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
     const PLAYER_SHEET = "Spieler_Discord";
     const RULES_SHEET = "Regelwerk";
+    const LINKS_SHEET = "Links"; // Neu hinzugefügt
 
     const LEAGUES = [
       "Autodarts Liga 1",
@@ -1010,6 +1039,7 @@
       playerMetaMap: {},
       matchdayOpenState: {},
       regelwerkRows: [],
+      linksRows: [], // Neu hinzugefügt
     };
 
     const tableAreaEl = document.getElementById("tableArea");
@@ -1024,6 +1054,11 @@
     const regelwerkBtn = document.getElementById("regelwerkBtn");
     const regelwerkModal = document.getElementById("regelwerkModal");
     const regelwerkContent = document.getElementById("regelwerkContent");
+    
+    // Neu hinzugefügte Buttons für Links
+    const openLinksBtn = document.getElementById("openLinksBtn");
+    const linksModal = document.getElementById("linksModal");
+    const linksContent = document.getElementById("linksContent");
 
     function normalize(value) {
       return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -1038,7 +1073,20 @@
         .replace(/'/g, "&#39;");
     }
 
+    // NEU: Funktion, die im Text automatisch nach "http" sucht und einen anklickbaren Link daraus macht
+    function makeClickable(text) {
+      if (!text) return "";
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(urlRegex, function(url) {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline; word-break:break-all;">${url}</a>`;
+      });
+    }
+
     function csvUrl(sheetName) {
+      // NEU: Hier wird die gviz API zusammen mit der GID genutzt, das verhindert den CORS-Fehler
+      if (sheetName === PLAYER_SHEET) {
+        return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=2009950588`;
+      }
       return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
     }
 
@@ -1190,10 +1238,12 @@
         const legDiff = safeCell(row, 4);
         const punkte = safeCell(row, 5);
 
-        if (!platz || isNaN(parseInt(platz, 10))) continue;
-        if (!spieler) continue;
+        const nSpieler = normalize(spieler);
+        
+        // REPARIERT: Spieler ohne Platzierung werden nicht mehr ignoriert
+        if (!spieler || nSpieler === "spieler" || nSpieler === "name" || nSpieler === "spielername") continue;
 
-        body.push([platz, spieler, siege, niederlagen, legDiff, punkte]);
+        body.push([platz || "-", spieler, siege, niederlagen, legDiff, punkte]);
       }
 
       return { headers, rows: body };
@@ -1208,11 +1258,10 @@
         const row = rows[i];
         if (!rowHasAnyContent(row)) continue;
 
+        // Wir lesen nur noch exakt die 6 wichtigen Spalten aus
         const spieltagNummer = safeCell(row, 0);
         const spieler1 = safeCell(row, 1);
-        const discord1 = safeCell(row, 2);
         const spieler2 = safeCell(row, 3);
-        const discord2 = safeCell(row, 4);
         const legs1 = safeCell(row, 5);
         const legs2 = safeCell(row, 6);
         const status = safeCell(row, 7);
@@ -1223,12 +1272,13 @@
         const title = `Spieltag ${spieltagNummer}`;
 
         if (!grouped.has(title)) grouped.set(title, []);
-        grouped.get(title).push([title, spieler1, discord1, spieler2, discord2, legs1, legs2, status]);
+        grouped.get(title).push([title, spieler1, spieler2, legs1, legs2, status]);
       }
 
       return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
         const totalMatches = rowsForDay.length;
-        const doneMatches = rowsForDay.filter(r => isFinishedMatch(r[7], r[5], r[6])).length;
+        // Index 5 ist der Status, Index 3 und 4 sind die Legs in diesem bereinigten Array
+        const doneMatches = rowsForDay.filter(r => isFinishedMatch(r[5], r[3], r[4])).length;
         const dayStatus = totalMatches > 0 && doneMatches === totalMatches ? "fertig" : "offen";
 
         return {
@@ -1242,6 +1292,7 @@
       });
     }
 
+    // ACHTUNG: Die Methode für das Auslesen der Popups nutzt nun makeClickable()
     function renderSheetAsBlocks(rows, mode) {
       const validRows = (rows || []).filter(row => rowHasAnyContent(row));
       if (!validRows.length) return `<p>Keine Inhalte gefunden.</p>`;
@@ -1261,25 +1312,24 @@
           if (!first) return "";
           return `
             <div class="content-block">
-              <h4>${htmlEscape(first)}</h4>
-              ${rest.length ? rest.map(text => `<p>${htmlEscape(text)}</p>`).join("") : `<p>-</p>`}
+              <h4>${makeClickable(htmlEscape(first))}</h4>
+              ${rest.length ? rest.map(text => `<p>${makeClickable(htmlEscape(text))}</p>`).join("") : `<p>-</p>`}
             </div>
           `;
         }).join("");
-        
       }
 
       const blocks = cleaned.map((row) => {
         const filled = row.filter(cell => cell);
         if (!filled.length) return "";
-        if (filled.length === 1) return `<div class="content-block"><p>${htmlEscape(filled[0])}</p></div>`;
+        if (filled.length === 1) return `<div class="content-block"><p>${makeClickable(htmlEscape(filled[0]))}</p></div>`;
 
         const title = filled[0];
-        const body = filled.slice(1).map(text => `<p>${htmlEscape(text)}</p>`).join("");
+        const body = filled.slice(1).map(text => `<p>${makeClickable(htmlEscape(text))}</p>`).join("");
 
         return `
           <div class="content-block">
-            <h4>${htmlEscape(title)}</h4>
+            <h4>${makeClickable(htmlEscape(title))}</h4>
             ${body}
           </div>
         `;
@@ -1358,7 +1408,9 @@
         `;
       }
 
-      const displayHeaders = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      // NEU: Discord Spalte eingebaut
+      const displayHeaders = ["Platz", "Spieler", "Discord", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      
       const sortedRows = sortStandingsWithCards(rows).map((row, index, arr) => ({
         displayRank: String(index + 1),
         originalRow: row,
@@ -1373,6 +1425,8 @@
       const tbody = sortedRows.map(entry => {
         const row = entry.originalRow;
         const spielerName = row[1] || "-";
+        
+        // Zieht den Discordnamen über die MetaMap (welche via GID generiert wird)
         const meta = state.playerMetaMap[normalize(spielerName)] || { discord: "", yellow: 0, red: 0, hasRed: false };
         const discordName = meta.discord || "";
 
@@ -1382,10 +1436,10 @@
             <td class="player-cell">
               <span class="player-name" title="${htmlEscape(spielerName)}">${htmlEscape(spielerName)}</span>
               <div class="player-meta-row">
-                ${discordName ? `<span class="player-discord" title="${htmlEscape(discordName)}">${htmlEscape(discordName)}</span>` : ``}
                 ${renderPlayerCards(meta)}
               </div>
             </td>
+            <td class="discord-cell">${discordName ? htmlEscape(discordName) : "-"}</td>
             <td>${htmlEscape(row[2] || "-")}</td>
             <td>${htmlEscape(row[3] || "-")}</td>
             <td>${htmlEscape(row[4] || "-")}</td>
@@ -1435,15 +1489,31 @@
 
       const tbody = rows.map(row => {
         const spieler1 = row[1] || "-";
-        const spieler2 = row[3] || "-";
+        const spieler2 = row[2] || "-";
+
+        // Holt den Discord-Namen exakt aus der via GID ausgelesenen MetaMap
+        const meta1 = state.playerMetaMap[normalize(spieler1)] || {};
+        const discord1 = meta1.discord || "";
+
+        const meta2 = state.playerMetaMap[normalize(spieler2)] || {};
+        const discord2 = meta2.discord || "";
+
+        const discord1Html = discord1 ? `<span class="player-discord">${htmlEscape(discord1)}</span>` : "";
+        const discord2Html = discord2 ? `<span class="player-discord">${htmlEscape(discord2)}</span>` : "";
 
         return `
           <tr>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span></td>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
-            <td class="col-legs">${htmlEscape(row[5] || "-")}</td>
-            <td class="col-legs">${htmlEscape(row[6] || "-")}</td>
-            <td class="status-cell">${renderMatchStatusDot(row[7], row[5], row[6])}</td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span>
+              ${discord1Html}
+            </td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span>
+              ${discord2Html}
+            </td>
+            <td class="col-legs">${htmlEscape(row[3] || "-")}</td>
+            <td class="col-legs">${htmlEscape(row[4] || "-")}</td>
+            <td class="status-cell">${renderMatchStatusDot(row[5], row[3], row[4])}</td>
           </tr>
         `;
       }).join("");
@@ -1502,61 +1572,67 @@
       const dartcounterLeagues = state.leagues
         .filter(l => l.name.startsWith("DartCounter") && leagueHasPlayers(state.leagueData[l.name]));
 
-      autodartsSubmenuEl.innerHTML = autodartsLeagues.map(l => `
-        <button class="submenu-btn ${l.name === state.activeLeague ? "active" : ""}" data-name="${htmlEscape(l.name)}">
-          ${htmlEscape(l.name)}
-        </button>
-      `).join("");
-
-      dartcounterSubmenuEl.innerHTML = dartcounterLeagues.map(l => `
-        <button class="submenu-btn ${l.name === state.activeLeague ? "active" : ""}" data-name="${htmlEscape(l.name)}">
-          ${htmlEscape(l.name)}
-        </button>
-      `).join("");
-
-      autodartsSubmenuEl.classList.toggle("active", state.activeMode === "Autodarts");
-      dartcounterSubmenuEl.classList.toggle("active", state.activeMode === "DartCounter");
-
-      autodartsSubmenuEl.querySelectorAll(".submenu-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          state.activeLeague = btn.dataset.name;
-          renderSystemSubmenus();
-          renderLeague();
+      if (autodartsSubmenuEl) {
+        autodartsSubmenuEl.innerHTML = autodartsLeagues.map(l => `
+          <button class="submenu-btn ${l.name === state.activeLeague ? "active" : ""}" data-name="${htmlEscape(l.name)}">
+            ${htmlEscape(l.name)}
+          </button>
+        `).join("");
+        autodartsSubmenuEl.classList.toggle("active", state.activeMode === "Autodarts");
+        
+        autodartsSubmenuEl.querySelectorAll(".submenu-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            state.activeLeague = btn.dataset.name;
+            renderSystemSubmenus();
+            renderLeague();
+          });
         });
-      });
+      }
 
-      dartcounterSubmenuEl.querySelectorAll(".submenu-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          state.activeLeague = btn.dataset.name;
-          renderSystemSubmenus();
-          renderLeague();
+      if (dartcounterSubmenuEl) {
+        dartcounterSubmenuEl.innerHTML = dartcounterLeagues.map(l => `
+          <button class="submenu-btn ${l.name === state.activeLeague ? "active" : ""}" data-name="${htmlEscape(l.name)}">
+            ${htmlEscape(l.name)}
+          </button>
+        `).join("");
+        dartcounterSubmenuEl.classList.toggle("active", state.activeMode === "DartCounter");
+
+        dartcounterSubmenuEl.querySelectorAll(".submenu-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            state.activeLeague = btn.dataset.name;
+            renderSystemSubmenus();
+            renderLeague();
+          });
         });
-      });
+      }
     }
 
     function attachMatchdayEvents() {
+      if (!matchdayAreaEl) return;
       matchdayAreaEl.querySelectorAll(".matchday").forEach(card => {
         const key = card.dataset.key;
         const btn = card.querySelector(".matchday-head");
-        btn.addEventListener("click", () => {
-          const newOpen = !card.classList.contains("open");
-          card.classList.toggle("open", newOpen);
-          state.matchdayOpenState[key] = newOpen;
-        });
+        if(btn) {
+          btn.addEventListener("click", () => {
+            const newOpen = !card.classList.contains("open");
+            card.classList.toggle("open", newOpen);
+            state.matchdayOpenState[key] = newOpen;
+          });
+        }
       });
     }
 
     function renderLeague() {
       const league = state.leagues.find(l => l.name === state.activeLeague);
       if (!league) {
-        tableAreaEl.innerHTML = `<div class="empty">Keine Liga ausgewählt.</div>`;
-        matchdayAreaEl.innerHTML = "";
+        if (tableAreaEl) tableAreaEl.innerHTML = `<div class="empty">Keine Liga ausgewählt.</div>`;
+        if (matchdayAreaEl) matchdayAreaEl.innerHTML = "";
         return;
       }
 
       const data = state.leagueData[league.name];
-      tableAreaEl.innerHTML = renderStandingsTable(data.standings.headers, data.standings.rows);
-      matchdayAreaEl.innerHTML = renderMatchdays(data.matchdays);
+      if (tableAreaEl) tableAreaEl.innerHTML = renderStandingsTable(data.standings.headers, data.standings.rows);
+      if (matchdayAreaEl) matchdayAreaEl.innerHTML = renderMatchdays(data.matchdays);
       attachMatchdayEvents();
     }
 
@@ -1564,8 +1640,8 @@
       state.activeMode = mode;
       document.body.setAttribute("data-mode", mode);
 
-      modeAutodartsBtn.classList.toggle("active", mode === "Autodarts");
-      modeDartCounterBtn.classList.toggle("active", mode === "DartCounter");
+      if(modeAutodartsBtn) modeAutodartsBtn.classList.toggle("active", mode === "Autodarts");
+      if(modeDartCounterBtn) modeDartCounterBtn.classList.toggle("active", mode === "DartCounter");
 
       const visible = getVisibleModeLeagues();
       if (!visible.some(l => l.name === state.activeLeague)) {
@@ -1577,33 +1653,39 @@
     }
 
     function openModal(modal) {
+      if(!modal) return;
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
     }
 
     function closeModal(modal) {
+      if(!modal) return;
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
     }
 
     async function loadStaticSheetContent() {
       try {
-        const [regelwerkRows] = await Promise.all([
+        const [regelwerkRows, linksRows] = await Promise.all([
           loadCsv(RULES_SHEET).catch(() => []),
+          loadCsv(LINKS_SHEET).catch(() => []),
         ]);
 
         state.regelwerkRows = regelwerkRows;
+        state.linksRows = linksRows;
 
-        regelwerkContent.innerHTML = renderSheetAsBlocks(regelwerkRows, "rules");
+        if (regelwerkContent) regelwerkContent.innerHTML = renderSheetAsBlocks(regelwerkRows, "rules");
+        if (linksContent) linksContent.innerHTML = renderSheetAsBlocks(linksRows, "links");
       } catch (e) {
-        console.warn("Regelwerk / FAQ nicht ladbar", e);
-        regelwerkContent.innerHTML = `<p>Regelwerk konnte nicht geladen werden.</p>`;
+        console.warn("Regelwerk / Links nicht ladbar", e);
+        if (regelwerkContent) regelwerkContent.innerHTML = `<p>Regelwerk konnte nicht geladen werden.</p>`;
+        if (linksContent) linksContent.innerHTML = `<p>Links konnten nicht geladen werden.</p>`;
       }
     }
 
     async function loadAll() {
-      tableAreaEl.innerHTML = `<div class="empty">Lade Daten…</div>`;
-      matchdayAreaEl.innerHTML = "";
+      if(tableAreaEl) tableAreaEl.innerHTML = `<div class="empty">Lade Daten…</div>`;
+      if(matchdayAreaEl) matchdayAreaEl.innerHTML = "";
 
       try {
         state.leagues = LEAGUES.map(name => ({ name }));
@@ -1631,18 +1713,21 @@
         renderLeague();
       } catch (error) {
         console.error(error);
-        tableAreaEl.innerHTML = `<div class="empty">Fehler beim Laden: ${htmlEscape(error && error.message ? error.message : "Unbekannter Fehler")}</div>`;
-        matchdayAreaEl.innerHTML = "";
+        if(tableAreaEl) tableAreaEl.innerHTML = `<div class="empty">Fehler beim Laden: ${htmlEscape(error && error.message ? error.message : "Unbekannter Fehler")}</div>`;
+        if(matchdayAreaEl) matchdayAreaEl.innerHTML = "";
       }
     }
 
-    modeAutodartsBtn.addEventListener("click", () => setMode("Autodarts"));
-    modeDartCounterBtn.addEventListener("click", () => setMode("DartCounter"));
+    if(modeAutodartsBtn) modeAutodartsBtn.addEventListener("click", () => setMode("Autodarts"));
+    if(modeDartCounterBtn) modeDartCounterBtn.addEventListener("click", () => setMode("DartCounter"));
 
-    openImpressumBtn.addEventListener("click", () => openModal(impressumModal));
-    closeImpressumBtn.addEventListener("click", () => closeModal(impressumModal));
+    if(openImpressumBtn) openImpressumBtn.addEventListener("click", () => openModal(impressumModal));
+    if(closeImpressumBtn) closeImpressumBtn.addEventListener("click", () => closeModal(impressumModal));
+    
+    // Event-Listener für den Links Button
+    if(openLinksBtn) openLinksBtn.addEventListener("click", () => openModal(linksModal));
 
-    regelwerkBtn.addEventListener("click", () => openModal(regelwerkModal));
+    if(regelwerkBtn) regelwerkBtn.addEventListener("click", () => openModal(regelwerkModal));
 
     document.querySelectorAll("[data-close-modal]").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -1652,15 +1737,17 @@
       });
     });
 
-    [impressumModal, regelwerkModal].forEach(modal => {
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeModal(modal);
-      });
+    [impressumModal, regelwerkModal, linksModal].forEach(modal => {
+      if(modal) {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeModal(modal);
+        });
+      }
     });
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        [impressumModal, regelwerkModal].forEach(closeModal);
+        [impressumModal, regelwerkModal, linksModal].forEach(closeModal);
       }
     });
 
