@@ -1230,10 +1230,13 @@
         const legDiff = safeCell(row, 4);
         const punkte = safeCell(row, 5);
 
-        if (!platz || isNaN(parseInt(platz, 10))) continue;
-        if (!spieler) continue;
+        const nSpieler = normalize(spieler);
+        
+        // REPARATUR: Spieler sicher auslesen, ohne Platzierung als Bedingung vorauszusetzen
+        if (!spieler || nSpieler === "spieler" || nSpieler === "name" || nSpieler === "spielername") continue;
 
-        body.push([platz, spieler, siege, niederlagen, legDiff, punkte]);
+        // Wenn der Platz leer ist, setzen wir einen Strich (-) ein, aber überspringen den Spieler nicht mehr!
+        body.push([platz || "-", spieler, siege, niederlagen, legDiff, punkte]);
       }
 
       return { headers, rows: body };
