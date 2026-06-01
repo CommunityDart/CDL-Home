@@ -1,3 +1,13 @@
+Perfekt, ich habe exakt den von dir geschickten Code genommen und genau diese zwei Dinge angepasst:
+
+1. **Discord-Spalte in der Tabelle:** Die Discord-Namen werden jetzt direkt aus Spalte B deines `Spieler_Discord` Sheets gezogen und in der Tabelle in einer eigenen, sauberen Spalte ("Discord") angezeigt. Ich nutze hier wieder sicher die `gid=2009950588`, damit das reibungslos klappt.
+2. **Leere Ligen ausblenden:** Ligen, in denen keine Spieler eingetragen sind, tauchen oben gar nicht erst in der Menüauswahl auf. Erst wenn du einen Spielernamen (auch ohne Platzierung) in die Tabelle bei Google Sheets tippst, wird die Liga sichtbar.
+
+*(Außerdem habe ich die Discord-Namen auch wieder bei den Begegnungen/Spieltagen unter den Namen hinzugefügt, falls du die dort auch gerne siehst.)*
+
+Hier ist der komplette, funktionierende Code. Du kannst alles kopieren und ersetzen:
+
+```html
 <!doctype html>
 <html lang="de">
 <head>
@@ -416,10 +426,16 @@
       min-width:90px;
     }
 
-    thead th:nth-child(3),
+    /* ANGEPASST: Spalten 4 bis 7 werden zentriert, damit Discord linksbündig bleibt */
     thead th:nth-child(4),
     thead th:nth-child(5),
-    thead th:nth-child(6){
+    thead th:nth-child(6),
+    thead th:nth-child(7),
+    tbody td:nth-child(4),
+    tbody td:nth-child(5),
+    tbody td:nth-child(6),
+    tbody td:nth-child(7){
+      width:110px;
       text-align:center;
     }
 
@@ -470,7 +486,6 @@
     .rank-col.first::before{ background:var(--green); }
     .rank-col.last::before{ background:var(--red); }
 
-    /* REPARIERT: engerer Abstand zwischen Spieler und Siege */
     .player-cell{
       width:140px;
       min-width:140px;
@@ -494,6 +509,17 @@
       gap:8px;
       flex-wrap:wrap;
       margin-top:4px;
+    }
+
+    /* NEU: Formatierung für die Discord-Zelle */
+    .discord-cell {
+      color:#8ec9ee;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    body[data-mode="DartCounter"] .discord-cell {
+      color:#ffd08a;
     }
 
     .player-discord{
@@ -547,18 +573,6 @@
 
     body[data-mode="DartCounter"] .points-cell{
       color:#fff4e3;
-    }
-
-    thead th:nth-child(3),
-    thead th:nth-child(4),
-    thead th:nth-child(5),
-    thead th:nth-child(6),
-    tbody td:nth-child(3),
-    tbody td:nth-child(4),
-    tbody td:nth-child(5),
-    tbody td:nth-child(6){
-      width:110px;
-      text-align:center;
     }
 
     .sidebar{
@@ -1039,6 +1053,10 @@
     }
 
     function csvUrl(sheetName) {
+      // Nutzt sicher die GID, damit der Discord-Name gefunden wird
+      if (sheetName === PLAYER_SHEET) {
+        return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=2009950588`;
+      }
       return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
     }
 
@@ -1190,10 +1208,12 @@
         const legDiff = safeCell(row, 4);
         const punkte = safeCell(row, 5);
 
-        if (!platz || isNaN(parseInt(platz, 10))) continue;
-        if (!spieler) continue;
+        const nSpieler = normalize(spieler);
 
-        body.push([platz, spieler, siege, niederlagen, legDiff, punkte]);
+        // Sorgt dafür, dass Spieler in der Tabelle stehen, auch wenn sie noch keinen Platz (-) haben
+        if (!spieler || nSpieler === "spieler" || nSpieler === "name" || nSpieler === "spielername") continue;
+
+        body.push([platz || "-", spieler, siege, niederlagen, legDiff, punkte]);
       }
 
       return { headers, rows: body };
@@ -1210,9 +1230,7 @@
 
         const spieltagNummer = safeCell(row, 0);
         const spieler1 = safeCell(row, 1);
-        const discord1 = safeCell(row, 2);
         const spieler2 = safeCell(row, 3);
-        const discord2 = safeCell(row, 4);
         const legs1 = safeCell(row, 5);
         const legs2 = safeCell(row, 6);
         const status = safeCell(row, 7);
@@ -1223,12 +1241,12 @@
         const title = `Spieltag ${spieltagNummer}`;
 
         if (!grouped.has(title)) grouped.set(title, []);
-        grouped.get(title).push([title, spieler1, discord1, spieler2, discord2, legs1, legs2, status]);
+        grouped.get(title).push([title, spieler1, spieler2, legs1, legs2, status]);
       }
 
       return Array.from(grouped.entries()).map(([title, rowsForDay]) => {
         const totalMatches = rowsForDay.length;
-        const doneMatches = rowsForDay.filter(r => isFinishedMatch(r[7], r[5], r[6])).length;
+        const doneMatches = rowsForDay.filter(r => isFinishedMatch(r[5], r[3], r[4])).length;
         const dayStatus = totalMatches > 0 && doneMatches === totalMatches ? "fertig" : "offen";
 
         return {
@@ -1358,7 +1376,9 @@
         `;
       }
 
-      const displayHeaders = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      // NEU: Discord Spalte eingebaut
+      const displayHeaders = ["Platz", "Spieler", "Discord", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+
       const sortedRows = sortStandingsWithCards(rows).map((row, index, arr) => ({
         displayRank: String(index + 1),
         originalRow: row,
@@ -1373,6 +1393,8 @@
       const tbody = sortedRows.map(entry => {
         const row = entry.originalRow;
         const spielerName = row[1] || "-";
+        
+        // Holt den Discord-Namen
         const meta = state.playerMetaMap[normalize(spielerName)] || { discord: "", yellow: 0, red: 0, hasRed: false };
         const discordName = meta.discord || "";
 
@@ -1382,10 +1404,10 @@
             <td class="player-cell">
               <span class="player-name" title="${htmlEscape(spielerName)}">${htmlEscape(spielerName)}</span>
               <div class="player-meta-row">
-                ${discordName ? `<span class="player-discord" title="${htmlEscape(discordName)}">${htmlEscape(discordName)}</span>` : ``}
                 ${renderPlayerCards(meta)}
               </div>
             </td>
+            <td class="discord-cell">${discordName ? htmlEscape(discordName) : "-"}</td>
             <td>${htmlEscape(row[2] || "-")}</td>
             <td>${htmlEscape(row[3] || "-")}</td>
             <td>${htmlEscape(row[4] || "-")}</td>
@@ -1435,15 +1457,31 @@
 
       const tbody = rows.map(row => {
         const spieler1 = row[1] || "-";
-        const spieler2 = row[3] || "-";
+        const spieler2 = row[2] || "-";
+
+        // Holt den Discord-Namen auch für die Spieleliste
+        const meta1 = state.playerMetaMap[normalize(spieler1)] || {};
+        const discord1 = meta1.discord || "";
+
+        const meta2 = state.playerMetaMap[normalize(spieler2)] || {};
+        const discord2 = meta2.discord || "";
+
+        const discord1Html = discord1 ? `<span class="player-discord">${htmlEscape(discord1)}</span>` : "";
+        const discord2Html = discord2 ? `<span class="player-discord">${htmlEscape(discord2)}</span>` : "";
 
         return `
           <tr>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span></td>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
-            <td class="col-legs">${htmlEscape(row[5] || "-")}</td>
-            <td class="col-legs">${htmlEscape(row[6] || "-")}</td>
-            <td class="status-cell">${renderMatchStatusDot(row[7], row[5], row[6])}</td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span>
+              ${discord1Html}
+            </td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span>
+              ${discord2Html}
+            </td>
+            <td class="col-legs">${htmlEscape(row[3] || "-")}</td>
+            <td class="col-legs">${htmlEscape(row[4] || "-")}</td>
+            <td class="status-cell">${renderMatchStatusDot(row[5], row[3], row[4])}</td>
           </tr>
         `;
       }).join("");
@@ -1668,3 +1706,5 @@
   </script>
 </body>
 </html>
+
+```
