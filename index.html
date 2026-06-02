@@ -797,6 +797,18 @@
 
     .modal-body p{ margin:0 0 12px; }
 
+    .modal-body a.sheet-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 800;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    .modal-body a.sheet-link:hover {
+      text-decoration: underline;
+    }
+
     .content-block{
       margin-bottom:18px;
       padding:14px 14px;
@@ -910,6 +922,7 @@
 
     <div class="footer">
       <button id="openImpressumBtn" class="footer-btn" type="button">Impressum</button>
+      <button id="openLinksBtn" class="footer-btn" type="button">Links</button>
       <a class="footer-link" href="https://paypal.me/DEINLINK" target="_blank" rel="noopener noreferrer">Spenden</a>
       <div class="footer-note">Community Dart Liga • GitHub Pages Version</div>
     </div>
@@ -942,10 +955,23 @@
     </div>
   </div>
 
+  <div id="linksModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="linksTitle">
+      <div class="modal-head">
+        <h3 id="linksTitle" class="modal-title">Nützliche Links</h3>
+        <button class="button modal-close" type="button" data-close-modal="linksModal">✕</button>
+      </div>
+      <div id="linksContent" class="modal-body">
+        <p>Lade Links…</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
     const PLAYER_SHEET = "Spieler_Discord";
     const RULES_SHEET = "Regelwerk";
+    const LINKS_SHEET = "Links"; // Neues Tabellenblatt
 
     const LEAGUES = [
       "Autodarts Liga 1", "Autodarts Liga 2", "Autodarts Liga 3",
@@ -962,6 +988,7 @@
       playerMetaMap: {},
       matchdayOpenState: {},
       regelwerkRows: [],
+      linksRows: [], // Neu
     };
 
     const tableAreaEl = document.getElementById("tableArea");
@@ -970,12 +997,19 @@
     const modeDartCounterBtn = document.getElementById("modeDartCounter");
     const autodartsSubmenuEl = document.getElementById("autodartsSubmenu");
     const dartcounterSubmenuEl = document.getElementById("dartcounterSubmenu");
+    
     const openImpressumBtn = document.getElementById("openImpressumBtn");
     const closeImpressumBtn = document.getElementById("closeImpressumBtn");
     const impressumModal = document.getElementById("impressumModal");
+    
     const regelwerkBtn = document.getElementById("regelwerkBtn");
     const regelwerkModal = document.getElementById("regelwerkModal");
     const regelwerkContent = document.getElementById("regelwerkContent");
+
+    // Neu: Links DOM Elemente
+    const openLinksBtn = document.getElementById("openLinksBtn");
+    const linksModal = document.getElementById("linksModal");
+    const linksContent = document.getElementById("linksContent");
 
     function normalize(value) {
       return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -1239,6 +1273,40 @@
       return blocks || `<p>Keine Inhalte gefunden.</p>`;
     }
 
+    // NEU: Funktion um das Links Tabellenblatt sauber aufzubauen
+    function renderLinks(rows) {
+      const validRows = (rows || []).filter(rowHasAnyContent);
+      if (!validRows.length) return `<p>Es wurden noch keine Links hinterlegt.</p>`;
+
+      // Erste Zeile prüfen, ob es eine Überschrift ist (enthält "link", "url", "titel")
+      let startIndex = 0;
+      const firstRowStr = validRows[0].join(" ").toLowerCase();
+      if (firstRowStr.includes("link") || firstRowStr.includes("url") || firstRowStr.includes("titel")) {
+        startIndex = 1;
+      }
+
+      const blocks = validRows.slice(startIndex).map(row => {
+        const title = String(row[0] || "").trim();
+        const url = String(row[1] || "").trim();
+        const desc = String(row[2] || "").trim();
+
+        if (!title) return "";
+
+        let content = `<h4>${htmlEscape(title)}</h4>`;
+        if (desc) content += `<p style="margin-bottom: 8px;">${htmlEscape(desc)}</p>`;
+        
+        if (url) {
+          // Sicherstellen, dass die URL funktioniert
+          const href = url.startsWith("http") ? url : `https://${url}`;
+          content += `<a href="${htmlEscape(href)}" target="_blank" rel="noopener noreferrer" class="sheet-link">Link öffnen ➔</a>`;
+        }
+
+        return `<div class="content-block">${content}</div>`;
+      }).join("");
+
+      return blocks || `<p>Es wurden noch keine Links hinterlegt.</p>`;
+    }
+
     async function loadLeague(leagueName) {
       let leagueRows = [];
       let ergRows = [];
@@ -1249,7 +1317,6 @@
       try { ergRows = await loadCsv(ergName(leagueName)); }
       catch (e) { console.warn("Erg-Blatt nicht ladbar:", leagueName, e); }
 
-      // --- FIX: Fehlende Discord-Namen aus dem Erg-Blatt übernehmen ---
       if (ergRows && ergRows.length) {
         for (let i = 0; i < ergRows.length; i++) {
           const row = ergRows[i];
@@ -1278,7 +1345,6 @@
           }
         }
       }
-      // ----------------------------------------------------------------
 
       return {
         standings: parseStandingsFromLeagueSheet(leagueRows),
@@ -1340,7 +1406,6 @@
         `;
       }
 
-      // ANGEPASST: Discord als Header hinzugefügt
       const displayHeaders = ["Platz", "Spieler", "Discord", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
       
       const sortedRows = sortStandingsWithCards(rows).map((row, index, arr) => ({
@@ -1360,7 +1425,6 @@
         const meta = state.playerMetaMap[normalize(spielerName)] || { discord: "", yellow: 0, red: 0, hasRed: false };
         const discordName = meta.discord || "";
 
-        // ANGEPASST: Discord Zelle in der Tabelle eingefügt
         return `
           <tr>
             <td class="${`rank-col ${rankClass(entry.displayRank, entry.totalRows)}`.trim()}">${htmlEscape(entry.displayRank)}</td>
@@ -1582,18 +1646,24 @@
       modal.setAttribute("aria-hidden", "true");
     }
 
+    // ANGEPASST: Lädt nun auch das Links-Blatt
     async function loadStaticSheetContent() {
       try {
-        const [regelwerkRows] = await Promise.all([
+        const [regelwerkRows, linksRows] = await Promise.all([
           loadCsv(RULES_SHEET).catch(() => []),
+          loadCsv(LINKS_SHEET).catch(() => []), // Neu: Lade Links
         ]);
 
         state.regelwerkRows = regelwerkRows;
+        state.linksRows = linksRows;
 
         regelwerkContent.innerHTML = renderSheetAsBlocks(regelwerkRows, "rules");
+        linksContent.innerHTML = renderLinks(linksRows); // Neu: Baue Links Modal Inhalt
+
       } catch (e) {
-        console.warn("Regelwerk / FAQ nicht ladbar", e);
+        console.warn("Regelwerk / Links nicht ladbar", e);
         regelwerkContent.innerHTML = `<p>Regelwerk konnte nicht geladen werden.</p>`;
+        linksContent.innerHTML = `<p>Links konnten nicht geladen werden.</p>`;
       }
     }
 
@@ -1639,6 +1709,7 @@
     closeImpressumBtn.addEventListener("click", () => closeModal(impressumModal));
 
     regelwerkBtn.addEventListener("click", () => openModal(regelwerkModal));
+    openLinksBtn.addEventListener("click", () => openModal(linksModal)); // Neu: Link Button Event
 
     document.querySelectorAll("[data-close-modal]").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -1648,7 +1719,7 @@
       });
     });
 
-    [impressumModal, regelwerkModal].forEach(modal => {
+    [impressumModal, regelwerkModal, linksModal].forEach(modal => { // Neu: linksModal hinzugefügt
       modal.addEventListener("click", (e) => {
         if (e.target === modal) closeModal(modal);
       });
@@ -1656,7 +1727,7 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        [impressumModal, regelwerkModal].forEach(closeModal);
+        [impressumModal, regelwerkModal, linksModal].forEach(closeModal); // Neu: linksModal hinzugefügt
       }
     });
 
