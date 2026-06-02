@@ -793,7 +793,7 @@
       line-height:1.6;
       font-size:14px;
       overflow:auto;
-      word-break: break-all; /* Hinzugefügt, damit lange URLs umbrechen */
+      word-break: break-all;
     }
 
     .modal-body p{ margin:0 0 12px; }
@@ -973,7 +973,7 @@
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
     const PLAYER_SHEET = "Spieler_Discord";
     const RULES_SHEET = "Regelwerk";
-    const LINKS_SHEET = "Links"; // Neues Tabellenblatt
+    const LINKS_SHEET = "Links"; 
 
     const LEAGUES = [
       "Autodarts Liga 1", "Autodarts Liga 2", "Autodarts Liga 3",
@@ -990,7 +990,7 @@
       playerMetaMap: {},
       matchdayOpenState: {},
       regelwerkRows: [],
-      linksRows: [], // Neu
+      linksRows: [], 
     };
 
     const tableAreaEl = document.getElementById("tableArea");
@@ -1135,7 +1135,6 @@
         if (!spieler) continue;
 
         const nSpieler = normalize(spieler);
-        // Header überspringen
         if (!nSpieler || ["spieler", "name", "spielername"].includes(nSpieler)) continue;
 
         map[nSpieler] = {
@@ -1274,44 +1273,44 @@
       return blocks || `<p>Keine Inhalte gefunden.</p>`;
     }
 
-    // ANGEPASST: Die URL wird jetzt direkt als klickbarer Text angezeigt
+    // NEU: Liest nun gezielt Spalte B (Name) und Spalte C (URL) aus dem Sheet
     function renderLinks(rows) {
       const validRows = (rows || []).filter(rowHasAnyContent);
-      if (!validRows.length) return `<p>Es wurden noch keine Links gefunden oder das Blatt konnte nicht geladen werden.</p>`;
+      if (!validRows.length) return `<p>Es wurden noch keine Links gefunden.</p>`;
 
       let startIndex = 0;
       const firstRowStr = validRows[0].join(" ").toLowerCase();
-      if (firstRowStr.includes("link") || firstRowStr.includes("url") || firstRowStr.includes("titel")) {
+      if (firstRowStr.includes("link") || firstRowStr.includes("url") || firstRowStr.includes("titel") || firstRowStr.includes("name")) {
         startIndex = 1;
       }
 
       const blocks = validRows.slice(startIndex).map(row => {
-        let title = String(row[0] || "").trim();
-        let url = String(row[1] || "").trim();
-        let desc = String(row[2] || "").trim();
+        // Wie von dir beschrieben: Name in Spalte B (Index 1), URL in Spalte C (Index 2)
+        let title = String(row[1] || "").trim();
+        let url = String(row[2] || "").trim();
 
-        // Wenn jemand in Spalte A direkt den Link gepostet hat (und Spalte B leer ist)
-        if (title.startsWith("http") && !url) {
-          url = title;
-          title = "Unbenannter Link";
+        // Fallback: Falls du aus Versehen doch in Spalte A und B geschrieben hast
+        if (!title && !url) {
+            title = String(row[0] || "").trim();
+            url = String(row[1] || "").trim();
         }
-        
-        // Wenn kein Titel existiert, aber eine URL da ist
-        if (!title && url) title = url;
-        
-        // Wenn beides komplett leer ist, überspringen
-        if (!title && !url) return "";
 
-        let content = `<h4>${htmlEscape(title)}</h4>`;
-        if (desc) content += `<p style="margin-bottom: 8px;">${htmlEscape(desc)}</p>`;
+        if (!title && !url) return "";
+        if (!title && url) title = url;
+
+        let content = "";
         
         if (url) {
           const href = url.startsWith("http") ? url : `https://${url}`;
-          // HIER DIE ÄNDERUNG: Statt "Link öffnen ➔" wird htmlEscape(url) angezeigt
-          content += `<a href="${htmlEscape(href)}" target="_blank" rel="noopener noreferrer" class="sheet-link">${htmlEscape(url)}</a>`;
+          // Zeigt nur den Namen als klickbaren Text an (Schrift etwas größer)
+          content = `<a href="${htmlEscape(href)}" target="_blank" rel="noopener noreferrer" class="sheet-link" style="font-size:16px;">${htmlEscape(title)}</a>`;
+        } else {
+          // Falls jemand nur Text ohne Link in die Liste packt
+          content = `<span style="font-size:16px; font-weight:800;">${htmlEscape(title)}</span>`;
         }
 
-        return `<div class="content-block">${content}</div>`;
+        // Ein bisschen Innenabstand für die Optik
+        return `<div class="content-block" style="padding: 12px 14px;">${content}</div>`;
       }).join("");
 
       return blocks || `<p>Die Links konnten nicht im erwarteten Format gelesen werden.</p>`;
@@ -1332,7 +1331,6 @@
           const row = ergRows[i];
           if (!rowHasAnyContent(row)) continue;
 
-          // Spieler 1 (Spalte 2) und Discord 1 (Spalte 3)
           const s1 = normalize(safeCell(row, 1));
           const d1 = safeCell(row, 2);
           if (s1 && d1 && !["spieler", "spieler 1"].includes(s1)) {
@@ -1343,7 +1341,6 @@
             }
           }
 
-          // Spieler 2 (Spalte 4) und Discord 2 (Spalte 5)
           const s2 = normalize(safeCell(row, 3));
           const d2 = safeCell(row, 4);
           if (s2 && d2 && !["spieler", "spieler 2"].includes(s2)) {
