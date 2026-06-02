@@ -416,10 +416,12 @@
       min-width:90px;
     }
 
+    /* ANGEPASST: Spalten 3 bis 7 zentrieren */
     thead th:nth-child(3),
     thead th:nth-child(4),
     thead th:nth-child(5),
-    thead th:nth-child(6){
+    thead th:nth-child(6),
+    thead th:nth-child(7){
       text-align:center;
     }
 
@@ -470,7 +472,6 @@
     .rank-col.first::before{ background:var(--green); }
     .rank-col.last::before{ background:var(--red); }
 
-    /* REPARIERT: engerer Abstand zwischen Spieler und Siege */
     .player-cell{
       width:140px;
       min-width:140px;
@@ -494,6 +495,17 @@
       gap:8px;
       flex-wrap:wrap;
       margin-top:4px;
+    }
+
+    /* NEU: Klasse für die eigene Discord-Spalte */
+    .discord-cell {
+      color:#8ec9ee;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    body[data-mode="DartCounter"] .discord-cell {
+      color:#ffd08a;
     }
 
     .player-discord{
@@ -549,14 +561,17 @@
       color:#fff4e3;
     }
 
+    /* ANGEPASST: Spalten 3 bis 7 zentrieren */
     thead th:nth-child(3),
     thead th:nth-child(4),
     thead th:nth-child(5),
     thead th:nth-child(6),
+    thead th:nth-child(7),
     tbody td:nth-child(3),
     tbody td:nth-child(4),
     tbody td:nth-child(5),
-    tbody td:nth-child(6){
+    tbody td:nth-child(6),
+    tbody td:nth-child(7){
       width:110px;
       text-align:center;
     }
@@ -1358,7 +1373,9 @@
         `;
       }
 
-      const displayHeaders = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      // ANGEPASST: Discord als Header hinzugefügt
+      const displayHeaders = ["Platz", "Spieler", "Discord", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      
       const sortedRows = sortStandingsWithCards(rows).map((row, index, arr) => ({
         displayRank: String(index + 1),
         originalRow: row,
@@ -1376,16 +1393,17 @@
         const meta = state.playerMetaMap[normalize(spielerName)] || { discord: "", yellow: 0, red: 0, hasRed: false };
         const discordName = meta.discord || "";
 
+        // ANGEPASST: Discord Zelle in der Tabelle eingefügt
         return `
           <tr>
             <td class="${`rank-col ${rankClass(entry.displayRank, entry.totalRows)}`.trim()}">${htmlEscape(entry.displayRank)}</td>
             <td class="player-cell">
               <span class="player-name" title="${htmlEscape(spielerName)}">${htmlEscape(spielerName)}</span>
               <div class="player-meta-row">
-                ${discordName ? `<span class="player-discord" title="${htmlEscape(discordName)}">${htmlEscape(discordName)}</span>` : ``}
                 ${renderPlayerCards(meta)}
               </div>
             </td>
+            <td class="discord-cell">${discordName ? htmlEscape(discordName) : "-"}</td>
             <td>${htmlEscape(row[2] || "-")}</td>
             <td>${htmlEscape(row[3] || "-")}</td>
             <td>${htmlEscape(row[4] || "-")}</td>
@@ -1435,12 +1453,23 @@
 
       const tbody = rows.map(row => {
         const spieler1 = row[1] || "-";
+        const discord1 = row[2] || "";
         const spieler2 = row[3] || "-";
+        const discord2 = row[4] || "";
+
+        const discord1Html = discord1 ? `<span class="player-discord">${htmlEscape(discord1)}</span>` : "";
+        const discord2Html = discord2 ? `<span class="player-discord">${htmlEscape(discord2)}</span>` : "";
 
         return `
           <tr>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span></td>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span>
+              ${discord1Html}
+            </td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span>
+              ${discord2Html}
+            </td>
             <td class="col-legs">${htmlEscape(row[5] || "-")}</td>
             <td class="col-legs">${htmlEscape(row[6] || "-")}</td>
             <td class="status-cell">${renderMatchStatusDot(row[7], row[5], row[6])}</td>
