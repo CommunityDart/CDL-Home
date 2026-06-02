@@ -793,6 +793,7 @@
       line-height:1.6;
       font-size:14px;
       overflow:auto;
+      word-break: break-all; /* Hinzugefügt, damit lange URLs umbrechen */
     }
 
     .modal-body p{ margin:0 0 12px; }
@@ -821,6 +822,7 @@
       margin:0 0 8px;
       font-size:15px;
       color:#fff;
+      word-break: normal;
     }
 
     .content-block:last-child{ margin-bottom:0; }
@@ -1272,7 +1274,7 @@
       return blocks || `<p>Keine Inhalte gefunden.</p>`;
     }
 
-    // FEHLERTOLERANTERE VERSION FÜR DIE LINKS
+    // ANGEPASST: Die URL wird jetzt direkt als klickbarer Text angezeigt
     function renderLinks(rows) {
       const validRows = (rows || []).filter(rowHasAnyContent);
       if (!validRows.length) return `<p>Es wurden noch keine Links gefunden oder das Blatt konnte nicht geladen werden.</p>`;
@@ -1305,7 +1307,8 @@
         
         if (url) {
           const href = url.startsWith("http") ? url : `https://${url}`;
-          content += `<a href="${htmlEscape(href)}" target="_blank" rel="noopener noreferrer" class="sheet-link">Link öffnen ➔</a>`;
+          // HIER DIE ÄNDERUNG: Statt "Link öffnen ➔" wird htmlEscape(url) angezeigt
+          content += `<a href="${htmlEscape(href)}" target="_blank" rel="noopener noreferrer" class="sheet-link">${htmlEscape(url)}</a>`;
         }
 
         return `<div class="content-block">${content}</div>`;
