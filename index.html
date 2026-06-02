@@ -14,7 +14,6 @@
       --green:#3ddc97;
       --red:#e74c3c;
       --yellow:#f7c948;
-
       --accent:#20b7ff;
       --accent-border:rgba(32,183,255,.42);
       --row-a:#052130;
@@ -267,8 +266,10 @@
     }
 
     .discord-icon{
-      width:18px;
-      height:18px;
+      width:18px !important;
+      height:18px !important;
+      max-width:18px !important;
+      max-height:18px !important;
       fill:currentColor;
       flex:0 0 18px;
       display:block;
@@ -293,17 +294,9 @@
       padding-bottom:0;
     }
 
-    .submenu-slot.active{
-      display:flex;
-    }
-
-    .submenu-slot.left{
-      grid-column:1 / span 3;
-    }
-
-    .submenu-slot.middle{
-      grid-column:2 / span 3;
-    }
+    .submenu-slot.active{ display:flex; }
+    .submenu-slot.left{ grid-column:1 / span 3; }
+    .submenu-slot.middle{ grid-column:2 / span 3; }
 
     .submenu-btn{
       border:1px solid rgba(75,135,165,.24);
@@ -386,9 +379,7 @@
       font-size:13px;
     }
 
-    body[data-mode="DartCounter"] .section-sub{
-      color:#f3c98f;
-    }
+    body[data-mode="DartCounter"] .section-sub{ color:#f3c98f; }
 
     .table-wrap{
       overflow-x:auto;
@@ -419,7 +410,8 @@
     thead th:nth-child(3),
     thead th:nth-child(4),
     thead th:nth-child(5),
-    thead th:nth-child(6){
+    thead th:nth-child(6),
+    thead th:nth-child(7){
       text-align:center;
     }
 
@@ -470,7 +462,6 @@
     .rank-col.first::before{ background:var(--green); }
     .rank-col.last::before{ background:var(--red); }
 
-    /* REPARIERT: engerer Abstand zwischen Spieler und Siege */
     .player-cell{
       width:140px;
       min-width:140px;
@@ -493,8 +484,15 @@
       align-items:center;
       gap:8px;
       flex-wrap:wrap;
-      margin-top:4px;
     }
+
+    .discord-cell {
+      color:#8ec9ee;
+      font-weight:700;
+      font-size:14px;
+    }
+
+    body[data-mode="DartCounter"] .discord-cell { color:#ffd08a; }
 
     .player-discord{
       display:block;
@@ -508,9 +506,7 @@
       max-width:none;
     }
 
-    body[data-mode="DartCounter"] .player-discord{
-      color:#ffd08a;
-    }
+    body[data-mode="DartCounter"] .player-discord{ color:#ffd08a; }
 
     .player-cards{
       display:inline-flex;
@@ -540,23 +536,19 @@
       border-color:rgba(255,255,255,.14);
     }
 
-    .points-cell{
-      font-weight:900;
-      color:#fff;
-    }
-
-    body[data-mode="DartCounter"] .points-cell{
-      color:#fff4e3;
-    }
+    .points-cell{ font-weight:900; color:#fff; }
+    body[data-mode="DartCounter"] .points-cell{ color:#fff4e3; }
 
     thead th:nth-child(3),
     thead th:nth-child(4),
     thead th:nth-child(5),
     thead th:nth-child(6),
+    thead th:nth-child(7),
     tbody td:nth-child(3),
     tbody td:nth-child(4),
     tbody td:nth-child(5),
-    tbody td:nth-child(6){
+    tbody td:nth-child(6),
+    tbody td:nth-child(7){
       width:110px;
       text-align:center;
     }
@@ -703,16 +695,10 @@
       white-space:nowrap;
     }
 
-    .match-table td.col-player{
-      min-width:120px;
-    }
-
+    .match-table td.col-player{ min-width:120px; }
     .col-player{ width:auto; }
     .col-legs{ width:64px; text-align:center; }
-    .col-status{
-      width:96px;
-      text-align:right;
-    }
+    .col-status{ width:96px; text-align:right; }
 
     .status-cell{
       width:96px;
@@ -828,18 +814,8 @@
     .content-block:last-child{ margin-bottom:0; }
 
     @media (max-width:1180px){
-      .banner-nav{
-        grid-template-columns:repeat(3, minmax(0, 1fr));
-      }
-
-      .submenu-row{
-        grid-template-columns:repeat(3, minmax(0, 1fr));
-      }
-
-      .submenu-slot.left,
-      .submenu-slot.middle{
-        grid-column:auto;
-      }
+      .banner-nav, .submenu-row{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+      .submenu-slot.left, .submenu-slot.middle{ grid-column:auto; }
     }
 
     @media (max-width:1100px){
@@ -847,7 +823,6 @@
         min-height:260px;
         background-position:center center;
       }
-
       .main{grid-template-columns:1fr}
       .sidebar{order:2}
     }
@@ -855,20 +830,16 @@
     @media (max-width:760px){
       .wrap{width:min(100% - 16px, 1400px)}
       .button,.footer-btn,.footer-link{width:100%}
-
       .hero-banner.image-banner{
         min-height:180px;
         border-radius:20px;
         background-position:center center;
         background-size:cover;
       }
-
-      .banner-nav,
-      .submenu-row{
+      .banner-nav, .submenu-row{
         grid-template-columns:repeat(2, minmax(0, 1fr));
         gap:10px;
       }
-
       .hero-action-btn{
         min-height:42px;
         border-radius:14px;
@@ -876,36 +847,25 @@
         padding:0 10px;
         white-space:normal;
       }
-
       .player-cell{
         width:150px;
         min-width:150px;
       }
-
       .matchday-head-right{
         width:92px;
         min-width:92px;
         flex:0 0 92px;
       }
-
       .matchday-progress{ width:42px; }
-
-      .status-cell,
-      .col-status{
+      .status-cell, .col-status{
         width:92px;
         min-width:92px;
       }
-
-      .match-table td.col-player{
-        min-width:100px;
-      }
+      .match-table td.col-player{ min-width:100px; }
     }
 
     @media (max-width:560px){
-      .banner-nav,
-      .submenu-row{
-        grid-template-columns:1fr;
-      }
+      .banner-nav, .submenu-row{ grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -988,18 +948,10 @@
     const RULES_SHEET = "Regelwerk";
 
     const LEAGUES = [
-      "Autodarts Liga 1",
-      "Autodarts Liga 2",
-      "Autodarts Liga 3",
-      "Autodarts Liga 4",
-      "Autodarts Liga 5",
-      "Autodarts Liga 6",
-      "DartCounter Liga 1",
-      "DartCounter Liga 2",
-      "DartCounter Liga 3",
-      "DartCounter Liga 4",
-      "DartCounter Liga 5",
-      "DartCounter Liga 6"
+      "Autodarts Liga 1", "Autodarts Liga 2", "Autodarts Liga 3",
+      "Autodarts Liga 4", "Autodarts Liga 5", "Autodarts Liga 6",
+      "DartCounter Liga 1", "DartCounter Liga 2", "DartCounter Liga 3",
+      "DartCounter Liga 4", "DartCounter Liga 5", "DartCounter Liga 6"
     ];
 
     const state = {
@@ -1148,8 +1100,8 @@
         if (!spieler) continue;
 
         const nSpieler = normalize(spieler);
-        if (!nSpieler) continue;
-        if (["spieler", "name", "spielername"].includes(nSpieler)) continue;
+        // Header überspringen
+        if (!nSpieler || ["spieler", "name", "spielername"].includes(nSpieler)) continue;
 
         map[nSpieler] = {
           discord: discord || "",
@@ -1266,7 +1218,6 @@
             </div>
           `;
         }).join("");
-        
       }
 
       const blocks = cleaned.map((row) => {
@@ -1297,6 +1248,37 @@
 
       try { ergRows = await loadCsv(ergName(leagueName)); }
       catch (e) { console.warn("Erg-Blatt nicht ladbar:", leagueName, e); }
+
+      // --- FIX: Fehlende Discord-Namen aus dem Erg-Blatt übernehmen ---
+      if (ergRows && ergRows.length) {
+        for (let i = 0; i < ergRows.length; i++) {
+          const row = ergRows[i];
+          if (!rowHasAnyContent(row)) continue;
+
+          // Spieler 1 (Spalte 2) und Discord 1 (Spalte 3)
+          const s1 = normalize(safeCell(row, 1));
+          const d1 = safeCell(row, 2);
+          if (s1 && d1 && !["spieler", "spieler 1"].includes(s1)) {
+            if (!state.playerMetaMap[s1]) {
+              state.playerMetaMap[s1] = { discord: d1, yellow: 0, red: 0, hasRed: false };
+            } else if (!state.playerMetaMap[s1].discord) {
+              state.playerMetaMap[s1].discord = d1;
+            }
+          }
+
+          // Spieler 2 (Spalte 4) und Discord 2 (Spalte 5)
+          const s2 = normalize(safeCell(row, 3));
+          const d2 = safeCell(row, 4);
+          if (s2 && d2 && !["spieler", "spieler 2"].includes(s2)) {
+            if (!state.playerMetaMap[s2]) {
+              state.playerMetaMap[s2] = { discord: d2, yellow: 0, red: 0, hasRed: false };
+            } else if (!state.playerMetaMap[s2].discord) {
+              state.playerMetaMap[s2].discord = d2;
+            }
+          }
+        }
+      }
+      // ----------------------------------------------------------------
 
       return {
         standings: parseStandingsFromLeagueSheet(leagueRows),
@@ -1358,7 +1340,9 @@
         `;
       }
 
-      const displayHeaders = ["Platz", "Spieler", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      // ANGEPASST: Discord als Header hinzugefügt
+      const displayHeaders = ["Platz", "Spieler", "Discord", "Siege", "Niederlagen", "Leg-Diff", "Punkte"];
+      
       const sortedRows = sortStandingsWithCards(rows).map((row, index, arr) => ({
         displayRank: String(index + 1),
         originalRow: row,
@@ -1376,16 +1360,17 @@
         const meta = state.playerMetaMap[normalize(spielerName)] || { discord: "", yellow: 0, red: 0, hasRed: false };
         const discordName = meta.discord || "";
 
+        // ANGEPASST: Discord Zelle in der Tabelle eingefügt
         return `
           <tr>
             <td class="${`rank-col ${rankClass(entry.displayRank, entry.totalRows)}`.trim()}">${htmlEscape(entry.displayRank)}</td>
             <td class="player-cell">
               <span class="player-name" title="${htmlEscape(spielerName)}">${htmlEscape(spielerName)}</span>
               <div class="player-meta-row">
-                ${discordName ? `<span class="player-discord" title="${htmlEscape(discordName)}">${htmlEscape(discordName)}</span>` : ``}
                 ${renderPlayerCards(meta)}
               </div>
             </td>
+            <td class="discord-cell">${discordName ? htmlEscape(discordName) : "-"}</td>
             <td>${htmlEscape(row[2] || "-")}</td>
             <td>${htmlEscape(row[3] || "-")}</td>
             <td>${htmlEscape(row[4] || "-")}</td>
@@ -1435,12 +1420,23 @@
 
       const tbody = rows.map(row => {
         const spieler1 = row[1] || "-";
+        const discord1 = row[2] || "";
         const spieler2 = row[3] || "-";
+        const discord2 = row[4] || "";
+
+        const discord1Html = discord1 ? `<span class="player-discord">${htmlEscape(discord1)}</span>` : "";
+        const discord2Html = discord2 ? `<span class="player-discord">${htmlEscape(discord2)}</span>` : "";
 
         return `
           <tr>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span></td>
-            <td class="col-player"><span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span></td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler1)}">${htmlEscape(spieler1)}</span>
+              ${discord1Html}
+            </td>
+            <td class="col-player">
+              <span class="match-player" title="${htmlEscape(spieler2)}">${htmlEscape(spieler2)}</span>
+              ${discord2Html}
+            </td>
             <td class="col-legs">${htmlEscape(row[5] || "-")}</td>
             <td class="col-legs">${htmlEscape(row[6] || "-")}</td>
             <td class="status-cell">${renderMatchStatusDot(row[7], row[5], row[6])}</td>
