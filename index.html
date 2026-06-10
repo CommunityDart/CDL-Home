@@ -110,7 +110,6 @@
       pointer-events:none;
     }
 
-    /* EFFEKT AKTIVIERT: Kräftiger Glow für Neuigkeiten (Home) und Autodarts */
     body[data-mode="Home"] .hero-banner.image-banner,
     body[data-mode="Autodarts"] .hero-banner.image-banner{
       box-shadow:
@@ -387,7 +386,6 @@
       align-items:start;
     }
 
-    /* Schaltet das Grid auf volle Breite um, wenn man auf der Startseite ist */
     body[data-mode="Home"] .main {
       grid-template-columns: 1fr;
     }
@@ -1027,7 +1025,8 @@
 
     <div class="footer">
       <button id="openImpressumBtn" class="footer-btn" type="button">Impressum</button>
-      <a class="footer-link" href="https://www.paypal.com/pool/9nHfKrmgfD?sr=wccr" target="_blank" rel="noopener noreferrer">Spenden</a>
+      <button id="openLinksBtn" class="footer-btn" type="button">Links</button>
+      <a class="footer-link" href="https://paypal.me/DEINLINK" target="_blank" rel="noopener noreferrer">Spenden</a>
       <div class="footer-note">Community Dart Liga • GitHub Pages Version</div>
     </div>
   </div>
@@ -1059,11 +1058,24 @@
     </div>
   </div>
 
+  <div id="linksModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="linksTitle">
+      <div class="modal-head">
+        <h3 id="linksTitle" class="modal-title">Links</h3>
+        <button class="button modal-close" type="button" data-close-modal="linksModal">✕</button>
+      </div>
+      <div id="linksContent" class="modal-body">
+        <p>Lade Links…</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SHEET_ID = "1P8aN20vfu6MLnMaEMXLv_OvOeXiF76-dAW1Fpy4DNe0";
     const PLAYER_SHEET = "Spieler_Discord";
     const RULES_SHEET = "Regelwerk";
     const NEWS_SHEET = "Neuigkeiten";
+    const LINKS_SHEET = "Links"; // NEU: Name des Tabellenblatts für Links
 
     const LEAGUES = [
       "Autodarts Liga 1",
@@ -1089,6 +1101,7 @@
       matchdayOpenState: {},
       regelwerkRows: [],
       newsRows: [],
+      linksRows: [], // NEU: Speicher für Links
     };
 
     const tableAreaEl = document.getElementById("tableArea");
@@ -1104,6 +1117,9 @@
     const regelwerkBtn = document.getElementById("regelwerkBtn");
     const regelwerkModal = document.getElementById("regelwerkModal");
     const regelwerkContent = document.getElementById("regelwerkContent");
+    const openLinksBtn = document.getElementById("openLinksBtn"); // NEU
+    const linksModal = document.getElementById("linksModal"); // NEU
+    const linksContent = document.getElementById("linksContent"); // NEU
 
     function normalize(value) {
       return String(value ?? "").trim().toLowerCase().replace(/\s+/g, " ");
@@ -1251,7 +1267,6 @@
       return map;
     }
 
-    /* REPARIERT: Strenger Check auf gültige Nummer im Platzierungsfeld */
     function parseStandingsFromLeagueSheet(rows) {
       if (!rows || !rows.length) return { headers: [], rows: [] };
 
@@ -1282,7 +1297,6 @@
         const legDiff = safeCell(row, 4);
         const punkte = safeCell(row, 5);
 
-        // KORREKTUR: Wenn Platz keine valide Zahl ist, stoppen wir sofort. Das trennt Tabelle von Spieltagen.
         if (!platz || isNaN(parseInt(platz, 10))) continue;
 
         const nSpieler = normalize(spieler);
@@ -1325,7 +1339,6 @@
         if (!spieltagNummer || isNaN(parseInt(spieltagNummer, 10))) continue;
         if (!spieler1 || !spieler2) continue;
 
-        // FILTER: Ignoriert Dummy-Einträge aus leeren Tabellenvorlagen
         if (normalize(spieler1).startsWith("spieler ") || normalize(spieler2).startsWith("spieler ")) continue;
 
         const title = `Spieltag ${spieltagNummer}`;
@@ -1355,27 +1368,6 @@
       if (!validRows.length) return `<p>Keine Inhalte gefunden.</p>`;
 
       const cleaned = validRows.map(row => row.map(cell => String(cell || "").trim()));
-
-      if (mode === "faq" && cleaned.length > 0) {
-        const bodyRows = cleaned.filter((row, index) => {
-          const joined = row.join(" ").toLowerCase();
-          if (index === 0 && (joined.includes("frage") || joined.includes("antwort") || joined.includes("faq"))) return false;
-          return true;
-        });
-
-        const blocks = bodyRows.map(row => {
-          const first = row.find(cell => cell);
-          const rest = row.slice(1).filter(cell => cell);
-          if (!first) return "";
-          return `
-            <div class="content-block">
-              <h4>${makeClickable(htmlEscape(first))}</h4>
-              ${rest.length ? rest.map(text => `<p>${makeClickable(htmlEscape(text))}</p>`).join("") : `<p>-</p>`}
-            </div>
-          `;
-        }).join("");
-        
-      }
 
       const blocks = cleaned.map((row) => {
         const filled = row.filter(cell => cell);
@@ -1745,20 +1737,25 @@
       modal.setAttribute("aria-hidden", "true");
     }
 
+    /* REPARIERT: Lädt nun parallel auch das Links-Blatt wieder ein */
     async function loadStaticSheetContent() {
       try {
-        const [regelwerkRows, newsRows] = await Promise.all([
+        const [regelwerkRows, newsRows, linksRows] = await Promise.all([
           loadCsv(RULES_SHEET).catch(() => []),
           loadCsv(NEWS_SHEET).catch(() => []),
+          loadCsv(LINKS_SHEET).catch(() => []), // NEU: Links parallel mitladen
         ]);
 
         state.regelwerkRows = regelwerkRows;
         state.newsRows = newsRows;
+        state.linksRows = linksRows; // NEU
 
-        regelwerkContent.innerHTML = renderSheetAsBlocks(regelwerkRows, "rules");
+        if (regelwerkContent) regelwerkContent.innerHTML = renderSheetAsBlocks(regelwerkRows, "rules");
+        if (linksContent) linksContent.innerHTML = renderSheetAsBlocks(linksRows, "links"); // NEU: Links parsen und einbinden
       } catch (e) {
         console.warn("Statische Inhalte nicht ladbar", e);
-        regelwerkContent.innerHTML = `<p>Regelwerk konnte nicht geladen werden.</p>`;
+        if (regelwerkContent) regelwerkContent.innerHTML = `<p>Regelwerk konnte nicht geladen werden.</p>`;
+        if (linksContent) linksContent.innerHTML = `<p>Links konnten nicht geladen werden.</p>`; // NEU
       }
     }
 
@@ -1802,6 +1799,8 @@
 
     openImpressumBtn.addEventListener("click", () => openModal(impressumModal));
     closeImpressumBtn.addEventListener("click", () => closeModal(impressumModal));
+    
+    if (openLinksBtn) openLinksBtn.addEventListener("click", () => openModal(linksModal)); // NEU
 
     regelwerkBtn.addEventListener("click", () => openModal(regelwerkModal));
 
@@ -1813,15 +1812,19 @@
       });
     });
 
-    [impressumModal, regelwerkModal].forEach(modal => {
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeModal(modal);
-      });
+    /* REPARIERT: Klick auf den Hintergrund schließt nun auch das Links-Modal wieder */
+    [impressumModal, regelwerkModal, linksModal].forEach(modal => {
+      if (modal) {
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) closeModal(modal);
+        });
+      }
     });
 
+    /* REPARIERT: Escape-Taste schließt nun auch das Links-Modal wieder */
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        [impressumModal, regelwerkModal].forEach(closeModal);
+        [impressumModal, regelwerkModal, linksModal].forEach(closeModal);
       }
     });
 
