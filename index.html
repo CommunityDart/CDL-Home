@@ -109,6 +109,8 @@
       pointer-events:none;
     }
 
+    /* REPARIERT: Der Glow-Effekt gilt jetzt auch für die Startseite (Home) */
+    body[data-mode="Home"] .hero-banner.image-banner,
     body[data-mode="Autodarts"] .hero-banner.image-banner{
       box-shadow:
         0 18px 44px rgba(0,0,0,.34),
@@ -1215,6 +1217,7 @@
       return map;
     }
 
+    // REPARIERT: Striktere Tabellen-Ende-Erkennung und besseres Herausfiltern von Dummy-Reihen
     function parseStandingsFromLeagueSheet(rows) {
       if (!rows || !rows.length) return { headers: [], rows: [] };
 
@@ -1224,7 +1227,7 @@
       for (let i = 0; i < rows.length; i++) {
         const text = rows[i].map(c => normalize(c)).join(" | ");
         if (tabelleMarker === -1 && text.includes("tabelle")) tabelleMarker = i;
-        if (spieltageMarker === -1 && text.includes("spieltage")) spieltageMarker = i;
+        if (spieltageMarker === -1 && (text.includes("spieltage") || text.includes("spieltag"))) spieltageMarker = i;
       }
 
       if (tabelleMarker === -1) return { headers: [], rows: [] };
@@ -1246,7 +1249,18 @@
         const punkte = safeCell(row, 5);
 
         const nSpieler = normalize(spieler);
-        if (!spieler || nSpieler === "spieler" || nSpieler === "name" || nSpieler === "spielername") continue;
+        
+        // Filtert Tabellenköpfe und typische Dummy-Werte bzw. "Spieler 1" Einträge konsequent aus
+        if (!spieler || 
+            nSpieler === "spieler" || 
+            nSpieler === "name" || 
+            nSpieler === "spielername" || 
+            nSpieler === "-" || 
+            nSpieler === "freilos" ||
+            nSpieler === "tba" ||
+            nSpieler.startsWith("spieler ")) {
+           continue;
+        }
 
         body.push([platz || "-", spieler, siege, niederlagen, legDiff, punkte]);
       }
